@@ -1,4 +1,19 @@
 Rails.application.routes.draw do
+
+  root 'order#index'
+
+  get 'order/index'
+
+  get 'order/search'
+
+  get 'order/place_order'
+
+  get 'order/review_results'
+
+  get 'order/print_results'
+
+  get 'order/print_order'
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
