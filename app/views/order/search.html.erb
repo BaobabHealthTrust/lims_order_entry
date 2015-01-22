@@ -1,2 +1,66 @@
-<h1>Order#search</h1>
-<p>Find me in app/views/order/search.html.erb</p>
+<button onclick="Android.showMsg('<%= @cat %>')"><%= @cat %></button>
+
+<br />
+
+<% if @cat.strip.match(/print/) %>
+
+    <table>
+      <tr>
+        <td>
+          Name
+        </td>
+        <td>
+          <input id="name" value="Mary Banda" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          National ID
+        </td>
+        <td>
+          <input id="npid" value="P17002930291" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Date
+        </td>
+        <td>
+          <input id="datetime" value="<%= Time.now.strftime("%d/%b/%Y %H:%M") %>" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Location
+        </td>
+        <td>
+          <input id="ward" value="Ward 1A" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Test(s)
+        </td>
+        <td>
+          <input id="test" value="FBC" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Test(s)
+        </td>
+        <td>
+          <input id="barcode" value="00100018" />
+        </td>
+      </tr>
+      <tr>  <!-- String name, String npid, String datetime, String ward, String test, String barcode -->
+        <td colspan="2" >
+          <button onclick="Android.printBarcode(__$('name').value.trim(), __$('npid').value.trim(),
+                  __$('datetime').value.trim(), __$('ward').value.trim(), __$('test').value.trim(), __$('barcode').value.trim())">Print Barcode</button>
+        </td>
+      </tr>
+    </table>
+
+
+
+<% end %>

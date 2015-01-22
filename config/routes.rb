@@ -2,6 +2,10 @@ Rails.application.routes.draw do
 
   root 'order#index'
 
+  get '/search_by_name' => "order#search_by_name_and_gender"
+
+  get '/search_by_dob' => "order#search_by_name_and_dob"
+
   get 'order/index'
 
   get 'order/search'
