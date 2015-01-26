@@ -17,3 +17,4 @@
 /tmp
 *.lock
 .idea/
+config/*.yml

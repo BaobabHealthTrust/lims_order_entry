@@ -2,8 +2,8 @@ default: &default
   wsdl_server: localhost
   wsdl_port: 3001
   namespace: http://www.baobabhealth.org
-  username: admin
-  password: test
+  username: 
+  password: 
 
 development:
   <<: *default
