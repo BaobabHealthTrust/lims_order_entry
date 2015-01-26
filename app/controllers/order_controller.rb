@@ -1,6 +1,6 @@
 class OrderController < ApplicationController
 
-  before_filter :set_connection, :only => [:search_by_name_and_gender, :search_by_name_and_dob]
+  before_filter :set_connection, :only => [:search_by_name_and_gender, :search_by_name_and_dob, :search_by_npid]
 
   def index
   end
@@ -23,18 +23,25 @@ class OrderController < ApplicationController
 
   def search_by_name_and_gender
 
-    query = @client.call(:get_patient_by_name, :message => { :firstname => params[:first_name].strip,
-                                                             :lastname => params[:last_name].strip,
-                                                             :gender => params[:gender].strip }) rescue nil
+    query = @request.get_patient_by_name(params[:firstname], params[:lastname], params[:gender]) rescue nil
 
-
-    render :text => query
+    render :text => query.to_json
 
   end
 
   def search_by_name_and_dob
 
+    query = @request.get_patient_by_name_and_dob(params[:firstname], params[:lastname], params[:gender], params[:birthdate]) rescue nil
 
+    render :text => query.to_json
+
+  end
+
+  def search_by_npid
+
+    query = @request.get_patient_by_npid(params[:id])
+
+    render :text => query.to_json
 
   end
 
@@ -42,7 +49,7 @@ class OrderController < ApplicationController
 
   def set_connection
 
-    @client = Savon::Client.new(wsdl: "http://#{CONFIG[:wsdl_server]}:#{CONFIG[:wsdl_port]}/demographics/wsdl")
+    @request = SoapService.new
 
   end
 
