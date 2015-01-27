@@ -50,9 +50,9 @@ class SoapService
 
   end
 
-  def get_patient_by_name(firstname, lastname, gender)
+  def get_patient_by_name(firstname, lastname, gender, page = 1, pagesize = 20)
 
-    response = @client.call(:get_patient_by_name, :message => {:firstname => firstname, :lastname => lastname, :gender => gender})
+    response = @client.call(:get_patient_by_name, :message => {:firstname => firstname, :lastname => lastname, :gender => gender, :page => page, :pagesize => pagesize})
 
     return [] if response.soap_fault?
 
@@ -84,9 +84,9 @@ class SoapService
 
   end
 
-  def get_patient_by_name_and_dob(firstname, lastname, gender, birthdate)
+  def get_patient_by_name_and_dob(firstname, lastname, gender, birthdate, page = 1, pagesize = 20)
 
-    response = @client.call(:get_patient_by_name_and_dob, :message => {:firstname => firstname, :lastname => lastname, :gender => gender, :birthdate => birthdate})
+    response = @client.call(:get_patient_by_name_and_dob, :message => {:firstname => firstname, :lastname => lastname, :gender => gender, :birthdate => birthdate, :page => page, :pagesize => pagesize})
 
     return [] if response.soap_fault?
 
