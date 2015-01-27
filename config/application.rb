@@ -27,5 +27,7 @@ module LimsOrderEntry
     
     require 'soap_service'
     
+    require 'segments/tq1'
+    
   end
 end
