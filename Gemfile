@@ -27,6 +27,8 @@ gem 'savon', '2.7.2'
 gem 'colored'
 gem 'redcarpet'
 
+gem 'ruby-hl7'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
