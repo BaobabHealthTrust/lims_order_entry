@@ -3,7 +3,13 @@ default: &default
   wsdl_port: 3001
   namespace: http://www.baobabhealth.org
   username: 
-  password: 
+  password:
+  order_server: localhost
+  order_port: 80
+  order_username:
+  order_password:
+  test_order_path: /blis/htdocs/api/processHL7Order.php
+  avaialble_tests_path: /blis/htdocs/api/get_test_catalog.php
 
 development:
   <<: *default

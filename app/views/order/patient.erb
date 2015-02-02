@@ -1,0 +1,168 @@
+<!--
+
+[{:national_id=>"P129500000229", :full_name=>"Mevis Kadammanja", :sex=>"Female", :age=>"51",
+:date_of_birth=>"27/Oct/1963", :first_name=>"Mevis", :last_name=>"Kadammanja", :middle_name=>"N/A",
+:home_village=>nil, :home_ta=>"TA Malengachanzi", :home_district=>"Nkhotakota ", :current_village=>"Area 25a Houses",
+:current_ta=>nil, :current_district=>nil, :current_residence=>"Nsungwi market"}]
+
+-->
+
+<% if @patient.blank? %>
+
+    <div style="width: 100%; text-align: center; margin-top: 15%; font-size: 28px;">
+      <i><b>No Match Found!</b></i>
+    </div>
+
+    <script>
+
+
+        function renameBtn() {
+
+            if(__$("btnLogout")){
+
+                __$("btnLogout").innerHTML = "Cancel";
+
+            }else {
+
+                setTimeout("renameBtn()", 100);
+
+            }
+
+        }
+
+        setTimeout("renameBtn()", 100);
+
+    </script>
+
+<% else %>
+
+    <%
+
+       age = nil
+
+       dob = @patient[:date_of_birth].to_date rescue nil
+
+       if !dob.blank?
+
+         days = (Date.today - dob).to_i
+
+         if days < 30 # days
+
+           age = "#{days} days"
+
+         elsif days >= 30 and days <= 90 # weeks
+
+           age = "#{days / 7} weeks"
+
+         elsif days > 90 and days <= 720 # months
+
+           age = "#{days / 30} months"
+
+         else # years
+
+           age = "#{days / 365}"
+
+         end
+
+       end
+
+    %>
+
+    <table width="100%" style="font-size: 20px; margin-left: 10px;" cellpadding="2">
+      <tr>
+        <td style="color: #23538a; font-size: 18px; font-weight: bold;" align="right">
+          N<span style="font-size: 14px;">AME</span>
+        </td>
+        <td style="color: #23538a;">
+          :
+        </td>
+        <td colspan="4">
+          <%= @patient[:full_name] rescue nil %>
+        </td>
+      </tr>
+      <tr>
+        <td style="color: #23538a; font-size: 18px; font-weight: bold;" align="right">
+          N<span style="font-size: 14px;">ATIONAL ID</span>
+        </td>
+        <td style="color: #23538a;">
+          :
+        </td>
+        <td colspan="4">
+          <%= @patient[:national_id] rescue nil %>
+        </td>
+      </tr>
+      <tr>
+        <td style="color: #23538a; font-size: 18px; font-weight: bold;" align="right">
+          G<span style="font-size: 14px;">ENDER</span>
+        </td>
+        <td style="color: #23538a;">
+          :
+        </td>
+        <td>
+          <%= @patient[:sex] rescue nil %>
+        </td>
+        <td style="color: #23538a; font-size: 18px; font-weight: bold;" align="right">
+          A<span style="font-size: 14px;">GE</span>
+        </td>
+        <td style="color: #23538a;">
+          :
+        </td>
+        <td>
+          <%= age %> <i>(<%= @patient[:date_of_birth] rescue nil %>)</i>
+        </td>
+      </tr>
+      <tr>
+        <td style="color: #23538a; font-size: 18px; font-weight: bold;" align="right">
+          A<span style="font-size: 14px;">DDRESS</span>
+        </td>
+        <td style="color: #23538a;">
+          :
+        </td>
+        <td colspan="4">
+          <%= @patient[:current_residence] rescue nil %><%= !@patient[:current_village].blank? ? ", " : "" %>
+          <%= @patient[:current_village] rescue nil %><%= !@patient[:current_ta].blank? ? ", " : "" %>
+          <%= @patient[:current_ta] rescue nil %><%= !@patient[:current_district].blank? ? ", " : "" %>
+          <%= @patient[:current_district] rescue nil %>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="6">
+            <div style="height: 477px; width: 96%; overflow: auto; border-top: 1px solid #23538a; margin: auto;">
+
+            </div>
+        </td>
+      </tr>
+    </table>
+
+    <button id="btnOrder" class="button_blue" style="float: right; margin-right: 15px;" onclick="window.location = '/place_order/<%= @patient[:national_id] rescue nil %>'">Order
+      Test
+    </button>
+
+    <script>
+
+
+        function attachBtn() {
+
+            if (__$("nav")) {
+
+                __$("nav").appendChild(__$("btnOrder"));
+
+            } else {
+
+                setTimeout("attachBtn()", 100);
+
+            }
+
+            if(__$("btnLogout")){
+
+                __$("btnLogout").innerHTML = "Cancel";
+
+            }
+
+        }
+
+        setTimeout("attachBtn()", 100);
+
+    </script>
+
+<% end %>

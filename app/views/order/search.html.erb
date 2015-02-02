@@ -1,8 +1,19 @@
-<button onclick="Android.showMsg('<%= @cat %>')"><%= @cat %></button>
+<table>
+  <tr>
+    <td>
+      First Name
+    </td>
+    <td>
+      <input type="input" name="firstname" id="firstname" value="" />
+          </td>
+  </tr>
+</table>
 
-<br />
+<% if @cat.strip.match(/print/) and false %>
 
-<% if @cat.strip.match(/print/) %>
+    <button onclick="Android.showMsg('<%= @cat %>')"><%= @cat %></button>
+
+    <br />
 
     <table>
       <tr>

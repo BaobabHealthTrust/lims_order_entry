@@ -2,6 +2,16 @@ Rails.application.routes.draw do
 
   root 'order#index'
 
+  get '/process_order' => "order#process_order"
+
+  get '/receptor/:id' => "order#receptor"
+
+  post '/receptor' => "order#receptor"
+
+  get '/patient/:id' => "order#patient"
+
+  get '/catalog' => "order#catalog"
+
   get '/search_by_npid/:id' => "order#search_by_npid"
 
   get '/search_by_name' => "order#search_by_name_and_gender"
@@ -12,7 +22,7 @@ Rails.application.routes.draw do
 
   get 'order/search'
 
-  get 'order/place_order'
+  get '/place_order/:id' => "order#place_order"
 
   get 'order/review_results'
 
