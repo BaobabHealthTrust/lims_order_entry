@@ -1,0 +1,2 @@
+module LabProcessingHelper
+end

@@ -1,0 +1,52 @@
+<script>
+
+    function checkLocation() {
+
+        var mac;
+
+        if (typeof(Android) != "undefined")
+            mac = Android.getMac();
+
+        var url = "/check_location/" + mac;
+
+        var httpRequest = new XMLHttpRequest();
+
+        httpRequest.onreadystatechange = function () {
+
+            if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
+                    httpRequest.status == 304)) {
+
+                var result = httpRequest.responseText;
+
+                if (document.getElementById("location")) {
+
+                    document.getElementById("location").innerHTML = result;
+
+                }
+
+                if (result.trim().length == 0) {
+
+                    if (document.getElementById("location")) {
+
+                        document.getElementById("location").innerHTML = "";
+
+                    }
+
+                    window.location = "/lab_processing/capture_location";
+
+                }
+
+            }
+
+        };
+        try {
+            httpRequest.open('GET', url, true);
+            httpRequest.send(null);
+        } catch (e) {
+        }
+
+    }
+
+    checkLocation();
+
+</script>

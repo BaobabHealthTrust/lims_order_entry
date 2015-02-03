@@ -1,0 +1,287 @@
+<script>
+
+    if (document.getElementById("location")) {
+
+        document.getElementById("location").innerHTML = "";
+
+    }
+
+</script>
+
+<table width="100%" cellspacing="0">
+  <tr>
+    <th colspan="2" style="background-color: #23538a; color: #fff; padding: 5px;">
+      Specify Current Location
+    </th>
+  </tr>
+  <tr>
+    <td>
+      <div id="frame1" style="height: 280px; width: 100%; overflow: auto; border-top: 1px solid #23538a; margin: auto;">
+        <table width="90%" style="margin: auto; margin-top: 5px; " cellspacing="0" cellpadding="10">
+          <tr>
+            <th style="border-bottom: 2px solid #333; color: #333; border-right: 1px dotted #ccc;">
+              Department
+            </th>
+            <th style="border-bottom: 2px solid #333; color: #333;">
+              Station
+            </th>
+          </tr>
+          <tr>
+            <td style="border-bottom: 1px dotted #ccc; border-right: 1px dotted #ccc;">
+              <div id="department" style="width: 100%; height: 200px; overflow: auto;">
+
+              </div>
+            </td>
+            <td style="border-bottom: 1px dotted #ccc;">
+              <div id="station" style="width: 100%; height: 200px; overflow: auto;">
+
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </td>
+  </tr>
+</table>
+
+<%= form_tag("/lab_processing/set_location", :method => :post) do -%>
+
+    <%= hidden_field_tag(:mac, nil) %>
+
+    <%= hidden_field_tag(:dept, nil) %>
+
+    <%= hidden_field_tag(:device, nil) %>
+
+<% end %>
+
+<script>
+
+    var locations = {};
+
+    var liDeptSelect, liDevSelect, selectedDev, selectedDept;
+
+    function changeLabels() {
+
+        if (document.getElementById("btnNext")) {
+
+            document.getElementById("btnNext").innerHTML = "Save Location";
+
+            document.getElementById("btnNext").onclick = function () {
+
+                if(__$("dept")){
+
+                    __$("dept").value = selectedDept;
+
+                }
+
+                if(__$("device")){
+
+                    __$("device").value = selectedDev;
+
+                }
+
+                document.forms[0].submit();
+
+            }
+
+        } else {
+
+            setTimeout("changeLabels()", 100);
+
+            return;
+
+        }
+
+        if (document.getElementById("btnLogout")) {
+
+            document.getElementById("btnLogout").innerHTML = "Cancel";
+
+            document.getElementById("btnLogout").onclick = function () {
+
+                window.location = "/lab_processing/index";
+
+            }
+
+        } else {
+
+            setTimeout("changeLabels()", 100);
+
+            return;
+
+        }
+
+        getLocations();
+
+    }
+
+    function getLocations() {
+
+        var mac;
+
+        if (typeof(Android) != "undefined")
+            mac = Android.getMac();
+
+        if (document.getElementById("mac")) {
+
+            document.getElementById("mac").value = mac;
+
+        }
+
+        var url = "/list_locations";
+
+        var httpRequest = new XMLHttpRequest();
+
+        httpRequest.onreadystatechange = function () {
+
+            if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
+                    httpRequest.status == 304)) {
+
+                var result = JSON.parse(httpRequest.responseText);
+
+                locations = result;
+
+                loadLocations();
+
+            }
+
+        };
+        try {
+            httpRequest.open('GET', url, true);
+            httpRequest.send(null);
+        } catch (e) {
+        }
+
+    }
+
+    function loadLocations() {
+
+        if (__$("department")) {
+
+            __$("department").innerHTML = "";
+
+            var ul = document.createElement("ul");
+            ul.id = "ulDept";
+            ul.style.listStyle = "none";
+            ul.style.paddingLeft = "0px";
+
+            __$("department").appendChild(ul);
+
+            var keys = Object.keys(locations).sort();
+
+            for (var i = 0; i < keys.length; i++) {
+
+                var key = keys[i];
+
+                var li = document.createElement("li");
+                li.innerHTML = key;
+                li.style.padding = "10px";
+                li.style.cursor = "pointer";
+                li.style.margin = "1px";
+                li.setAttribute("dept", key);
+
+                if (i % 2 > 0) {
+
+                    li.style.backgroundColor = "#eee";
+
+                    li.setAttribute("tag", "odd");
+
+                } else {
+
+                    li.style.borderTop = "1px dotted #ccc";
+
+                    li.style.borderBottom = "1px dotted #ccc";
+
+                }
+
+                ul.appendChild(li);
+
+                new FastButton(li, function () {
+
+                    if (liDeptSelect) {
+
+                        liDeptSelect.style.backgroundColor = (liDeptSelect.getAttribute("tag") == "odd" ? "#eee" : "");
+
+                    }
+
+                    liDeptSelect = this;
+
+                    this.style.backgroundColor = "lightblue";
+
+                    selectedDept = this.getAttribute("dept");
+
+                    loadStations(this.getAttribute("dept"));
+
+                });
+
+            }
+
+        }
+    }
+
+    function loadStations(dept) {
+
+        if (__$("station")) {
+
+            __$("station").innerHTML = "";
+
+            var ul = document.createElement("ul");
+            ul.id = "ulDev";
+            ul.style.listStyle = "none";
+            ul.style.paddingLeft = "0px";
+
+            __$("station").appendChild(ul);
+
+            var keys = Object.keys(locations[dept]).sort();
+
+            for (var i = 0; i < keys.length; i++) {
+
+                var key = keys[i];
+
+                var li = document.createElement("li");
+                li.innerHTML = key;
+                li.style.padding = "10px";
+                li.style.cursor = "pointer";
+                li.style.margin = "1px";
+                li.setAttribute("device", key);
+
+                if (i % 2 > 0) {
+
+                    li.style.backgroundColor = "#eee";
+
+                    li.setAttribute("tag", "odd");
+
+                } else {
+
+                    li.style.borderTop = "1px dotted #ccc";
+
+                    li.style.borderBottom = "1px dotted #ccc";
+
+                }
+
+                ul.appendChild(li);
+
+                new FastButton(li, function () {
+
+                    if (liDevSelect) {
+
+                        liDevSelect.style.backgroundColor = (liDevSelect.getAttribute("tag") == "odd" ? "#eee" : "");
+
+                    }
+
+                    liDevSelect = this;
+
+                    this.style.backgroundColor = "lightblue";
+
+                    selectedDev = this.getAttribute("device");
+
+                });
+
+            }
+
+        }
+
+    }
+
+    setTimeout("changeLabels()", 200);
+
+</script>

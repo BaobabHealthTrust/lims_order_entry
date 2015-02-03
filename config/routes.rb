@@ -2,6 +2,24 @@ Rails.application.routes.draw do
 
   root 'order#index'
 
+  get "/list_locations" => "lab_processing#list_locations"
+
+  get 'lab_processing/receive_samples'
+
+  get 'lab_processing/enter_results'
+
+  get 'lab_processing/verify_results'
+
+  get 'lab_processing/dispose_samples'
+
+  get 'lab_processing/index'
+
+  get 'lab_processing/capture_location'
+
+  post 'lab_processing/set_location'
+
+  get '/check_location/:id' => "lab_processing#check_location"
+
   get '/process_order' => "order#process_order"
 
   get '/receptor/:id' => "order#receptor"
