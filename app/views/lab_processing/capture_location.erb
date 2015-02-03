@@ -118,8 +118,15 @@
 
         var mac;
 
-        if (typeof(Android) != "undefined")
+        if (typeof(Android) != "undefined") {
+
             mac = Android.getMac();
+
+        } else {
+
+            mac = "<%= request.ip %>".replace(/\./g, "_");      // Substitute with IP Address
+
+        }
 
         if (document.getElementById("mac")) {
 

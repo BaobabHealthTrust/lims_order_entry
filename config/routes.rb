@@ -2,9 +2,23 @@ Rails.application.routes.draw do
 
   root 'order#index'
 
-  get "/list_locations" => "lab_processing#list_locations"
+  get "/dispose_sample/:id" => "lab_processing#dispose_sample"
 
-  get 'lab_processing/receive_samples'
+  get "/list_rejection_reasons" => "lab_processing#list_rejection_reasons"
+
+  get "/rejection_reason/:id" => "lab_processing#rejection_reason"
+
+  post "/reject_sample" => "lab_processing#reject_sample"
+
+  get "/process_sample/:id" => "lab_processing#process_sample"
+
+  get "/receive_samples/:id" => "lab_processing#receive_samples"
+
+  get "/sample_status" => "lab_processing#sample_status"
+
+  get "/search_for_samples" => "lab_processing#search_for_samples"
+
+  get "/list_locations" => "lab_processing#list_locations"
 
   get 'lab_processing/enter_results'
 

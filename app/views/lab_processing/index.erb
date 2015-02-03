@@ -1,5 +1,40 @@
 <%= render 'location_check' %>
 
+<style>
+
+  .long {
+      min-width: 245px;
+  }
+
+</style>
+<div id="shell" style="height: 295px; overflow: auto; text-align: center;">
+
+  <button class="button_blue long" style="margin: 10px; width: 515px;" onclick="window.location = '/search_for_samples?target=process_sample';">
+    Start Processing Sample
+  </button>
+
+  <br />
+
+  <button class="button_blue long" style="margin: 10px;" onclick="window.location = '/search_for_samples?target=rejection_reason';">
+    Reject Sample
+  </button>
+
+  <button class="button_blue long" style="margin: 10px;">
+    Enter Results
+  </button>
+
+  <br />
+
+  <button class="button_blue long" style="margin: 10px;">
+    Verify Results
+  </button>
+
+  <button class="button_blue long" style="margin: 10px;" onclick="window.location = '/search_for_samples?target=dispose_sample';">
+    Dispose Sample
+  </button>
+
+</div>
+
 <script>
 
   function changeLabels(){
@@ -10,7 +45,7 @@
 
       } else {
 
-          setTimeout("changeLabels()", 100);
+          setTimeout("changeLabels()", 10);
 
           return;
 
@@ -28,14 +63,44 @@
 
       } else {
 
-          setTimeout("changeLabels()", 100);
+          setTimeout("changeLabels()", 10);
 
           return;
 
       }
 
+      redirectIfReception();
+
   }
 
-  setTimeout("changeLabels()", 100);
+  function redirectIfReception(){
+
+      if(currentLocation != null){
+
+          if(currentLocation.trim().match(/reception/i)){
+
+              window.location = "/search_for_samples?target=receive_samples";
+
+          }
+
+          if(typeof(Android) != "undefined"){
+
+              document.getElementById("shell").style.height = "295px";
+
+          } else {
+
+              document.getElementById("shell").style.height = (window.innerHeight - 135) + "px";
+
+          }
+
+      } else {
+
+          setTimeout("changeLabels()", 10);
+
+      }
+
+  }
+
+  setTimeout("changeLabels()", 10);
 
 </script>

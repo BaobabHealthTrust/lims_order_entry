@@ -1,2 +1,41 @@
-<h1>LabProcessing#receive_samples</h1>
-<p>Find me in app/views/lab_processing/receive_samples.html.erb</p>
+<%= render 'location_check' %>
+
+<script>
+
+    function changeLabels(){
+
+        if(document.getElementById("btnNext")){
+
+            document.getElementById("btnNext").style.display = "none";
+
+        } else {
+
+            setTimeout("changeLabels()", 100);
+
+            return;
+
+        }
+
+        if(document.getElementById("btnLogout")){
+
+            document.getElementById("btnLogout").innerHTML = "Cancel";
+
+            document.getElementById("btnLogout").onclick = function(){
+
+                window.location = "/lab_processing/index";
+
+            }
+
+        } else {
+
+            setTimeout("changeLabels()", 100);
+
+            return;
+
+        }
+
+    }
+
+    setTimeout("changeLabels()", 100);
+
+</script>

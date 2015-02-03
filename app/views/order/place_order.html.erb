@@ -506,7 +506,13 @@
                 var full_name = "<%= @patient[:full_name] rescue nil %>";
 
 
-                Android.printBarcode(full_name, npid, result["messageDatetime"], "", result["typeOfSample"], result["accessionNumber"]);
+                if (typeof(Android) != "undefined") {
+                    Android.printBarcode(full_name, npid, result["messageDatetime"], "", result["typeOfSample"], result["accessionNumber"]);
+                } else {
+
+                    alert("Accession Number: " + result["accessionNumber"]);
+
+                }
 
                 if (__$("tests")) {
 

@@ -158,6 +158,7 @@
         background-image: -o-linear-gradient(top, #a7cfdf, #23538a);
         background-image: linear-gradient(to bottom, #a7cfdf, #23538a);
         filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=#a7cfdf, endColorstr=#23538a);
+        cursor: pointer;
     }
 
     .button_blue:hover {
@@ -193,6 +194,7 @@
         background-image: -o-linear-gradient(top, #4ba614, #008c00);
         background-image: linear-gradient(to bottom, #4ba614, #008c00);
         filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=#4ba614, endColorstr=#008c00);
+        cursor: pointer;
     }
 
     .button_green:hover {
@@ -228,6 +230,7 @@
         background-image: -o-linear-gradient(top, #a90329, #6d0019);
         background-image: linear-gradient(to bottom, #a90329, #6d0019);
         filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=#a90329, endColorstr=#6d0019);
+        cursor: pointer;
     }
 
     .button_red:hover {
@@ -365,8 +368,8 @@
     function load() {
 
         /*new FastButton(document.getElementById('btnOrder'), function () {
-            window.location = '/order/search?target=order';
-        });*/
+         window.location = '/order/search?target=order';
+         });*/
 
         new FastButton(document.getElementById('btnView'), function () {
             window.location = '/order/search?target=view';
@@ -388,7 +391,7 @@
 
     function resizePage() {
 
-        if(__$("main")){
+        if (__$("main")) {
 
             __$("main").style.height = (window.innerHeight - 115) + "px";
 
@@ -396,19 +399,19 @@
 
     }
 
-    navigator.sayswho= (function(){
-        var ua= navigator.userAgent, tem,
-                M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
-        if(/trident/i.test(M[1])){
-            tem=  /\brv[ :]+(\d+)/g.exec(ua) || [];
-            return 'IE '+(tem[1] || '');
+    navigator.sayswho = (function () {
+        var ua = navigator.userAgent, tem,
+                M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+        if (/trident/i.test(M[1])) {
+            tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
+            return 'IE ' + (tem[1] || '');
         }
-        if(M[1]=== 'Chrome'){
-            tem= ua.match(/\b(OPR|Edge)\/(\d+)/);
-            if(tem!= null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
+        if (M[1] === 'Chrome') {
+            tem = ua.match(/\b(OPR|Edge)\/(\d+)/);
+            if (tem != null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
         }
-        M= M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
-        if((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
+        M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
+        if ((tem = ua.match(/version\/(\d+)/i)) != null) M.splice(1, 1, tem[1]);
         return M.join(' ');
     })();
 
@@ -464,6 +467,35 @@
   <button id="btnNext" class="button_green" style="float: right; margin-right: 15px;" onclick="window.location = '/lab_processing/index'">Finish</button>
 </div>
 
+<script>
+
+    <% if !flash[:error].blank? %>
+
+    if (typeof(Android) != "undefined") {
+
+        Android.showMsg("ERROR: <%= flash[:error] %>");
+
+    } else {
+
+        alert("ERROR: <%= flash[:error] %>");
+
+    }
+
+    <% elsif !flash[:notice].blank? %>
+
+    if (typeof(Android) != "undefined") {
+
+        Android.showMsg("INFO: <%= flash[:notice] %>");
+
+    } else {
+
+        alert("INFO: <%= flash[:notice] %>");
+
+    }
+
+    <% end %>
+
+</script>
 
 </body>
 </html>

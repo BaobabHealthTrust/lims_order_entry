@@ -1,0 +1,217 @@
+<script>
+
+    if (document.getElementById("location")) {
+
+        document.getElementById("location").innerHTML = "";
+
+    }
+
+</script>
+
+<table width="100%" cellspacing="0">
+  <tr>
+    <th colspan="2" style="background-color: #23538a; color: #fff; padding: 5px;">
+      Specify Reason For Sample Rejection
+    </th>
+  </tr>
+  <tr>
+    <td>
+      <div id="frame1" style="height: 280px; width: 100%; overflow: auto; border-top: 1px solid #23538a; margin: auto;">
+        <table width="90%" style="margin: auto; margin-top: 5px; " cellspacing="0" cellpadding="10">
+          <tr>
+            <th style="border-bottom: 2px solid #333; color: #333; border-right: 1px dotted #ccc;" align="left">
+              Rejection Reason
+            </th>
+          </tr>
+          <tr>
+            <td style="border-bottom: 1px dotted #ccc; border-right: 1px dotted #ccc;">
+              <div id="rejection_reason" style="width: 100%; height: 200px; overflow: auto;">
+
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </td>
+  </tr>
+</table>
+
+<%= form_tag("/reject_sample", :method => :post) do -%>
+
+    <%= hidden_field_tag(:id, @sample) %>
+
+    <%= hidden_field_tag(:location, @dept) %>
+
+    <%= hidden_field_tag(:reason, nil) %>
+
+<% end %>
+
+<script>
+
+    var reasons = {};
+
+    var selectedReasons = {};
+
+    function changeLabels() {
+
+        if (document.getElementById("btnNext")) {
+
+            document.getElementById("btnNext").innerHTML = "Confirm Rejection";
+
+            document.getElementById("btnNext").onclick = function () {
+
+                if(Object.keys(selectedReasons).length == 0){
+
+                    if(typeof(Android) != "undefined"){
+
+                        Android.showMsg("Please select at least a reason for rejection!");
+
+                    } else {
+
+                        alert("Please select at least a reason for rejection!");
+
+                    }
+
+                    return;
+                }
+
+                if(__$("reason")){
+
+                    var reason = "";
+
+                    var keys = Object.keys(selectedReasons);
+
+                    for(var i = 0; i < keys.length; i++){
+
+                        reason += keys[i] + ";";
+
+                    }
+
+                    __$("reason").value = reason;
+
+                }
+
+                document.forms[0].submit();
+
+            }
+
+        } else {
+
+            setTimeout("changeLabels()", 100);
+
+            return;
+
+        }
+
+        if (document.getElementById("btnLogout")) {
+
+            document.getElementById("btnLogout").innerHTML = "Cancel";
+
+            document.getElementById("btnLogout").onclick = function () {
+
+                window.location = "/lab_processing/index";
+
+            }
+
+        } else {
+
+            setTimeout("changeLabels()", 100);
+
+            return;
+
+        }
+
+        getReasons();
+
+    }
+
+    function getReasons() {
+
+        var url = "/list_rejection_reasons";
+
+        var httpRequest = new XMLHttpRequest();
+
+        httpRequest.onreadystatechange = function () {
+
+            if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
+                    httpRequest.status == 304)) {
+
+                var result = JSON.parse(httpRequest.responseText);
+
+                reasons = result;
+
+                loadReasons();
+
+            }
+
+        };
+        try {
+            httpRequest.open('GET', url, true);
+            httpRequest.send(null);
+        } catch (e) {
+        }
+
+    }
+
+    function loadReasons() {
+
+        if (__$("rejection_reason")) {
+
+            __$("rejection_reason").innerHTML = "";
+
+            var ul = document.createElement("ul");
+            ul.id = "ulDept";
+            ul.style.listStyle = "none";
+            ul.style.paddingLeft = "0px";
+
+            __$("rejection_reason").appendChild(ul);
+
+            for (var i = 0; i < reasons.length; i++) {
+
+                var key = reasons[i];
+
+                var li = document.createElement("li");
+                li.innerHTML = key;
+                li.style.padding = "10px";
+                li.style.cursor = "pointer";
+                li.style.margin = "1px";
+                li.setAttribute("reason", key);
+
+                if (i % 2 > 0) {
+
+                    li.style.backgroundColor = "#eee";
+
+                    li.setAttribute("tag", "odd");
+
+                } else {
+
+                    li.style.borderTop = "1px dotted #ccc";
+
+                    li.style.borderBottom = "1px dotted #ccc";
+
+                }
+
+                ul.appendChild(li);
+
+                new FastButton(li, function () {
+
+                    if (this.style.backgroundColor == "lightblue") {
+
+                        this.style.backgroundColor = (this.getAttribute("tag") == "odd" ? "#eee" : "");
+
+                    }
+
+                    this.style.backgroundColor = "lightblue";
+
+                    selectedReasons[this.getAttribute("reason")] = true;
+
+                });
+
+            }
+
+        }
+    }
+
+    setTimeout("changeLabels()", 200);
+
+</script>
