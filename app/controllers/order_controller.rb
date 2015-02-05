@@ -100,7 +100,7 @@ class OrderController < ApplicationController
 
     end
 
-    render :text => {:associations => assocs, :identifiers => ids, :shortnames => shorts, :codes => codes}.to_json
+    render :text => {:associations => assocs, :identifiers => ids, :shortnames => shorts, :codes => codes, :ids => ids}.to_json
 
   end
 

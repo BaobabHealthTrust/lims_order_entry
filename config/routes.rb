@@ -2,6 +2,8 @@ Rails.application.routes.draw do
 
   root 'order#index'
 
+  post "/save_result" => "lab_processing#save_result"
+
   get "/dispose_sample/:id" => "lab_processing#dispose_sample"
 
   get "/list_rejection_reasons" => "lab_processing#list_rejection_reasons"
@@ -20,7 +22,7 @@ Rails.application.routes.draw do
 
   get "/list_locations" => "lab_processing#list_locations"
 
-  get 'lab_processing/enter_results'
+  get '/enter_results/:id' => "lab_processing#enter_results"
 
   get 'lab_processing/verify_results'
 

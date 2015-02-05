@@ -1,2 +1,181 @@
-<h1>LabProcessing#enter_results</h1>
-<p>Find me in app/views/lab_processing/enter_results.html.erb</p>
+<%= render 'location_check' %>
+
+<%= form_tag("/save_result", :method => :post) do -%>
+
+    <%= hidden_field_tag(:id, @sample) %>
+
+    <%= hidden_field_tag(:location, @dept) %>
+
+    <%= hidden_field_tag(:result, nil) %>
+
+    <% @list.each do |test, measures| %>
+
+        <%= hidden_field_tag(:test, test.split("|")[0]) %>
+
+        <%= hidden_field_tag(:test_id, test.split("|")[1]) %>
+
+        <%= hidden_field_tag(:specimen, test.split("|")[2]) %>
+
+        <table style="margin: auto; margin-top: 10px; width: 100%;" cellpadding="5">
+          <tr>
+            <th align="left" style="font-size: 18px; border-bottom: 2px solid #333;" colspan="3">
+              <%= test.split("|")[0] %>
+            </th>
+          </tr>
+          <tr>
+            <th align="left" style="padding-left: 20px;">
+              Result
+            </th>
+            <!--td>
+              &nbsp;
+            </td>
+            <th align="left">
+              Remark
+            </th-->
+          </tr>
+
+          <% measures.each do |measure| %>
+
+              <% if !measure["range"].strip.blank? %>
+
+                  <tr>
+
+                    <% if measure["range"].strip.match(/\//) %>
+
+                        <% elements = measure["range"].strip.split("/") %>
+
+                        <td style="padding-left: 40px; padding-right: 40px;">
+                          <ul style="list-style: none; padding-left: 0px; border: 1px solid #ccc; width: 100%; margin: 0px; height: 200px; overflow: auto;">
+
+                            <% i = 0 %>
+
+                            <% elements.each do |element| %>
+
+                                <li id="<%= "#{test}_#{element}" %>" style="border: 1px dotted #ccc; padding: 10px; cursor: pointer; margin: 2px; font-size: 18px;
+                                        background-color: <%= i % 2 > 0 ? '#eee' : '' %>" cat="<%= i % 2 > 0 ? 'odd' : 'even' %>" tag="<%= test %>" ><%= element %></li>
+
+                                <% i += 1 %>
+
+                                <script>
+
+                                    new FastButton(document.getElementById("<%= "#{test}_#{element}" %>"), function () {
+                                        if(selectedControls[this.getAttribute('tag')]){
+                                            selectedControls[this.getAttribute('tag')].style.backgroundColor = (selectedControls[this.getAttribute('tag')].getAttribute('cat') == 'odd' ? '#eee' : '');
+                                        }; this.style.backgroundColor = 'lightblue';
+                                        selectedControls[this.getAttribute('tag')] = this;
+                                        selectedResult[this.getAttribute('tag')] = this.innerHTML.trim();
+                                    });
+
+                                </script>
+
+                            <% end %>
+
+                          </ul>
+                        </td>
+
+                    <% else %>
+
+                    <% end %>
+
+                    <!--td>
+                      &nbsp;
+                    </td>
+                    <td style="padding-left: 40px; padding-right: 40px; width: 50%;">
+                      <textarea id="remark" name="remark" style="width: 100%; height: 200px;"></textarea>
+
+                      <script>
+
+                          new FastButton(document.getElementById("remark"), function () {
+                              if(typeof(Android) != "undefined"){
+
+                                  Android.showInputDialog("Enter remark");
+
+                                  Android.showMsg(Android.mString);
+                              }
+                          });
+
+                      </script>
+
+                    </td-->
+
+                  </tr>
+
+              <% end %>
+
+          <% end %>
+
+        </table>
+
+    <% end %>
+
+<% end %>
+
+<script>
+
+    var selectedControls = {};
+    var selectedResult = {};
+
+    function changeLabels() {
+
+        if (document.getElementById("btnNext")) {
+
+            document.getElementById("btnNext").innerHTML = "Save Result";
+
+            document.getElementById("btnNext").onclick = function () {
+
+                if(Object.keys(selectedResult).length == 0){
+
+                    if(typeof(Android) != "undefined"){
+
+                        Android.showMsg("Please enter a valid result first!");
+
+                    } else {
+
+                        alert("Please enter a valid result first!");
+
+                    }
+
+                    return;
+                }
+
+                if(__$("result")){
+
+                    __$("result").value = selectedResult[Object.keys(selectedResult)[0]].trim();
+
+                }
+
+                document.forms[0].submit();
+
+            }
+
+        } else {
+
+            setTimeout("changeLabels()", 100);
+
+            return;
+
+        }
+
+        if (document.getElementById("btnLogout")) {
+
+            document.getElementById("btnLogout").innerHTML = "Cancel";
+
+            document.getElementById("btnLogout").onclick = function () {
+
+                window.location = "/lab_processing/index";
+
+            }
+
+        } else {
+
+            setTimeout("changeLabels()", 100);
+
+            return;
+
+        }
+
+    }
+
+    setTimeout("changeLabels()", 100);
+
+</script>
