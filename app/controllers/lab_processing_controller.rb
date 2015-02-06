@@ -69,6 +69,29 @@ class LabProcessingController < ApplicationController
 
         hnd.close
 
+        tests = RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+                                   "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["search_by_acc_num_path"]}#{params[:id]}")
+
+        list = JSON.parse(tests).keys.first.split("|") rescue nil
+
+        if list.nil?
+
+          flash[:error] = "ERROR: Test or specimen details extracting failed!"
+
+          redirect_to "/search_for_samples?target=receive_samples" and return
+
+        end
+
+        parameters = {
+            :id => params[:id].strip,
+            :test => list[0],
+            :state => "Received",
+            :specimen => list[2],
+            :location => "Reception"
+        }
+
+        save_state(parameters)
+
         flash[:notice] = "Sample with ID #{params[:id]} recorded as received!"
 
       end
@@ -210,6 +233,29 @@ class LabProcessingController < ApplicationController
 
         hnd.close
 
+        tests = RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+                                   "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["search_by_acc_num_path"]}#{params[:id]}")
+
+        list = JSON.parse(tests).keys.first.split("|") rescue nil
+
+        if list.nil?
+
+          flash[:error] = "ERROR: Test or specimen details extracting failed!"
+
+          redirect_to "/search_for_samples?target=process_sample" and return
+
+        end
+
+        parameters = {
+            :id => params[:id].strip,
+            :test => list[0],
+            :state => "Testing",
+            :specimen => list[2],
+            :location => "#{dept.strip.upcase.gsub(/\_/, " ").titleize}"
+        }
+
+        save_state(parameters)
+
         flash[:notice] = "Sample with ID #{params[:id]} recorded as being processed in #{dept}!"
 
       end
@@ -280,6 +326,29 @@ class LabProcessingController < ApplicationController
 
         hnd.close
 
+        tests = RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+                                   "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["search_by_acc_num_path"]}#{params[:id]}")
+
+        list = JSON.parse(tests).keys.first.split("|") rescue nil
+
+        if list.nil?
+
+          flash[:error] = "ERROR: Test or specimen details extracting failed!"
+
+          redirect_to "/search_for_samples?target=rejection_reason" and return
+
+        end
+
+        parameters = {
+            :id => params[:id].strip,
+            :test => list[0],
+            :state => "Rejected",
+            :specimen => list[2],
+            :location => "#{dept.strip.upcase.gsub(/\_/, " ").titleize}"
+        }
+
+        save_state(parameters)
+
         flash[:notice] = "Sample with ID #{params[:id]} recorded as rejected in #{dept}!"
 
       end
@@ -326,6 +395,29 @@ class LabProcessingController < ApplicationController
 
         hnd.close
 
+        tests = RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+                                   "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["search_by_acc_num_path"]}#{params[:id]}")
+
+        list = JSON.parse(tests).keys.first.split("|") rescue nil
+
+        if list.nil?
+
+          flash[:error] = "ERROR: Test or specimen details extracting failed!"
+
+          redirect_to "/search_for_samples?target=rejection_reason" and return
+
+        end
+
+        parameters = {
+            :id => params[:id].strip,
+            :test => list[0],
+            :state => "Disposed",
+            :specimen => list[2],
+            :location => "#{dept.strip.upcase.gsub(/\_/, " ").titleize}"
+        }
+
+        save_state(parameters)
+
         flash[:notice] = "Sample with ID #{params[:id]} recorded as disposed in #{dept}!"
 
       end
@@ -340,6 +432,100 @@ class LabProcessingController < ApplicationController
 
     patient = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
                                  "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["patient_by_acc_num_path"]}#{params[:id]}")).first
+
+    # create a message
+    msg = HL7::Message.new
+
+    # create a MSH segment for our new message
+    msh = HL7::Message::Segment::MSH.new
+    msh.enc_chars = "^~\&"
+    msh.sending_facility = "KCH^2.16.840.1.113883.3.5986.2.15^ISO"
+    msh.recv_facility = "KCH^2.16.840.1.113883.3.5986.2.15^ISO"
+    msh.time = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+    msh.message_type = "ORU^R01^ORU_R01"
+    msh.message_control_id = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+    msh.processing_id = "T"
+    msh.version_id = "2.5.1"
+
+    msg << msh # add the MSH segment to the message
+
+    pid = HL7::Message::Segment::PID.new
+    pid.set_id = "1"
+    pid.patient_id_list = patient["surrogateId"] rescue nil
+    pid.patient_name = "#{patient["name"] rescue nil}"
+    pid.patient_dob = patient["dob"].to_date.strftime("%Y%m%d") rescue nil
+    pid.admin_sex = patient["sex"] rescue nil
+
+    msg << pid # add the PID segment to the message
+
+    pv1 = HL7::Message::Segment::PV1.new
+
+    msg << pv1 # add the PV1 segment to the message
+
+    orc = HL7::Message::Segment::ORC.new
+    orc.entered_by = "1^Super^User"
+    orc.enterers_location = "^^^^^^^^#{params[:location]}"
+    orc.ordering_facility_name = "KCH"
+
+    msg << orc # add the ORC segment to the message
+
+    tq1 = HL7::Message::Segment::TQ1.new
+    tq1.set_id = "1"
+    tq1.priority = "R^Routine^HL70485"
+
+    msg << tq1 # add the TQ1 segment to the message
+
+    obr = HL7::Message::Segment::OBR.new
+    obr.set_id = "1"
+    obr.universal_service_id = "#{params[:test] rescue nil}^#{params[:test] rescue nil}^LOINC"
+    obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+    obr.relevant_clinical_info = "Rule out diagnosis"
+    obr.ordering_provider = "439234^Moyo^Chris"
+    obr.result_status = "Tested"
+
+    msg << obr # add the OBR segment to the message
+
+    obx = HL7::Message::Segment::OBX.new
+    obx.set_id = "1"
+    obx.value_type = "CE"
+    obx.observation_id = "#{params[:test_id]}^#{params[:test]}^ISO"
+    obx.observation_value = "^#{params[:result]}"
+    obx.units = "#{nil}"
+    obx.references_range = "#{nil}"
+    obx.observation_result_status = "F"
+    obx.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+    obx.responsible_observer = "439234^Moyo^Chris"
+    obx.analysis_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+    obx.performing_organization_name = "KCH Laboratory"
+    obx.performing_organization_address = "^^Lilongwe^^^Malawi"
+    obx.performing_organization_medical_director = "Limula^Henry"
+
+    msg << obx # add the OBR segment to the message
+
+    spm = HL7::Message::Segment::SPM.new
+    spm.set_id = "1"
+    spm.specimen_id = "#{params[:id]}"
+    spm.specimen_type = "#{params[:specimen] rescue nil}^#{params[:specimen] rescue nil}"
+
+    msg << spm # add the SPM segment to the message
+
+    # raise msg.to_s.inspect
+
+    result = RestClient.post("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+                                 "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["test_result_path"]}", {:hl7 => msg.to_s})
+
+    # raise result.inspect
+
+    flash[:notice] = "Result saved!"
+
+    redirect_to "/search_for_samples?target=enter_results" and return
+
+  end
+
+  def save_state(params)
+
+    patient = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+                                            "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["patient_by_acc_num_path"]}#{params[:id]}")).first
 
     # create a message
     msg = HL7::Message.new
@@ -389,23 +575,24 @@ class LabProcessingController < ApplicationController
     obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
     obr.relevant_clinical_info = "Rule out diagnosis"
     obr.ordering_provider = "439234^Moyo^Chris"
+    obr.result_status = "#{params[:state]}"
 
     msg << obr # add the OBR segment to the message
 
     obx = HL7::Message::Segment::OBX.new
-    obx.set_id = "1"
-    obx.value_type = "CE"
-    obx.observation_id = "#{params[:test_id]}^#{params[:test]}^ISO"
-    obx.observation_value = "^#{params[:result]}"
+    obx.set_id = "#{nil}"
+    obx.value_type = "#{nil}"
+    obx.observation_id = "#{nil}"
+    obx.observation_value = "#{nil}"
     obx.units = "#{nil}"
     obx.references_range = "#{nil}"
-    obx.observation_result_status = "F"
-    obx.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
-    obx.responsible_observer = "439234^Moyo^Chris"
-    obx.analysis_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
-    obx.performing_organization_name = "KCH Laboratory"
-    obx.performing_organization_address = "^^Lilongwe^^^Malawi"
-    obx.performing_organization_medical_director = "Limula^Henry"
+    obx.observation_result_status = "#{nil}"
+    obx.observation_date = "#{nil}"
+    obx.responsible_observer = "#{nil}"
+    obx.analysis_date = "#{nil}"
+    obx.performing_organization_name = "#{nil}"
+    obx.performing_organization_address = "#{nil}"
+    obx.performing_organization_medical_director = "#{nil}"
 
     msg << obx # add the OBR segment to the message
 
@@ -422,10 +609,6 @@ class LabProcessingController < ApplicationController
                                  "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["test_result_path"]}", {:hl7 => msg.to_s})
 
     # raise result.inspect
-
-    flash[:notice] = "Result saved!"
-
-    redirect_to "/search_for_samples?target=enter_results" and return
 
   end
 
