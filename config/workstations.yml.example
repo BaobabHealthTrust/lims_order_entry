@@ -18,6 +18,9 @@ development:
   blood_bank:
     workbench1:
     workbench2:
+  reception:
+    workbench1:
+    workbench2:
   microbiology:
     workbench1:
     workbench2:
