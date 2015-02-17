@@ -58,10 +58,7 @@ class LabProcessingController < ApplicationController
 
         result[Rails.env] = {} if result[Rails.env].blank?
 
-        result[Rails.env][params[:id].strip] = {
-            "received_at_reception" => Time.now.strftime("%Y%m%d%H%M%S"),
-            "state" => "RECEIVED AT RECEPTION"
-        }
+       
 
         hnd = File.open(file, "w")
 
@@ -69,8 +66,9 @@ class LabProcessingController < ApplicationController
 
         hnd.close
 
-        tests = RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
-                                   "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["search_by_acc_num_path"]}#{params[:id]}")
+		link = "#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["search_by_acc_num_path"]}#{params[:id]}"
+	
+        tests = RestClient.get(link)
 
         list = JSON.parse(tests).keys.first.split("|") rescue nil
 
