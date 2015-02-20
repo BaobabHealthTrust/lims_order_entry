@@ -58,7 +58,11 @@ class LabProcessingController < ApplicationController
 
         result[Rails.env] = {} if result[Rails.env].blank?
 
-       
+        result[Rails.env][params[:id].strip] = {
+            "received_at_reception" => Time.now.strftime("%Y%m%d%H%M%S"),
+            "state" => "RECEIVED AT RECEPTION"
+        }
+
 
         hnd = File.open(file, "w")
 
