@@ -106,7 +106,7 @@
       </tr>
       <tr>
         <td colspan="6">
-          <div id="frame" style="height: 477px; width: 96%; overflow: auto; border-top: 1px solid #23538a; margin: auto;">
+          <div id="frame" style="height: 380px; width: 96%; overflow: auto; border-top: 1px solid #23538a; margin: auto;">
             <table width="90%" style="margin: auto; margin-top: 10px; " cellspacing="0" cellpadding="10">
               <tr>
                 <th style="border-bottom: 2px solid #333; color: #333;">
@@ -124,6 +124,22 @@
           </div>
         </td>
       </tr>
+      <tr>
+        <td colspan="6" align="center">
+          <table style="margin-left: 40px;">
+            <tr>
+              <td>
+                <button id="selected" class="button_gray" style="cursor: pointer;">Confirm Orders</button>
+              </td>
+              <td style="vertical-align: middle;">
+                <div id="count" style="border-radius: 25px; border: 1px solid green; padding: 10px; color: green;
+                        font-size: 18px; width: 25px; height: 25px; vertical-align: middle; text-align: center;">0
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
     </table>
 
 <% end %>
@@ -134,14 +150,32 @@
     var identifiers = {};
     var shortnames = {};
     var codes = {};
+    var groups = {};
+    var containers = {};
+    var volumes = {};
+    var units = {};
 
     var liSpecSelect, liTestSelect;
 
-    var selectedSample, selectedTest;
+    var selectedSample = null;
+    var selectedTest = null;
+    var selectedTestSpecimen = null;
 
-    var icoClose = "data:image/png;base64,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";
+    var selectedTests = {};
 
-    var icoPrinter = "data:image/png;base64,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";
+    var currentOrders = {};
+
+    var containerTypes = {
+        "EDTA": purpletop,
+        "Sterile Container": sterile6,
+        "Fluoride Oxalate": graytop,
+        "Slide": slide,
+        "DBS": dbs,
+        "BD Bactec Adult Bottle": blood1,
+        "BD Bactec Paed Bottle": blood2,
+        "Swab": swabs,
+        "Plain Tube": lab_16
+    }
 
     function renameBtn() {
 
@@ -187,6 +221,14 @@
             shortnames = result["shortnames"];
 
             codes = result["codes"];
+
+            groups = result["groups"];
+
+            containers = result["containers"];
+
+            volumes = result["volumes"];
+
+            units = result["units"];
 
             loadSpecimens();
 
@@ -261,7 +303,6 @@
 
     function loadTests(specimen) {
 
-
         if (__$("tests")) {
 
             document.body.removeChild(__$("tests"));
@@ -272,7 +313,7 @@
             div.id = "tests";
             div.style.position = "absolute";
             div.style.width = "85%";
-            div.style.height = "60%";
+            div.style.height = "67%";
             div.style.top = "20%";
             div.style.left = "5%";
             div.style.border = "1px solid #000";
@@ -306,13 +347,13 @@
 
                 if (__$("tests")) {
 
-                    if(__$("btnClose")){
+                    if (__$("btnClose")) {
 
                         document.body.removeChild(__$("btnClose"));
 
                     }
 
-                    if(__$("btnOrder")){
+                    if (__$("btnOrder")) {
 
                         document.body.removeChild(__$("btnOrder"));
 
@@ -333,7 +374,7 @@
 
             var btnOrder = document.createElement("img");
             btnOrder.id = "btnOrder";
-            btnOrder.src = icoPrinter;
+            btnOrder.src = icoAdd;
             btnOrder.height = "80";
             btnOrder.style.position = "absolute";
             btnOrder.style.zIndex = 100;
@@ -341,11 +382,13 @@
             btnOrder.style.bottom = "15%";
             btnOrder.style.cursor = "pointer";
 
-            document.body.appendChild(btnOrder);
+            // document.body.appendChild(btnOrder);
 
             new FastButton(btnOrder, function () {
 
-                processOrder();
+                if (selectedTest != null && selectedTestSpecimen != null) {
+                    addTest(selectedTest, selectedTestSpecimen);
+                }
 
             });
 
@@ -356,7 +399,29 @@
 
             divChild.appendChild(ul);
 
+            var j = 0;
+
             for (var i = 0; i < associations[specimen].length; i++) {
+
+                var parent = specimen;
+
+                var test = associations[specimen][i];
+
+                var container = containers[parent][test];
+
+                if (selectedTests[parent]) {
+
+                    if (selectedTests[parent][container]) {
+
+                        if (selectedTests[parent][container][associations[specimen][i]]) {
+
+                            continue;
+
+                        }
+
+                    }
+
+                }
 
                 var key = associations[specimen][i];
 
@@ -366,8 +431,10 @@
                 li.style.cursor = "pointer";
                 li.style.margin = "1px";
                 li.setAttribute("test", key);
+                li.setAttribute("specimen", specimen);
+                li.setAttribute("container", containers[specimen][key]);
 
-                if (i % 2 > 0) {
+                if (j % 2 > 0) {
 
                     li.style.backgroundColor = "#eee";
 
@@ -389,8 +456,6 @@
 
                         liTestSelect.style.backgroundColor = (liTestSelect.getAttribute("tag") == "odd" ? "#eee" : "");
 
-                        removeTest(this.getAttribute("test"));
-
                     }
 
                     liTestSelect = this;
@@ -399,9 +464,13 @@
 
                     selectedTest = this.getAttribute("test");
 
-                    addTest(this.getAttribute("test"));
+                    selectedTestSpecimen = this.getAttribute("specimen");
+
+                    addTest(selectedTest, selectedTestSpecimen);
 
                 });
+
+                j++;
 
             }
 
@@ -409,19 +478,649 @@
 
     }
 
-    function addTest(test){
+    function addTest(test, specimen) {
 
+        var parent = specimen;
 
+        if (!selectedTests[parent]) {
+
+            selectedTests[parent] = {}
+
+        }
+
+        var container = containers[parent][test];
+
+        if (!selectedTests[parent][container]) {
+
+            selectedTests[parent][container] = {}
+
+        }
+
+        selectedTests[parent][container][test] = codes[test];
+
+        if (__$("tests")) {
+
+            selectedTest = null;
+
+            selectedTestSpecimen = null;
+
+            if (__$("btnClose")) {
+
+                document.body.removeChild(__$("btnClose"));
+
+            }
+
+            if (__$("btnOrder")) {
+
+                document.body.removeChild(__$("btnOrder"));
+
+            }
+
+            document.body.removeChild(__$("tests"));
+
+            if (liSpecSelect) {
+
+                liSpecSelect.style.backgroundColor = (liSpecSelect.getAttribute("tag") == "odd" ? "#eee" : "");
+
+            }
+        }
+
+        if (__$("selected")) {
+            __$("selected").className = "button_blue";
+
+            __$("selected").onclick = function () {
+                showSelections();
+            };
+        }
+
+        if (__$("count")) {
+
+            var count = parseInt(__$("count").innerHTML.trim()) + 1;
+
+            __$("count").innerHTML = count;
+
+        }
+    }
+
+    function removeTest(test, specimen) {
+
+        var parent = specimen;
+
+        if (!selectedTests[parent]) {
+
+            return;
+
+        }
+
+        var container = containers[parent][test];
+
+        if (!selectedTests[parent][container]) {
+
+            return;
+
+        }
+
+        if (selectedTests[parent][container][test]) {
+
+            delete selectedTests[parent][container][test];
+
+        }
+
+        if (Object.keys(selectedTests[parent][container]).length == 0) {
+
+            delete selectedTests[parent][container];
+
+        }
+
+        if (Object.keys(selectedTests[parent]).length == 0) {
+
+            delete selectedTests[parent];
+
+        }
+
+        var found = false;
+
+        if (Object.keys(selectedTests).length > 0) {
+
+            var items = Object.keys(selectedTests);
+
+            for (var i = 0; i < items.length; i++) {
+
+                if (Object.keys(selectedTests[items[i]]).length > 0) {
+
+                    found = true;
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+        if (!found) {
+            if (__$("selected")) {
+
+                __$("selected").className = "button_gray";
+
+                __$("selected").onclick = function () {
+                };
+
+            }
+        } else {
+            if (__$("selected")) {
+                __$("selected").className = "button_blue";
+
+                __$("selected").onclick = function () {imgDel
+                    showSelections();
+                };
+            }
+        }
+
+        if (__$("count")) {
+
+            var count = parseInt(__$("count").innerHTML.trim()) - 1;
+
+            if (count < 0)
+                count = 0;
+
+            __$("count").innerHTML = count;
+
+        }
+
+        showSelections();
+    }
+
+    function showSelections() {
+
+        if (__$("tests")) {
+
+            document.body.removeChild(__$("tests"));
+
+        }
+
+        if (__$("btnClose")) {
+
+            document.body.removeChild(__$("btnClose"));
+
+        }
+
+        if (__$("btnOrder")) {
+
+            document.body.removeChild(__$("btnOrder"));
+
+        }
+
+        var div = document.createElement("div");
+        div.id = "tests";
+        div.style.position = "absolute";
+        div.style.width = "85%";
+        div.style.height = "67%";
+        div.style.top = "20%";
+        div.style.left = "5%";
+        div.style.border = "1px solid #000";
+        div.style.overflow = "hidden";
+        div.style.backgroundColor = "rgba(255,255,255,0.98)";
+        div.style.borderRadius = "10px";
+        div.style.fontSize = "20px";
+        div.style.padding = "10px";
+
+        document.body.appendChild(div);
+
+        var divChild = document.createElement("div");
+        divChild.style.width = "100%";
+        divChild.style.height = "100%";
+        divChild.style.overflow = "auto";
+        divChild.style.fontSize = "14px";
+
+        div.appendChild(divChild);
+
+        var btnClose = document.createElement("img");
+        btnClose.src = icoClose;
+        btnClose.id = "btnClose";
+        btnClose.height = "80";
+        btnClose.style.position = "absolute";
+        btnClose.style.zIndex = 100;
+        btnClose.style.right = "2%";
+        btnClose.style.top = "15%";
+        btnClose.style.cursor = "pointer";
+
+        new FastButton(btnClose, function () {
+
+            if (__$("tests")) {
+
+                if (__$("btnClose")) {
+
+                    document.body.removeChild(__$("btnClose"));
+
+                }
+
+                if (__$("btnOrder")) {
+
+                    document.body.removeChild(__$("btnOrder"));
+
+                }
+
+                document.body.removeChild(__$("tests"));
+
+                if (liSpecSelect) {
+
+                    liSpecSelect.style.backgroundColor = (liSpecSelect.getAttribute("tag") == "odd" ? "#eee" : "");
+
+                }
+            }
+
+        });
+
+        document.body.appendChild(btnClose);
+
+        var samples = Object.keys(selectedTests);
+
+        var table = document.createElement("div");
+        table.style.display = "table";
+        table.style.width = "99%";
+        table.style.borderSpacing = "1px";
+        table.style.margin = "auto";
+
+        divChild.appendChild(table);
+
+        var rowHeader = document.createElement("div");
+        rowHeader.style.display = "table-row";
+
+        table.appendChild(rowHeader);
+
+        var cellh1 = document.createElement("div");
+        cellh1.style.display = "table-cell";
+        cellh1.style.padding = "8px";
+        cellh1.style.verticalAlign = "middle";
+        cellh1.style.fontWeight = "bold";
+        cellh1.style.backgroundColor = "#ccc";
+        cellh1.style.color = "#333";
+        cellh1.style.width = "20%";
+        cellh1.style.textAlign = "center";
+        cellh1.style.borderTopLeftRadius = "10px";
+
+        cellh1.innerHTML = "Specimen";
+
+        rowHeader.appendChild(cellh1);
+
+        var cellh2 = document.createElement("div");
+        cellh2.style.display = "table-cell";
+        cellh2.style.padding = "8px";
+        cellh2.style.verticalAlign = "middle";
+        cellh2.style.fontWeight = "bold";
+        cellh2.style.backgroundColor = "#ccc";
+        cellh2.style.color = "#333";
+        cellh2.style.textAlign = "center";
+
+        cellh2.innerHTML = "Tests";
+
+        rowHeader.appendChild(cellh2);
+
+        var cellh4 = document.createElement("div");
+        cellh4.style.display = "table-cell";
+        cellh4.style.padding = "8px";
+        cellh4.style.verticalAlign = "middle";
+        cellh4.style.fontWeight = "bold";
+        cellh4.style.backgroundColor = "#ccc";
+        cellh4.style.color = "#333";
+        // cellh4.style.width = "100px";
+        cellh4.style.textAlign = "center";
+
+        cellh4.innerHTML = "Vol.";
+
+        rowHeader.appendChild(cellh4);
+
+        var cellh3 = document.createElement("div");
+        cellh3.style.display = "table-cell";
+        cellh3.style.padding = "8px";
+        cellh3.style.verticalAlign = "middle";
+        cellh3.style.fontWeight = "bold";
+        cellh3.style.backgroundColor = "#ccc";
+        cellh3.style.color = "#333";
+        cellh3.style.borderTopRightRadius = "10px";
+        cellh3.style.textAlign = "center";
+
+        cellh3.innerHTML = "Container";
+
+        rowHeader.appendChild(cellh3);
+
+        var content = document.createElement("div");
+        content.style.width = "99%";
+        content.style.borderSpacing = "1px";
+        content.style.margin = "auto";
+        content.style.height = "83%";
+        content.style.overflow = "auto";
+        content.style.border = "1px solid #ccc";
+        content.style.borderBottomRightRadius = "10px";
+        content.style.borderBottomLeftRadius = "10px";
+
+        divChild.appendChild(content);
+
+        var contentTable = document.createElement("table");
+        contentTable.style.width = "99%";
+        contentTable.style.margin = "auto";
+
+        content.appendChild(contentTable);
+
+        var contentTbody = document.createElement("tbody");
+        contentTable.appendChild(contentTbody);
+
+        for (var i = 0; i < samples.length; i++) {
+
+            var row = document.createElement("tr");
+
+            contentTbody.appendChild(row);
+
+            var cell1 = document.createElement("td");
+            cell1.style.padding = "5px";
+            cell1.style.verticalAlign = "top";
+            cell1.style.paddingLeft = "20px";
+            cell1.style.width = "20%";
+            cell1.style.borderRight = "1px dotted #ccc";
+            cell1.style.borderBottom = "1px dotted #ccc";
+            cell1.style.fontWeight = "bold";
+            cell1.style.fontStyle = "italic";
+
+            cell1.innerHTML = samples[i];
+
+            row.appendChild(cell1);
+
+            var containerList = Object.keys(selectedTests[samples[i]]);
+
+            var r = 0;
+
+            for (r = 0; r < containerList.length; r++) {
+
+                var tableRow = row;
+
+                if (r > 0) {
+                    tableRow = document.createElement("tr");
+
+                    contentTbody.appendChild(tableRow);
+                }
+
+                var cell3 = document.createElement("td");
+                cell3.style.padding = "5px";
+                cell3.style.verticalAlign = "top";
+                cell3.style.borderRight = "1px dotted #ccc";
+                cell3.style.borderBottom = "1px dotted #ccc";
+                cell3.className = "row" + i + "_" + r;
+
+                tableRow.appendChild(cell3);
+
+                var cell5 = document.createElement("td");
+                cell5.style.padding = "5px";
+                cell5.style.verticalAlign = "top";
+                cell5.style.borderBottom = "1px dotted #ccc";
+                cell5.style.borderRight = "1px dotted #ccc";
+                cell5.style.width = "105px";
+                cell5.style.textAlign = "center";
+                cell5.className = "row" + i + "_" + r;
+
+                tableRow.appendChild(cell5);
+
+                var cell4 = document.createElement("td");
+                cell4.style.padding = "5px";
+                cell4.style.verticalAlign = "top";
+                cell4.style.borderRight = "1px dotted #ccc";
+                cell4.style.borderBottom = "1px dotted #ccc";
+                cell4.style.width = "205px";
+                cell4.style.textAlign = "center";
+                cell4.className = "row" + i + "_" + r;
+
+                tableRow.appendChild(cell4);
+
+                var cell4Tbl = document.createElement("table");
+                cell4Tbl.style.width = "100%";
+
+                cell4.appendChild(cell4Tbl);
+
+                var cell4TblTbody = document.createElement("tbody");
+
+                cell4Tbl.appendChild(cell4TblTbody);
+
+                var tr = document.createElement("tr");
+
+                cell4TblTbody.appendChild(tr);
+
+                var td1 = document.createElement("td");
+                td1.style.width = "40px";
+
+                tr.appendChild(td1);
+
+                var td2 = document.createElement("td");
+                td2.align = "center";
+
+                tr.appendChild(td2);
+
+                var sampleContainers = containerList[r].split("/");
+
+                for (var s = 0; s < sampleContainers.length; s++) {
+
+                    var containerImg = document.createElement("img");
+                    containerImg.setAttribute("src", containerTypes[sampleContainers[s]]);
+                    containerImg.height = "100";
+                    containerImg.style.margin = "10px";
+
+                    td2.appendChild(containerImg);
+
+                }
+
+                var check = document.createElement("div");
+                check.style.border = "2px solid #000";
+                check.style.height = "40px";
+                check.style.width = "40px";
+                check.style.margin = "auto";
+                check.style.backgroundColor = "#fff";
+                check.style.cursor = "pointer";
+                check.setAttribute("tag", i + "_" + r);
+                check.setAttribute("sample", samples[i]);
+                check.setAttribute("container", containerList[r]);
+
+                td1.appendChild(check);
+
+                new FastButton(check, function () {
+
+                    if (this.innerHTML.trim().length == 0) {
+
+                        var img = document.createElement("img");
+                        img.setAttribute("src", imgTick);
+                        img.height = "55";
+                        img.style.marginTop = "-10px";
+
+                        this.appendChild(img);
+
+                    } else {
+
+                        this.innerHTML = "";
+
+                    }
+
+                    var tag = this.getAttribute("tag");
+
+                    var controls = document.getElementsByClassName("row" + tag);
+
+                    var specimen = this.getAttribute("sample");
+                    var containerType = this.getAttribute("container");
+
+                    if(this.getAttribute("selected") != null){
+
+                        for (var c = 0; c < controls.length; c++) {
+
+                            controls[c].style.backgroundColor = "";
+
+                        }
+
+                        if(currentOrders[specimen]){
+
+                            if(currentOrders[specimen][containerType]){
+
+                                delete currentOrders[specimen][containerType];
+
+                            }
+
+                            if(Object.keys(currentOrders[specimen]).length <= 0){
+
+                                delete currentOrders[specimen];
+
+                            }
+
+                        }
+
+                        this.removeAttribute("selected");
+
+                    } else {
+
+                        for (var c = 0; c < controls.length; c++) {
+
+                            controls[c].style.backgroundColor = "lightblue";
+
+                        }
+
+                        if(!currentOrders[specimen]){
+
+                            currentOrders[specimen] = {};
+
+                        }
+
+                        if(!currentOrders[specimen][containerType]){
+
+                            currentOrders[specimen][containerType] = true;
+
+                        }
+
+                        this.setAttribute("selected", true);
+
+                    }
+
+                });
+
+                var ul = document.createElement("ul");
+                ul.id = "ulTests" + samples[i] + "_" + containerList[r];
+                ul.style.listStyle = "none";
+                ul.style.paddingLeft = "0px";
+                ul.style.margin = "0px";
+
+                cell3.appendChild(ul);
+
+                var samplesList = Object.keys(selectedTests[samples[i]][containerList[r]]);
+
+                var total = 0;
+
+                for (var k = 0; k < samplesList.length; k++) {
+
+                    var key = samplesList[k];
+
+                    if (volumes[samples[i]][key] != "N/A") {
+
+                        total += parseInt(volumes[samples[i]][key]);
+
+                        cell5.innerHTML = total + " " + units[samples[i]][key];
+
+                    }
+
+                    var li = document.createElement("li");
+                    // li.innerHTML = key /*(shortnames[key] != null && String(shortnames[key]).trim().length > 0 ? shortnames[key] : key)*/ +
+                    //        (units[samples[i]][key] != "N/A" ? " <i>(" + volumes[samples[i]][key] + " " + units[samples[i]][key] + ")</i>" : "");
+                    li.style.padding = "10px";
+                    li.style.cursor = "pointer";
+                    li.style.margin = "1px";
+                    li.setAttribute("test", key);
+                    li.setAttribute("specimen", samples[i]);
+
+                    if (k % 2 > 0) {
+
+                        li.style.backgroundColor = "#eee";
+
+                        li.setAttribute("tag", "odd");
+
+                    } else {
+
+                        li.style.backgroundColor = "#fff";
+
+                    }
+
+                    ul.appendChild(li);
+
+                    var liTbl = document.createElement("table");
+                    liTbl.style.width = "100%";
+
+                    li.appendChild(liTbl);
+
+                    var liTblTbody = document.createElement("tbody");
+
+                    liTbl.appendChild(liTblTbody);
+
+                    var liTr = document.createElement("tr");
+
+                    liTblTbody.appendChild(liTr);
+
+                    var liTd1 = document.createElement("td");
+                    liTd1.innerHTML = key + (units[samples[i]][key] != "N/A" ? " <i>(" + volumes[samples[i]][key] + " " + units[samples[i]][key] + ")</i>" : "");
+
+                    liTr.appendChild(liTd1);
+
+                    var liTd2 = document.createElement("td");
+                    liTd2.style.width = "20px";
+
+                    liTr.appendChild(liTd2);
+
+                    var imgDel = document.createElement("img");
+                    imgDel.setAttribute("src", icoClose);
+                    imgDel.height = "20";
+
+                    liTd2.appendChild(imgDel);
+
+                    new FastButton(li, function () {
+
+                        if (liTestSelect) {
+
+                            liTestSelect.style.backgroundColor = (liTestSelect.getAttribute("tag") == "odd" ? "#eee" : "#fff");
+
+                        }
+
+                        liTestSelect = this;
+
+                        this.style.backgroundColor = "lightblue";
+
+                        selectedTest = this.getAttribute("test");
+
+                        selectedTestSpecimen = this.getAttribute("specimen");
+
+                        if (typeof(Android) != "undefined") {
+
+                            Android.confirmAction("Do you really want to remove the selected test?", "removeTest('" +
+                                    selectedTest + "', '" + selectedTestSpecimen + "')");
+
+                        } else {
+
+                            if (confirm("Do you really want to remove the selected test?")) {
+
+                                removeTest(selectedTest, selectedTestSpecimen);
+
+                            }
+
+                        }
+
+                        if (liTestSelect) {
+
+                            liTestSelect.style.backgroundColor = (liTestSelect.getAttribute("tag") == "odd" ? "#eee" : "#fff");
+
+                        }
+
+                    });
+
+                }
+            }
+
+            cell1.setAttribute("rowspan", r);
+
+        }
 
     }
 
-    function removeTest(test){
-
-
-
-    }
-
-    function processOrder(){
+    function processOrder() {
         <!--
         /*
         [{:national_id=>"P129500000229", :full_name=>"Mevis Kadammanja", :sex=>"Female", :age=>"51",
@@ -501,7 +1200,7 @@
                  "testName":"
                  }
 
-                */
+                 */
 
                 var full_name = "<%= @patient[:full_name] rescue nil %>";
 
@@ -516,13 +1215,13 @@
 
                 if (__$("tests")) {
 
-                    if(__$("btnClose")){
+                    if (__$("btnClose")) {
 
                         document.body.removeChild(__$("btnClose"));
 
                     }
 
-                    if(__$("btnOrder")){
+                    if (__$("btnOrder")) {
 
                         document.body.removeChild(__$("btnOrder"));
 
@@ -548,26 +1247,26 @@
 
         /*if (__$("tests") && false) {
 
-            if(__$("btnClose")){
+         if(__$("btnClose")){
 
-                document.body.removeChild(__$("btnClose"));
+         document.body.removeChild(__$("btnClose"));
 
-            }
+         }
 
-            if(__$("btnOrder")){
+         if(__$("btnOrder")){
 
-                document.body.removeChild(__$("btnOrder"));
+         document.body.removeChild(__$("btnOrder"));
 
-            }
+         }
 
-            document.body.removeChild(__$("tests"));
+         document.body.removeChild(__$("tests"));
 
-            if (liSpecSelect) {
+         if (liSpecSelect) {
 
-                liSpecSelect.style.backgroundColor = (liSpecSelect.getAttribute("tag") == "odd" ? "#eee" : "");
+         liSpecSelect.style.backgroundColor = (liSpecSelect.getAttribute("tag") == "odd" ? "#eee" : "");
 
-            }
-        }*/
+         }
+         }*/
 
     }
 

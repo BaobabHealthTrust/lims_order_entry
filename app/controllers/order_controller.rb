@@ -68,6 +68,14 @@ class OrderController < ApplicationController
 
     shorts = {}
 
+    groups = {}
+
+    containers = {}
+
+    volumes = {}
+
+    units = {}
+
     list.each do |group, members|
 
       id, name, code, sname = group.strip.split("|")
@@ -80,11 +88,15 @@ class OrderController < ApplicationController
 
       shorts[name] = sname
 
-      codes[name] = code
+      containers[name] = {}
+
+      volumes[name] = {}
+
+      units[name] = {}
 
       members.each do |element|
 
-        cid, cname, ccode, csname = element.strip.split("|")
+        cid, cname, ccode, csname, ccontainer, cvolume, cunits = element.strip.split("|")
 
         result[[id, name, code, sname]] << [cid, cname, ccode, csname]
 
@@ -96,11 +108,20 @@ class OrderController < ApplicationController
 
         codes[cname] = ccode
 
+        groups[cname] = name
+
+        containers[name][cname] = ccontainer
+
+        volumes[name][cname] = cvolume
+
+        units[name][cname] = cunits
+
       end
 
     end
 
-    render :text => {:associations => assocs, :identifiers => ids, :shortnames => shorts, :codes => codes, :ids => ids}.to_json
+    render :text => {:associations => assocs, :identifiers => ids, :shortnames => shorts, :codes => codes,
+                     :ids => ids, :groups => groups, :containers => containers, :volumes => volumes, :units => units}.to_json
 
   end
 
