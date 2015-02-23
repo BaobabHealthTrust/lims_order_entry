@@ -64,7 +64,9 @@ class OrderController < ApplicationController
 
     assocs = {}
 
-    codes = {}
+    codes = {
+        "specimens" => {}
+    }
 
     shorts = {}
 
@@ -87,6 +89,8 @@ class OrderController < ApplicationController
       assocs[name] = []
 
       shorts[name] = sname
+
+      codes["specimens"][name] = code
 
       containers[name] = {}
 
@@ -133,6 +137,8 @@ class OrderController < ApplicationController
 
   def process_order
 
+    # raise params.inspect
+
     # create a message
     msg = HL7::Message.new
 
@@ -165,21 +171,33 @@ class OrderController < ApplicationController
 
     msg << orc # add the ORC segment to the message
 
-    tq1 = HL7::Message::Segment::TQ1.new
-    tq1.set_id = "1"
-    tq1.priority = "S"
+    tests = params[:test_name].split(",")
 
-    msg << tq1 # add the TQ1 segment to the message
+    i = 0
+    tests.each do |test|
 
-    obr = HL7::Message::Segment::OBR.new
-    obr.set_id = "1"
-    obr.universal_service_id = "#{params[:test_code] rescue nil}^#{params[:test_name] rescue nil}^LOINC"
-    obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
-    obr.relevant_clinical_info = "Rule out diagnosis"
-    obr.ordering_provider = "439234^Moyo^Chris"
+      next if test.blank?
 
-    msg << obr # add the OBR segment to the message
-    msg << obr # add the OBR segment to the message
+      test_name, test_code, priority = test.split("|")
+
+      i += 1
+
+      obr = HL7::Message::Segment::OBR.new
+      obr.set_id = i
+      obr.universal_service_id = "#{test_code rescue nil}^#{test_name rescue nil}^LOINC"
+      obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+      obr.relevant_clinical_info = "Rule out diagnosis"
+      obr.ordering_provider = "439234^Moyo^Chris"
+
+      msg << obr # add the OBR segment to the message
+
+      tq1 = HL7::Message::Segment::TQ1.new
+      tq1.set_id = i
+      tq1.priority = priority
+
+      msg << tq1 # add the TQ1 segment to the message
+
+    end
 
     spm = HL7::Message::Segment::SPM.new
     spm.set_id = "1"

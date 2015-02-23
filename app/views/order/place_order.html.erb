@@ -159,11 +159,20 @@
 
     var selectedSample = null;
     var selectedTest = null;
+    var selectedOrderTests = [];
     var selectedTestSpecimen = null;
 
     var selectedTests = {};
 
     var currentOrders = {};
+
+    var drawingSamples = false;
+
+    var currentPriority = null;
+
+    var selectedOrder = null;
+
+    var selectedTestPriority = "R";
 
     var containerTypes = {
         "EDTA": purpletop,
@@ -466,7 +475,32 @@
 
                     selectedTestSpecimen = this.getAttribute("specimen");
 
-                    addTest(selectedTest, selectedTestSpecimen);
+                    // addTest(selectedTest, selectedTestSpecimen);
+
+                    if (__$("tests")) {
+
+                        if (__$("btnClose")) {
+
+                            document.body.removeChild(__$("btnClose"));
+
+                        }
+
+                        if (__$("btnOrder")) {
+
+                            document.body.removeChild(__$("btnOrder"));
+
+                        }
+
+                        document.body.removeChild(__$("tests"));
+
+                        if (liSpecSelect) {
+
+                            liSpecSelect.style.backgroundColor = (liSpecSelect.getAttribute("tag") == "odd" ? "#eee" : "");
+
+                        }
+                    }
+
+                    setPriority();
 
                 });
 
@@ -478,7 +512,140 @@
 
     }
 
-    function addTest(test, specimen) {
+    function setPriority() {
+
+        if (!__$("shield")) {
+
+            showShield();
+
+        }
+
+        var popup = document.createElement("div");
+        popup.id = "popup";
+        popup.style.position = "absolute";
+        popup.style.minHeight = "200px";
+        popup.style.top = "20%";
+        popup.style.width = "330px";
+        popup.style.left = ((window.innerWidth - 330) / 2) + "px";
+        popup.style.backgroundColor = "#fff";
+        popup.style.zIndex = 120;
+        popup.style.border = "2px outset #fff";
+        popup.style.borderRadius = "8px";
+
+        document.body.appendChild(popup);
+
+        var table = document.createElement("table");
+        table.width = "100%";
+        table.style.fontSize = "24px";
+
+        popup.appendChild(table);
+
+        var tbody = document.createElement("tbody");
+
+        table.appendChild(tbody);
+
+        var tr1 = document.createElement("tr");
+
+        tbody.appendChild(tr1);
+
+        var th = document.createElement("th");
+        th.innerHTML = "Priority: " + selectedTest;
+        th.style.backgroundColor = "#345d8c";
+        th.style.color = "#fff";
+        th.style.borderTopLeftRadius = "8px";
+        th.style.borderTopRightRadius = "8px";
+        th.style.border = "2px outset #23538a";
+        th.colSpan = "2";
+
+        tr1.appendChild(th);
+
+        var tr2 = document.createElement("tr");
+
+        tbody.appendChild(tr2);
+
+        var td1_1 = document.createElement("td");
+        td1_1.colSpan = "2";
+        td1_1.style.padding = "10px";
+        td1_1.style.paddingTop = "20px";
+        td1_1.style.paddingBottom = "20px";
+        td1_1.align = "center";
+        td1_1.innerHTML = "What is the priority level of this test?";
+
+        tr2.appendChild(td1_1);
+
+        var tr3 = document.createElement("tr");
+
+        tbody.appendChild(tr3);
+
+        var td2_1 = document.createElement("td");
+        td2_1.align = "center";
+        td2_1.style.padding = "20px";
+
+        tr3.appendChild(td2_1);
+
+        var td2_2 = document.createElement("td");
+        td2_2.align = "center";
+        td2_2.style.padding = "20px";
+
+        tr3.appendChild(td2_2);
+
+        var btnYes = document.createElement("button");
+        btnYes.className = "button_red";
+        btnYes.innerHTML = "Urgent";
+        btnYes.style.width = "120px";
+        btnYes.style.cursor = "pointer";
+
+        td2_2.appendChild(btnYes);
+
+        var btnNo = document.createElement("button");
+        btnNo.className = "button_green";
+        btnNo.innerHTML = "Routine";
+        btnNo.style.width = "120px";
+        btnNo.style.cursor = "pointer";
+
+        td2_1.appendChild(btnNo);
+
+        new FastButton(btnNo, function () {
+
+            if (__$("popup")) {
+
+                document.body.removeChild(__$("popup"));
+
+            }
+
+            if (__$("shield")) {
+
+                document.body.removeChild(__$("shield"));
+
+            }
+
+            selectedTestPriority = "R";
+
+            addTest(selectedTest, selectedTestSpecimen, selectedTestPriority);
+        });
+
+        new FastButton(btnYes, function () {
+
+            if (__$("popup")) {
+
+                document.body.removeChild(__$("popup"));
+
+            }
+
+            if (__$("shield")) {
+
+                document.body.removeChild(__$("shield"));
+
+            }
+
+            selectedTestPriority = "S";
+
+            addTest(selectedTest, selectedTestSpecimen, selectedTestPriority);
+        });
+
+    }
+
+    function addTest(test, specimen, priority) {
 
         var parent = specimen;
 
@@ -496,7 +663,7 @@
 
         }
 
-        selectedTests[parent][container][test] = codes[test];
+        selectedTests[parent][container][test] = [codes[test], priority];
 
         if (__$("tests")) {
 
@@ -529,7 +696,7 @@
             __$("selected").className = "button_blue";
 
             __$("selected").onclick = function () {
-                showSelections();
+                actOnSelection();
             };
         }
 
@@ -611,8 +778,8 @@
             if (__$("selected")) {
                 __$("selected").className = "button_blue";
 
-                __$("selected").onclick = function () {imgDel
-                    showSelections();
+                __$("selected").onclick = function () {
+                    actOnSelection();
                 };
             }
         }
@@ -630,6 +797,184 @@
 
         showSelections();
     }
+
+    function showShield() {
+
+        if (__$("shield")) {
+
+            document.removeChild(__$("shield"));
+
+        } else {
+
+            var shield = document.createElement("div");
+            shield.id = "shield";
+            shield.style.position = "absolute";
+            shield.style.width = "100%";
+            shield.style.height = "100%";
+            shield.style.top = "0px";
+            shield.style.left = "0px";
+            shield.style.backgroundColor = "rgba(200,200,200,0.5)";
+            shield.style.zIndex = 110;
+
+            document.body.appendChild(shield);
+
+            new FastButton(shield, function () {
+
+                selectedTest = null;
+
+                selectedTestSpecimen = null;
+
+                if (__$("popup")) {
+
+                    document.body.removeChild(__$("popup"));
+
+                }
+
+                if (__$("shield")) {
+
+                    document.body.removeChild(__$("shield"));
+
+                }
+
+            });
+        }
+
+    }
+
+    function actOnSelection() {
+
+        if (!__$("shield")) {
+
+            showShield();
+
+        }
+
+        var popup = document.createElement("div");
+        popup.id = "popup";
+        popup.style.position = "absolute";
+        popup.style.minHeight = "200px";
+        popup.style.top = "20%";
+        popup.style.width = "330px";
+        popup.style.left = ((window.innerWidth - 330) / 2) + "px";
+        popup.style.backgroundColor = "#fff";
+        popup.style.zIndex = 120;
+        popup.style.border = "2px outset #fff";
+        popup.style.borderRadius = "8px";
+
+        document.body.appendChild(popup);
+
+        var table = document.createElement("table");
+        table.width = "100%";
+        table.style.fontSize = "24px";
+
+        popup.appendChild(table);
+
+        var tbody = document.createElement("tbody");
+
+        table.appendChild(tbody);
+
+        var tr1 = document.createElement("tr");
+
+        tbody.appendChild(tr1);
+
+        var th = document.createElement("th");
+        th.innerHTML = "Quick Question";
+        th.style.backgroundColor = "#345d8c";
+        th.style.color = "#fff";
+        th.style.borderTopLeftRadius = "8px";
+        th.style.borderTopRightRadius = "8px";
+        th.style.border = "2px outset #23538a";
+        th.colSpan = "2";
+
+        tr1.appendChild(th);
+
+        var tr2 = document.createElement("tr");
+
+        tbody.appendChild(tr2);
+
+        var td1_1 = document.createElement("td");
+        td1_1.colSpan = "2";
+        td1_1.style.padding = "10px";
+        td1_1.style.paddingTop = "20px";
+        td1_1.style.paddingBottom = "20px";
+        td1_1.align = "center";
+        td1_1.innerHTML = "Are you drawing samples now?";
+
+        tr2.appendChild(td1_1);
+
+        var tr3 = document.createElement("tr");
+
+        tbody.appendChild(tr3);
+
+        var td2_1 = document.createElement("td");
+        td2_1.align = "center";
+        td2_1.style.padding = "20px";
+
+        tr3.appendChild(td2_1);
+
+        var td2_2 = document.createElement("td");
+        td2_2.align = "center";
+        td2_2.style.padding = "20px";
+
+        tr3.appendChild(td2_2);
+
+        var btnYes = document.createElement("button");
+        btnYes.className = "button_green";
+        btnYes.innerHTML = "Yes";
+        btnYes.style.width = "100px";
+        btnYes.style.cursor = "pointer";
+
+        td2_2.appendChild(btnYes);
+
+        var btnNo = document.createElement("button");
+        btnNo.className = "button_red";
+        btnNo.innerHTML = "No";
+        btnNo.style.width = "100px";
+        btnNo.style.cursor = "pointer";
+
+        td2_1.appendChild(btnNo);
+
+        new FastButton(btnNo, function () {
+
+            if (__$("popup")) {
+
+                document.body.removeChild(__$("popup"));
+
+            }
+
+            if (__$("shield")) {
+
+                document.body.removeChild(__$("shield"));
+
+            }
+
+            drawingSamples = false;
+
+            showSelections();
+        });
+
+        new FastButton(btnYes, function () {
+
+            if (__$("popup")) {
+
+                document.body.removeChild(__$("popup"));
+
+            }
+
+            if (__$("shield")) {
+
+                document.body.removeChild(__$("shield"));
+
+            }
+
+            drawingSamples = true;
+
+            showSelections();
+        });
+
+    }
+
+    var selectionLocked = false;
 
     function showSelections() {
 
@@ -687,6 +1032,10 @@
 
         new FastButton(btnClose, function () {
 
+            currentOrders = {};
+
+            selectedOrder = null;
+
             if (__$("tests")) {
 
                 if (__$("btnClose")) {
@@ -713,6 +1062,41 @@
         });
 
         document.body.appendChild(btnClose);
+
+        var btnOrder = document.createElement("button");
+        btnOrder.id = "btnOrder";
+        btnOrder.height = "80";
+        btnOrder.style.position = "absolute";
+        btnOrder.style.zIndex = 100;
+        btnOrder.style.right = "115px";
+        btnOrder.style.bottom = "6px";
+        btnOrder.style.cursor = "pointer";
+        btnOrder.innerHTML = "Order Selected";
+        btnOrder.className = "button_gray";
+
+        btnOrder.onclick = function () {
+
+            selectedOrder = null;
+
+            if (Object.keys(currentOrders).length > 0) {
+
+                doOrderTests();
+
+            }
+
+        }
+
+        document.body.appendChild(btnOrder);
+
+        /* new FastButton(btnOrder, function () {
+
+         selectedOrder = null;
+
+         if (Object.keys(currentOrders).length > 0) {
+         doOrderTests();
+         }
+
+         });*/
 
         var samples = Object.keys(selectedTests);
 
@@ -908,6 +1292,7 @@
                 }
 
                 var check = document.createElement("div");
+                check.className = "checks";
                 check.style.border = "2px solid #000";
                 check.style.height = "40px";
                 check.style.width = "40px";
@@ -918,9 +1303,64 @@
                 check.setAttribute("sample", samples[i]);
                 check.setAttribute("container", containerList[r]);
 
+                if (drawingSamples) {
+
+                    check.style.borderRadius = "40px";
+
+                }
+
                 td1.appendChild(check);
 
                 new FastButton(check, function () {
+
+                // check.onclick = function () {
+
+                    if (drawingSamples) {
+
+                        var checks = document.getElementsByClassName("checks");
+
+                        for(var z = 0; z < checks.length; z++) {
+
+                            if (checks[z].getAttribute("selected") != null) {
+
+                                var tag = checks[z].getAttribute("tag");
+
+                                var controls = document.getElementsByClassName("row" + tag);
+
+                                for (var c = 0; c < controls.length; c++) {
+
+                                    controls[c].style.backgroundColor = "";
+
+                                }
+
+                                var specimen = checks[z].getAttribute("sample");
+                                var containerType = checks[z].getAttribute("container");
+
+                                if (currentOrders[specimen]) {
+
+                                    if (currentOrders[specimen][containerType]) {
+
+                                        delete currentOrders[specimen][containerType];
+
+                                    }
+
+                                    if (Object.keys(currentOrders[specimen]).length <= 0) {
+
+                                        delete currentOrders[specimen];
+
+                                    }
+
+                                }
+
+                                checks[z].innerHTML = "";
+
+                                checks[z].removeAttribute("selected");
+
+                            }
+
+                        }
+
+                    }
 
                     if (this.innerHTML.trim().length == 0) {
 
@@ -944,7 +1384,7 @@
                     var specimen = this.getAttribute("sample");
                     var containerType = this.getAttribute("container");
 
-                    if(this.getAttribute("selected") != null){
+                    if (this.getAttribute("selected") != null) {
 
                         for (var c = 0; c < controls.length; c++) {
 
@@ -952,15 +1392,15 @@
 
                         }
 
-                        if(currentOrders[specimen]){
+                        if (currentOrders[specimen]) {
 
-                            if(currentOrders[specimen][containerType]){
+                            if (currentOrders[specimen][containerType]) {
 
                                 delete currentOrders[specimen][containerType];
 
                             }
 
-                            if(Object.keys(currentOrders[specimen]).length <= 0){
+                            if (Object.keys(currentOrders[specimen]).length <= 0) {
 
                                 delete currentOrders[specimen];
 
@@ -978,13 +1418,13 @@
 
                         }
 
-                        if(!currentOrders[specimen]){
+                        if (!currentOrders[specimen]) {
 
                             currentOrders[specimen] = {};
 
                         }
 
-                        if(!currentOrders[specimen][containerType]){
+                        if (!currentOrders[specimen][containerType]) {
 
                             currentOrders[specimen][containerType] = true;
 
@@ -993,6 +1433,26 @@
                         this.setAttribute("selected", true);
 
                     }
+
+                    if (Object.keys(currentOrders).length <= 0) {
+
+                        if (__$("btnOrder")) {
+
+                            __$("btnOrder").className = "button_gray";
+
+                        }
+
+                    } else {
+
+                        if (__$("btnOrder")) {
+
+                            __$("btnOrder").className = "button_blue";
+
+                        }
+
+                    }
+
+                // }
 
                 });
 
@@ -1118,6 +1578,132 @@
 
         }
 
+        if (Object.keys(currentOrders).length <= 0) {
+
+            if (__$("btnOrder")) {
+
+                __$("btnOrder").className = "button_gray";
+
+            }
+
+        } else {
+
+            if (__$("btnOrder")) {
+
+                __$("btnOrder").className = "button_blue";
+
+            }
+
+        }
+
+    }
+
+    function doOrderTests() {
+
+        var keys = Object.keys(currentOrders);
+
+        for (var i = 0; i < keys.length; i++) {
+
+            var containerTypes = Object.keys(currentOrders[keys[i]]);
+
+            for (var j = 0; j < containerTypes.length; j++) {
+
+                var tests = Object.keys(selectedTests[keys[i]][containerTypes[j]]);
+
+                for (var k = 0; k < tests.length; k++) {
+
+                    selectedOrderTests.push(tests[k]);
+
+                    currentPriority = selectedTests[keys[i]][containerTypes[j]][tests[k]][1];
+
+                    delete selectedTests[keys[i]][containerTypes[j]][tests[k]];
+
+                    if (Object.keys(selectedTests[keys[i]][containerTypes[j]]).length == 0) {
+
+                        delete selectedTests[keys[i]][containerTypes[j]];
+
+                    }
+
+                    if (Object.keys(selectedTests[keys[i]]).length == 0) {
+
+                        delete selectedTests[keys[i]];
+
+                    }
+
+                    if (currentOrders[keys[i]] && currentOrders[keys[i]][containerTypes[j]]) {
+
+                        delete currentOrders[keys[i]][containerTypes[j]];
+
+                    }
+
+                    if (currentOrders[keys[i]] && Object.keys(currentOrders[keys[i]]).length == 0) {
+
+                        delete currentOrders[keys[i]];
+
+                    }
+
+                    if (__$("count")) {
+
+                        var count = parseInt(__$("count").innerHTML.trim()) - 1;
+
+                        if (count < 0)
+                            count = 0;
+
+                        __$("count").innerHTML = count;
+
+                    }
+
+                }
+
+                selectedSample = keys[i];
+
+                processOrder();
+
+                showSelections();
+
+            }
+
+        }
+
+        var found = false;
+
+        if (Object.keys(selectedTests).length > 0) {
+
+            var items = Object.keys(selectedTests);
+
+            for (var i = 0; i < items.length; i++) {
+
+                if (Object.keys(selectedTests[items[i]]).length > 0) {
+
+                    found = true;
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+        if (!found) {
+            if (__$("selected")) {
+
+                __$("selected").className = "button_gray";
+
+                __$("selected").onclick = function () {
+                };
+
+            }
+        } else {
+            if (__$("selected")) {
+                __$("selected").className = "button_blue";
+
+                __$("selected").onclick = function () {
+                    actOnSelection();
+                };
+            }
+        }
+
     }
 
     function processOrder() {
@@ -1130,11 +1716,18 @@
         */
         -->
 
-        var test_code = codes[selectedTest];
+        var test_code = "";     // codes[selectedTest];
 
-        var test_name = selectedTest;
+        var test_name = "";     // selectedTest;
 
-        var specimen_code = codes[selectedSample];
+        for (var i = 0; i < selectedOrderTests.length; i++) {
+
+            test_name += selectedOrderTests[i].replace(/\&/g, "and") + "|" + codes[selectedOrderTests[i]] + "|" +
+                    currentPriority + ",";
+
+        }
+
+        var specimen_code = codes["specimens"][selectedSample];
 
         var specimen = selectedSample;
 
@@ -1150,8 +1743,8 @@
 
         var date_of_birth = "<%= @patient[:date_of_birth].to_date.strftime("%Y%m%d") rescue nil %>";
 
-        var url = "/process_order?npid=" + npid + "&test_code=" + (test_code == null ? "" : test_code) +
-                "&test_name=" + (test_name == null ? "" : test_name) +
+        var url = "/process_order?npid=" + npid +
+                "&test_name=" + (test_name == "" ? "" : encodeURI(test_name)) +
                 "&specimen_code=" + (specimen_code == null ? specimen : specimen_code) +
                 "&specimen=" + (specimen == null ? "" : specimen) +
                 "&first_name=" + (first_name == null ? "" : first_name) +
@@ -1172,69 +1765,97 @@
                 /*
 
                  {
-                 "sendingFacility":"KCH",
-                 "receivingFacility":"KCH",
-                 "messageDatetime":"20150130162135",
-                 "messageType":"OML_O21",
-                 "messageControlID":"20150130162135",
-                 "processingID":"T",
-                 "hl7VersionID":"2.5",
-                 "obrSetID":"3",
-                 "testCode":"626-2",
-                 "timestampForSpecimenCollection":"20150130162135",
-                 "reasonTestPerformed":"Rule out diagnosis",
-                 "whoOrderedTest":"Chris Moyo (3)",
-                 "healthFacilitySiteCodeAndName":"KCH",
-                 "pidSetID":"1",
-                 "nationalID":"P129500000229",
-                 "patientName":"Mevis N/A Kadammanja ",
-                 "dateOfBirth":"19631027",
-                 "gender":"F",
-                 "spmSetID":"1",
-                 "accessionNumber":"20150130-11",
-                 "typeOfSample":"Urine",
-                 "tq1SetID":"1",
-                 "priority":"S",
-                 "enteredBy":"User Super (1)",
-                 "enterersLocation":"",
-                 "testName":"
+                 "sendingFacility": "KCH",
+                 "receivingFacility": "KCH",
+                 "messageDatetime": "20150222215009",
+                 "messageType": "OML_O21",
+                 "messageControlID": "20150222215009",
+                 "processingID": "T",
+                 "hl7VersionID": "2.5",
+                 "tests": [
+                 {
+                 "obrSetID": "1",
+                 "testCode": "5909-7",
+                 "testName": "Blood films",
+                 "timestampForSpecimenCollection": "20150222215009",
+                 "reasonTestPerformed": "Rule out diagnosis",
+                 "whoOrderedTest": "Chris Moyo (1)"
+                 },
+                 {
+                 "obrSetID": "2",
+                 "testCode": "65758-5",
+                 "testName": "CD4",
+                 "timestampForSpecimenCollection": "20150222215009",
+                 "reasonTestPerformed": "Rule out diagnosis",
+                 "whoOrderedTest": "Chris Moyo (2)"
+                 },
+                 {
+                 "obrSetID": "3",
+                 "testCode": "4537-7",
+                 "testName": "Erythrocyte sedimentation rate",
+                 "timestampForSpecimenCollection": "20150222215009",
+                 "reasonTestPerformed": "Rule out diagnosis",
+                 "whoOrderedTest": "Chris Moyo (3)"
+                 },
+                 {
+                 "obrSetID": "4",
+                 "testCode": "57021-8",
+                 "testName": "Full blood count",
+                 "timestampForSpecimenCollection": "20150222215009",
+                 "reasonTestPerformed": "Rule out diagnosis",
+                 "whoOrderedTest": "Chris Moyo (4)"
+                 }
+                 ],
+                 "healthFacilitySiteCodeAndName": "KCH",
+                 "pidSetID": "1",
+                 "nationalID": "P170000000031",
+                 "patientName": "Test N\/A Patient ",
+                 "dateOfBirth": "19930701",
+                 "gender": "F",
+                 "spmSetID": "1",
+                 "accessionNumber": "KCH3",
+                 "typeOfSample": "Whole blood",
+                 "tq1SetID": "1",
+                 "priority": "S",
+                 "enteredBy": "User Super (1)",
+                 "enterersLocation": ""
                  }
 
                  */
 
-                var full_name = "<%= @patient[:full_name] rescue nil %>";
+                var currentTests = "";
 
+                var tests = result["tests"];
 
-                if (typeof(Android) != "undefined") {
-                    Android.printBarcode(full_name, npid, result["messageDatetime"], "", result["typeOfSample"], result["accessionNumber"]);
-                } else {
+                for (var i = 0; i < tests.length; i++) {
 
-                    alert("Accession Number: " + result["accessionNumber"]);
+                    var short = shortnames[tests[i]["testName"]];
+
+                    if (short.trim().length == 0) {
+
+                        short = tests[i]["testName"];
+
+                    }
+
+                    currentTests += short + ";"
 
                 }
 
-                if (__$("tests")) {
+                if(currentTests.trim().length > 12){
 
-                    if (__$("btnClose")) {
+                    currentTests = currentTests.substr(0, 12) + "...";
 
-                        document.body.removeChild(__$("btnClose"));
-
-                    }
-
-                    if (__$("btnOrder")) {
-
-                        document.body.removeChild(__$("btnOrder"));
-
-                    }
-
-                    document.body.removeChild(__$("tests"));
-
-                    if (liSpecSelect) {
-
-                        liSpecSelect.style.backgroundColor = (liSpecSelect.getAttribute("tag") == "odd" ? "#eee" : "");
-
-                    }
                 }
+
+                if (drawingSamples) {
+
+                    printBarcode(npid, result["messageDatetime"], currentTests, result["accessionNumber"]);
+
+                }
+
+                selectedOrderTests = [];
+
+                selectedSample = null;
 
             }
 
@@ -1267,6 +1888,29 @@
 
          }
          }*/
+
+    }
+
+    function printBarcode(npid, messageDatetime, testsTBD, accessionNumber, ward) {
+
+        if (ward == undefined) {
+
+            ward = "";
+
+        }
+
+        var full_name = "<%= @patient[:full_name] rescue nil %>";
+
+        // printBarcode(String name, String npid, String datetime, String ward, String test, String barcode)
+        if (typeof(Android) != "undefined") {
+
+            Android.printBarcode(full_name, npid, messageDatetime, ward, testsTBD, accessionNumber);
+
+        } else {
+
+            alert("Accession Number: " + accessionNumber);
+
+        }
 
     }
 
