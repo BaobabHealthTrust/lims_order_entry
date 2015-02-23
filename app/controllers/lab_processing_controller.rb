@@ -58,7 +58,11 @@ class LabProcessingController < ApplicationController
 
         result[Rails.env] = {} if result[Rails.env].blank?
 
-       
+        result[Rails.env][params[:id].strip] = {
+            "received_at_reception" => Time.now.strftime("%Y%m%d%H%M%S"),
+            "state" => "RECEIVED AT RECEPTION"
+        }
+
 
         hnd = File.open(file, "w")
 
@@ -72,7 +76,7 @@ class LabProcessingController < ApplicationController
 
         list = JSON.parse(tests).keys.first.split("|") rescue nil
 
-        if list.nil?
+        if list.blank?
 
           flash[:error] = "ERROR: Test or specimen details extracting failed!"
 
@@ -83,7 +87,7 @@ class LabProcessingController < ApplicationController
         parameters = {
             :id => params[:id].strip,
             :test => list[0],
-            :state => "Received",
+            :state => "Received At Reception",
             :specimen => list[2],
             :location => "Reception"
         }
