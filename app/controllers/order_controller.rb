@@ -206,6 +206,13 @@ class OrderController < ApplicationController
 
     msg << spm # add the SPM segment to the message
 
+    nte = HL7::Message::Segment::NTE.new
+    nte.set_id = "1"
+    nte.source = "P"
+    nte.comment = "#{params[:status] rescue nil}"
+
+    msg << nte # add the NTE segment to the message
+
     # raise msg.to_s.inspect
 
     result = RestClient.post("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +

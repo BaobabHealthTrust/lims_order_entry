@@ -595,7 +595,7 @@
         btnYes.style.width = "120px";
         btnYes.style.cursor = "pointer";
 
-        td2_2.appendChild(btnYes);
+        td2_1.appendChild(btnYes);
 
         var btnNo = document.createElement("button");
         btnNo.className = "button_green";
@@ -603,7 +603,7 @@
         btnNo.style.width = "120px";
         btnNo.style.cursor = "pointer";
 
-        td2_1.appendChild(btnNo);
+        td2_2.appendChild(btnNo);
 
         new FastButton(btnNo, function () {
 
@@ -1743,6 +1743,8 @@
 
         var date_of_birth = "<%= @patient[:date_of_birth].to_date.strftime("%Y%m%d") rescue nil %>";
 
+        var status = (drawingSamples ? "Drawn" : "Ordered");
+
         var url = "/process_order?npid=" + npid +
                 "&test_name=" + (test_name == "" ? "" : encodeURI(test_name)) +
                 "&specimen_code=" + (specimen_code == null ? specimen : specimen_code) +
@@ -1751,7 +1753,7 @@
                 "&last_name=" + (last_name == null ? "" : last_name) +
                 "&middle_name=" + (middle_name == null ? "" : middle_name) +
                 "&date_of_birth=" + (date_of_birth == null ? "" : date_of_birth) +
-                "&sex=" + (sex == null ? "" : sex);
+                "&sex=" + (sex == null ? "" : sex) + "&status=" + status;
 
         var httpRequest = new XMLHttpRequest();
 
