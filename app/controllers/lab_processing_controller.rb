@@ -36,67 +36,42 @@ class LabProcessingController < ApplicationController
 
   def receive_samples
 
-    result = {}
+    status_link = "#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["status_path"]}#{params[:id]}"
 
-    file = "#{Rails.root}/config/samples.yml"
-
-    if File.exists?(file)
-
-      result = YAML.load_file(file) rescue {}
-
-      if (!result.blank? and !result[Rails.env].blank? and !result[Rails.env][params[:id].strip].blank? and !result[Rails.env][params[:id].strip]["rejection_reason"].blank?)
-
-        flash[:error] = "Sample with ID #{params[:id]} was rejected and cannot be processed further!"
-
-      elsif !result.blank? and !result[Rails.env].blank? and !result[Rails.env][params[:id].strip].blank?
-
-        flash[:notice] = "Sample with ID #{params[:id]} already received!"
-
-      else
-
-        result = {} if result.blank?
-
-        result[Rails.env] = {} if result[Rails.env].blank?
-
-        result[Rails.env][params[:id].strip] = {
-            "received_at_reception" => Time.now.strftime("%Y%m%d%H%M%S"),
-            "state" => "RECEIVED AT RECEPTION"
-        }
+    status = RestClient.get(status_link)
 
 
-        hnd = File.open(file, "w")
+    if status.strip.upcase == "REJECTED"
+     flash[:error] = "Sample with ID #{params[:id]} was rejected and cannot be processed further!"
+    elsif status.strip.upcase == "RECEIVED AT RECEPTION"
+     flash[:notice] = "Sample with ID #{params[:id]} already received!"
+    elsif status.strip.upcase == "DRAWN"
 
-        hnd.write(result.to_yaml)
+     link = "#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["search_by_acc_num_path"]}#{params[:id]}"
 
-        hnd.close
+     tests = RestClient.get(link)
 
-		link = "#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["search_by_acc_num_path"]}#{params[:id]}"
-	
-        tests = RestClient.get(link)
+     list = JSON.parse(tests).keys.first.split("|") rescue nil
 
-        list = JSON.parse(tests).keys.first.split("|") rescue nil
+     if list.blank?
 
-        if list.blank?
+      flash[:error] = "ERROR: Test or specimen details extracting failed!"
 
-          flash[:error] = "ERROR: Test or specimen details extracting failed!"
+      redirect_to "/search_for_samples?target=receive_samples" and return
 
-          redirect_to "/search_for_samples?target=receive_samples" and return
+     end
 
-        end
+     parameters = {
+       :id => params[:id].strip,
+       :test => list[0],
+       :state => "Received At Reception",
+       :specimen => list[2],
+       :location => "Reception"
+     }
 
-        parameters = {
-            :id => params[:id].strip,
-            :test => list[0],
-            :state => "Received At Reception",
-            :specimen => list[2],
-            :location => "Reception"
-        }
+     save_state(parameters)
 
-        save_state(parameters)
-
-        flash[:notice] = "Sample with ID #{params[:id]} recorded as received!"
-
-      end
+     flash[:notice] = "Sample with ID #{params[:id]} recorded as received!"
 
     end
 
