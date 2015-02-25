@@ -374,7 +374,7 @@ class LabProcessingController < ApplicationController
     obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
     obr.relevant_clinical_info = "Rule out diagnosis"
     obr.ordering_provider = "439234^Moyo^Chris"
-    obr.result_status = "Tested"
+    # obr.result_status = "Tested"
 
     msg << obr # add the OBR segment to the message
 
@@ -401,6 +401,13 @@ class LabProcessingController < ApplicationController
     spm.specimen_type = "#{params[:specimen] rescue nil}^#{params[:specimen] rescue nil}"
 
     msg << spm # add the SPM segment to the message
+
+    nte = HL7::Message::Segment::NTE.new
+    nte.set_id = "1"
+    nte.source = "P"
+    nte.comment = "Tested"
+
+    msg << nte # add the NTE segment to the message
 
     # raise msg.to_s.inspect
 
@@ -451,7 +458,7 @@ class LabProcessingController < ApplicationController
 
     orc = HL7::Message::Segment::ORC.new
     orc.entered_by = "1^Super^User"
-    orc.enterers_location = "^^^^^^^^MEDICINE"
+    orc.enterers_location = "^^^^^^^^Ward 4B"
     orc.ordering_facility_name = "KCH"
 
     msg << orc # add the ORC segment to the message
@@ -468,7 +475,7 @@ class LabProcessingController < ApplicationController
     obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
     obr.relevant_clinical_info = "Rule out diagnosis"
     obr.ordering_provider = "439234^Moyo^Chris"
-    obr.result_status = "#{params[:state]}"
+    # obr.result_status = "#{params[:state]}"
 
     msg << obr # add the OBR segment to the message
 
@@ -495,6 +502,13 @@ class LabProcessingController < ApplicationController
     spm.specimen_type = "#{params[:specimen] rescue nil}^#{params[:specimen] rescue nil}"
 
     msg << spm # add the SPM segment to the message
+
+    nte = HL7::Message::Segment::NTE.new
+    nte.set_id = "1"
+    nte.source = "P"
+    nte.comment = "#{params[:state] rescue nil}"
+
+    msg << nte # add the NTE segment to the message
 
     # raise msg.to_s.inspect
 

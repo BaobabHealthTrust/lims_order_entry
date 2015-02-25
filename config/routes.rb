@@ -2,6 +2,10 @@ Rails.application.routes.draw do
 
   root 'order#index'
 
+  get "/update_state/:id" => "order#update_state"
+
+  get "/get_labs/:id" => "order#get_labs"
+
   post "/save_result" => "lab_processing#save_result"
 
   get "/dispose_sample/:id" => "lab_processing#dispose_sample"

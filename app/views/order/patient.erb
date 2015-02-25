@@ -127,19 +127,49 @@
       </tr>
       <tr>
         <td colspan="6">
-            <div style="height: 477px; width: 96%; overflow: auto; border-top: 1px solid #23538a; margin: auto;">
+            <div id="resultsParent" style="width: 95%; border-top: 1px solid #23538a; margin: auto; border: 1px solid #ccc;">
+
+              <table width="100%">
+                <tr style="background-color: #ccc; color: #333; font-size: 18px;">
+                  <th style="width: 148px; padding: 5px;">
+                    Date
+                  </th>
+                  <th style="width: 30%; padding: 5px;">
+                    Test
+                  </th>
+                  <th style=" padding: 5px;">
+                    Result/Status
+                  </th>
+                  <th style="width: 100px; padding: 5px;">
+                    Print Label
+                  </th>
+                </tr>
+                <tr>
+                  <td colspan="4">
+                    <div id="results" style="height: 400px; overflow: auto; border: 1px solid #ccc; text-align: center; width: 100%;">
+                    </div>
+                  </td>
+                </tr>
+              </table>
 
             </div>
         </td>
       </tr>
     </table>
 
-    <button id="btnOrder" class="button_blue" style="float: right; margin-right: 15px;" onclick="window.location = '/place_order/<%= @patient[:national_id] rescue nil %>'">Order
+    <button id="btnOrder" class="button_blue" style="float: right; margin-right: 15px; cursor: pointer;" onclick="window.location = '/place_order/<%= @patient[:national_id] rescue nil %>'">Order
       Test
     </button>
 
     <script>
 
+        var results = [];
+
+        var testNames = {};
+
+        var shortnames = <%= @shorts.to_json.html_safe %>;
+
+        var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
         function attachBtn() {
 
@@ -161,7 +191,267 @@
 
         }
 
+        function padZeros(number, positions){
+            var zeros = parseInt(positions) - String(number).length;
+            var padded = "";
+
+            for(var i = 0; i < zeros; i++){
+                padded += "0";
+            }
+
+            padded += String(number);
+
+            return padded;
+        }
+
+        function loadResults(){
+
+            if(__$("results")){
+
+                __$("results").innerHTML = "";
+
+                if(results.length == 0){
+
+                    __$("results").innerHTML = "<div style='margin: auto; font-weight: normal; font-style: italic; " +
+                            "margin-top: 40px; font-size: 24px; color: #23538a;'>No tests or results available!</div>";
+
+                    return;
+
+                }
+
+                var result = results[0]["orders"];
+
+                var keys = Object.keys(result);
+
+                var table = document.createElement("table");
+                table.width = "100%";
+                table.style.fontSize = "16px";
+
+                __$("results").appendChild(table);
+
+                var tbody = document.createElement("tbody");
+
+                table.appendChild(tbody);
+
+                var c = 0;
+
+                for(var i = 0; i < keys.length; i++){
+
+                    var key = keys[i];
+
+                    testNames[key] = {};
+
+                    var kids = Object.keys(result[key]["results"]);
+
+                    for(var j = 0; j < kids.length; j++){
+
+                        var kid = kids[j];
+
+                        testNames[key][result[key]["results"][kid]["test_name"]] = true;
+
+                        var tr = document.createElement("tr");
+
+                        if(c % 2 > 0){
+
+                            tr.style.backgroundColor = "#eee";
+
+                        }
+
+                        tbody.appendChild(tr);
+
+                        var date = "";
+
+                        if(result[key]["results"][kid]["result_date_time"] != null && result[key]["results"][kid]["result_date_time"].trim().length > 0) {
+
+                            var datetime = result[key]["results"][kid]["result_date_time"];
+                            var year = parseInt(datetime.substr(0, 4));
+                            var month = parseInt(datetime.substr(4, 2)) - 1;
+                            var day = parseInt(datetime.substr(6, 2));
+                            var hour = parseInt(datetime.substr(8, 2));
+                            var minute = parseInt(datetime.substr(10, 2));
+                            var second = parseInt(datetime.substr(12, 2));
+                            var theDate = new Date(year, month, day, hour, minute, second);
+
+                            date = "<i>" + day + "/" + months[month] + "/" + year + "</i> <b>" + padZeros(hour, 2) + ":" + padZeros(minute, 2) + "</b>";
+
+                        }
+
+                        var td1 = document.createElement("td");
+                        td1.innerHTML = date;
+                        td1.style.width = "150px";
+                        td1.style.border = "1px dotted #ccc";
+
+                        tr.appendChild(td1);
+
+                        var td2 = document.createElement("td");
+                        td2.innerHTML = result[key]["results"][kid]["test_name"];
+                        td2.style.width = "30%";
+                        td2.style.textAlign = "left";
+                        td2.style.paddingLeft = "10px";
+                        td2.style.border = "1px dotted #ccc";
+
+                        tr.appendChild(td2);
+
+                        var td3 = document.createElement("td");
+                        td3.innerHTML = (result[key]["results"][kid]["result"] != null && String(result[key]["results"][kid]["result"]).trim().length > 0 ?
+                                result[key]["results"][kid]["result"] : result[key]["results"][kid]["status"]);
+                        td3.style.textAlign = "left";
+                        td3.style.paddingLeft = "10px";
+                        td3.style.border = "1px dotted #ccc";
+
+                        tr.appendChild(td3);
+
+                        var td4 = document.createElement("td");
+                        td4.style.width = "100px";
+                        td4.style.border = "1px dotted #ccc";
+                        td4.style.padding = "5px";
+
+                        tr.appendChild(td4);
+
+                        var print = document.createElement("img");
+                        print.src = (result[key]["results"][kid]["status"].toLowerCase().trim() == "ordered" ? printer_red : printer_green);
+                        print.height = 50;
+                        print.setAttribute("state", result[key]["results"][kid]["status"]);
+                        print.setAttribute("accession_number", key);
+                        print.style.cursor = "pointer";
+
+                        td4.appendChild(print);
+
+                        new FastButton(print, function () {
+
+                            printLabel(this.getAttribute("accession_number"), this.getAttribute("state"), "Drawn");
+
+                        });
+
+                        c++;
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        function printLabel(accession_number, currentState, state){
+
+            if(accession_number == undefined || currentState == undefined || state == undefined){
+
+                return;
+
+            }
+
+            if(currentState.trim().toLocaleLowerCase() == "ordered"){
+
+                var url = "/update_state/" + accession_number + "?state=" + state;
+
+                var httpRequest = new XMLHttpRequest();
+                httpRequest.onreadystatechange = function () {
+
+                    if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
+                            httpRequest.status == 304)) {
+
+                        console.log(httpRequest.responseText);
+
+                    }
+
+                };
+                try {
+                    httpRequest.open('GET', url, true);
+                    httpRequest.send(null);
+                } catch (e) {
+                }
+
+            }
+
+            var datetime = (new Date()).getDate() + "/" + months[(new Date()).getMonth()] + "/" + (new Date()).getFullYear() +
+                    " " + (new Date()).getHours() + ":" + (new Date()).getMinutes();
+
+            var currentTests = "";
+
+            var tests = testNames[accession_number];
+
+            for (var i = 0; i < tests.length; i++) {
+
+                var short = shortnames[tests[i]["testName"]];
+
+                if (short == undefined || short.trim().length == 0) {
+
+                    short = tests[i]["testName"];
+
+                }
+
+                currentTests += short + ";"
+
+            }
+
+            if(currentTests.trim().length > 12){
+
+                currentTests = currentTests.substr(0, 12) + "...";
+
+            }
+
+            printBarcode(datetime, currentTests, accession_number);
+
+        }
+
+        function printBarcode(messageDatetime, testsTBD, accessionNumber, ward) {
+
+            if (ward == undefined) {
+
+                ward = "";
+
+            }
+
+            var npid = "<%= @patient[:national_id] %>"
+            var full_name = "<%= @patient[:full_name] rescue nil %>";
+
+            // printBarcode(String name, String npid, String datetime, String ward, String test, String barcode)
+            if (typeof(Android) != "undefined") {
+
+                Android.printBarcode(full_name, npid, messageDatetime, ward, testsTBD, accessionNumber);
+
+            } else {
+
+                alert("Accession Number: " + accessionNumber);
+
+            }
+
+            window.location = window.location.href;
+
+        }
+
+        function ajaxTasks() {
+
+            var url = "/get_labs/<%= params[:id] %>";
+
+            var httpRequest = new XMLHttpRequest();
+            httpRequest.onreadystatechange = function () {
+                handleTasks(httpRequest);
+            };
+            try {
+                httpRequest.open('GET', url, true);
+                httpRequest.send(null);
+            } catch (e) {
+            }
+        }
+
+        function handleTasks(aXMLHttpRequest) {
+            if (!aXMLHttpRequest) return;
+
+            if (aXMLHttpRequest.readyState == 4 && (aXMLHttpRequest.status == 200 ||
+                    aXMLHttpRequest.status == 304)) {
+
+                results = JSON.parse(aXMLHttpRequest.responseText);
+
+                loadResults();
+
+            }
+        }
+
         setTimeout("attachBtn()", 100);
+
+        ajaxTasks();
 
     </script>
 
