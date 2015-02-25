@@ -15,6 +15,7 @@ default: &default
   search_by_acc_num_path: /blis/htdocs/api/remote_calls.php?action=by_session_num&id=
   patient_by_acc_num_path: /blis/htdocs/api/remote_calls.php?action=get_patient_by_sp_id&id=
   test_result_path: /blis/htdocs/api/updateHL7Order.php
+  status_path: /blis/htdocs/api/get_status.php?accession_number=
 
 development:
   <<: *default
