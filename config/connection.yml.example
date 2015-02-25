@@ -6,6 +6,7 @@ default: &default
   password:
   order_server: localhost
   order_port: 80
+  test_order_port: 3005
   order_username:
   order_password:
   test_order_path: /blis/htdocs/api/processHL7Order.php

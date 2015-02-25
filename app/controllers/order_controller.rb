@@ -88,7 +88,7 @@ class OrderController < ApplicationController
 
       assocs[name] = []
 
-      shorts[name] = sname
+      # shorts[name] = sname
 
       codes["specimens"][name] = code
 
@@ -215,8 +215,11 @@ class OrderController < ApplicationController
 
     # raise msg.to_s.inspect
 
-    result = RestClient.post("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
-                                 "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["test_order_path"]}", {:hl7 => msg.to_s})
+    # result = RestClient.post("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+    #                             "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["test_order_path"]}", {:hl7 => msg.to_s})
+
+    result = RestClient.post("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_server"]}:#{CONFIG["test_order_port"]}" +
+                                 "#{CONFIG["test_order_path"]}", msg.to_s, {:content_type => 'application/text'})
 
     # raise result.inspect
 
