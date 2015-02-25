@@ -1833,7 +1833,7 @@
 
                     var short = shortnames[tests[i]["testName"]];
 
-                    if (short.trim().length == 0) {
+                    if (short == undefined || short.trim().length == 0) {
 
                         short = tests[i]["testName"];
 
