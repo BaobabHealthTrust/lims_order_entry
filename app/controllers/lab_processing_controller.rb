@@ -458,7 +458,7 @@ class LabProcessingController < ApplicationController
 
     orc = HL7::Message::Segment::ORC.new
     orc.entered_by = "1^Super^User"
-    orc.enterers_location = "^^^^^^^^Ward 4B"
+    orc.enterers_location = "^^^^^^^^#{params[:location]}"
     orc.ordering_facility_name = "KCH"
 
     msg << orc # add the ORC segment to the message
