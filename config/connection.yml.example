@@ -1,21 +1,28 @@
 default: &default
-  wsdl_server: localhost
-  wsdl_port: 3001
-  namespace: http://www.baobabhealth.org
-  username: 
-  password:
-  order_server: localhost
-  order_port: 80
-  test_order_port: 3005
-  order_username:
-  order_password:
-  test_order_path: /blis/htdocs/api/processHL7Order.php
-  avaialble_tests_path: /blis/htdocs/api/get_test_catalog.php
-  order_transport_protocol: http
-  search_by_acc_num_path: /blis/htdocs/api/remote_calls.php?action=by_session_num&id=
-  patient_by_acc_num_path: /blis/htdocs/api/remote_calls.php?action=get_patient_by_sp_id&id=
-  test_result_path: /blis/htdocs/api/updateHL7Order.php
-  status_path: /blis/htdocs/api/get_status.php?accession_number=
+    wsdl_server: localhost
+    wsdl_port: 3001
+    namespace: http://www.baobabhealth.org
+    username: admin
+    password: test
+    order_transport_protocol: http
+    order_username:
+    order_password:
+    order_server: localhost #192.168.15.5
+    order_port: 80
+    test_order_transport_protocol: http
+    test_order_server: localhost
+    test_order_port: 3005
+    test_order_path: /place_order/ # /blis/htdocs/api/processHL7Order.php
+    avaialble_tests_path: /blis/htdocs/api/get_test_catalog.php
+    search_by_acc_num_path: /blis/htdocs/api/remote_calls.php?action=by_session_num&id=
+    patient_by_acc_num_path: /blis/htdocs/api/remote_calls.php?action=get_patient_by_sp_id&id=
+    test_result_path: /blis/htdocs/api/updateHL7Order.php
+    status_path: /blis/htdocs/api/get_status.php?accession_number=
+    lab_repo_server: localhost
+    lab_repo_protocol: http
+    lab_repo_path: /update_state/
+    lab_repo_port: 3004
+    lab_get_labs_path: /get_labs/
 
 development:
   <<: *default
@@ -24,7 +31,7 @@ development:
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  <<: *default
+    <<: *default
 
 production:
-  <<: *default
+    <<: *default
