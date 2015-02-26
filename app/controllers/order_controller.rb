@@ -289,7 +289,7 @@ class OrderController < ApplicationController
     # result = RestClient.post("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
     #                             "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["test_order_path"]}", {:hl7 => msg.to_s})
 
-    result = RestClient.post("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_server"]}:#{CONFIG["test_order_port"]}" +
+    result = RestClient.post("#{CONFIG["test_order_transport_protocol"]}://#{CONFIG["test_order_server"]}:#{CONFIG["test_order_port"]}" +
                                  "#{CONFIG["test_order_path"]}", msg.to_s, {:content_type => 'application/text'})
 
     # raise result.inspect
@@ -309,7 +309,7 @@ class OrderController < ApplicationController
   def get_labs
 
     result = RestClient.get("#{CONFIG["lab_repo_protocol"]}://#{CONFIG["lab_repo_server"]}:#{CONFIG["lab_repo_port"]}" +
-                                 "#{CONFIG["lab_repo_path"]}#{params[:id]}")
+                                 "#{CONFIG["lab_get_labs_path"]}#{params[:id]}")
 
 
     render :text => result
@@ -406,8 +406,8 @@ class OrderController < ApplicationController
 
     # raise msg.to_s.inspect
 
-    result = RestClient.post("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
-                                 "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["test_result_path"]}", {:hl7 => msg.to_s})
+    result = RestClient.post("#{CONFIG["lab_repo_protocol"]}://#{CONFIG["lab_repo_server"]}:#{CONFIG["lab_repo_port"]}/#{CONFIG["lab_repo_path"]}",
+                             msg.to_s, {:content_type => 'application/text'})
 
     # raise result.inspect
 
