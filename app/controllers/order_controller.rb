@@ -144,7 +144,7 @@ class OrderController < ApplicationController
 
     assocs = {}
 
-    codes = {
+    @codes = {
         "specimens" => {}
     }
 
@@ -170,7 +170,7 @@ class OrderController < ApplicationController
 
       # shorts[name] = sname
 
-      codes["specimens"][name] = code
+      @codes["specimens"][name] = code
 
       containers[name] = {}
 
@@ -190,7 +190,7 @@ class OrderController < ApplicationController
 
         @shorts[cname] = csname
 
-        codes[cname] = ccode
+        @codes[cname] = ccode
 
         groups[cname] = name
 
@@ -308,8 +308,9 @@ class OrderController < ApplicationController
 
   def get_labs
 
-    result = RestClient.get("#{CONFIG["lab_repo_protocol"]}://#{CONFIG["lab_repo_server"]}:#{CONFIG["lab_repo_port"]}" +
-                                 "#{CONFIG["lab_get_labs_path"]}#{params[:id]}")
+    # raise "#{CONFIG["lab_repo_protocol"]}://#{CONFIG["lab_repo_server"]}:#{CONFIG["lab_repo_port"]}#{CONFIG["lab_get_labs_path"]}#{params[:id]}".inspect
+
+    result = RestClient.get("#{CONFIG["lab_repo_protocol"]}://#{CONFIG["lab_repo_server"]}:#{CONFIG["lab_repo_port"]}#{CONFIG["lab_get_labs_path"]}#{params[:id]}")
 
 
     render :text => result
@@ -320,6 +321,8 @@ class OrderController < ApplicationController
 
     patient = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
                                             "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["patient_by_acc_num_path"]}#{params[:id]}")).first
+
+    group_tests = JSON.parse(RestClient.get("#{CONFIG["lab_repo_protocol"]}://#{CONFIG["lab_repo_server"]}:#{CONFIG["lab_repo_port"]}#{CONFIG["lab_get_spacific_labs_path"]}#{params[:id]}")) rescue []
 
     # create a message
     msg = HL7::Message.new
@@ -337,10 +340,16 @@ class OrderController < ApplicationController
 
     msg << msh # add the MSH segment to the message
 
+    name = patient["name"].split(" ")
+
+    fname = name[0] rescue nil
+    mname = (name.length > 2 ? name[1] : "")
+    lname = (name.length > 2 ? name[2] : name[1])
+
     pid = HL7::Message::Segment::PID.new
     pid.set_id = "1"
     pid.patient_id_list = patient["surrogateId"] rescue nil
-    pid.patient_name = "#{patient["name"] rescue nil}"
+    pid.patient_name = "#{lname}^#{fname}^#{mname}"
     pid.patient_dob = patient["dob"].to_date.strftime("%Y%m%d") rescue nil
     pid.admin_sex = patient["sex"] rescue nil
 
@@ -357,6 +366,34 @@ class OrderController < ApplicationController
 
     msg << orc # add the ORC segment to the message
 
+    tests = group_tests.first["orders"][params[:id]]["results"].keys # rescue nil
+
+    i = 0
+    tests.each do |test_code|
+
+      next if test_code.blank?
+
+      test_name = group_tests.first["orders"][params[:id]]["results"][test_code]["test_name"]
+
+      i += 1
+
+      obr = HL7::Message::Segment::OBR.new
+      obr.set_id = i
+      obr.universal_service_id = "#{test_code rescue nil}^#{test_name rescue nil}^LOINC"
+      obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+      obr.relevant_clinical_info = "Rule out diagnosis"
+      obr.ordering_provider = "439234^Moyo^Chris"
+
+      msg << obr # add the OBR segment to the message
+
+      tq1 = HL7::Message::Segment::TQ1.new
+      tq1.set_id = i
+
+      msg << tq1 # add the TQ1 segment to the message
+
+    end
+
+=begin
     tq1 = HL7::Message::Segment::TQ1.new
     tq1.set_id = "1"
     tq1.priority = "R^Routine^HL70485"
@@ -365,13 +402,14 @@ class OrderController < ApplicationController
 
     obr = HL7::Message::Segment::OBR.new
     obr.set_id = "1"
-    obr.universal_service_id = "#{params[:test] rescue nil}^#{params[:test] rescue nil}^LOINC"
+    obr.universal_service_id = "#{params[:test_code] rescue nil}^#{params[:test_name] rescue nil}"
     obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
     obr.relevant_clinical_info = "Rule out diagnosis"
     obr.ordering_provider = "439234^Moyo^Chris"
     # obr.result_status = "#{params[:state]}"
 
     msg << obr # add the OBR segment to the message
+=end
 
     obx = HL7::Message::Segment::OBX.new
     obx.set_id = "#{nil}"
@@ -406,7 +444,10 @@ class OrderController < ApplicationController
 
     # raise msg.to_s.inspect
 
-    result = RestClient.post("#{CONFIG["lab_repo_protocol"]}://#{CONFIG["lab_repo_server"]}:#{CONFIG["lab_repo_port"]}/#{CONFIG["lab_repo_path"]}",
+    # raise "#{CONFIG["lab_state_update_protocol"]}://#{CONFIG["lab_state_update_server"]}:#{CONFIG["lab_state_update_port"]}#{CONFIG["lab_state_update_path"]}"
+
+    result = RestClient.post("#{CONFIG["lab_state_update_protocol"]}://#{CONFIG["lab_state_update_server"]}:" +
+                                 "#{CONFIG["lab_state_update_port"]}#{CONFIG["lab_state_update_path"]}",
                              msg.to_s, {:content_type => 'application/text'})
 
     # raise result.inspect

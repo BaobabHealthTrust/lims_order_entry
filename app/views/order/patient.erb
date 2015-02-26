@@ -131,7 +131,7 @@
 
               <table width="100%">
                 <tr style="background-color: #ccc; color: #333; font-size: 18px;">
-                  <th style="width: 148px; padding: 5px;">
+                  <th style="width: 120px; padding: 5px;">
                     Date
                   </th>
                   <th style="width: 30%; padding: 5px;">
@@ -140,7 +140,7 @@
                   <th style=" padding: 5px;">
                     Result/Status
                   </th>
-                  <th style="width: 100px; padding: 5px;">
+                  <th style="width: 90px; padding: 5px;">
                     Print Label
                   </th>
                 </tr>
@@ -168,6 +168,8 @@
         var testNames = {};
 
         var shortnames = <%= @shorts.to_json.html_safe %>;
+
+        var codes = <%= @codes.to_json.html_safe %>;
 
         var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
@@ -313,13 +315,15 @@
                         print.height = 50;
                         print.setAttribute("state", result[key]["results"][kid]["status"]);
                         print.setAttribute("accession_number", key);
+                        print.setAttribute("test_code", codes[result[key]["results"][kid]["test_name"]]);
+                        print.setAttribute("test_name", result[key]["results"][kid]["test_name"]);
                         print.style.cursor = "pointer";
 
                         td4.appendChild(print);
 
                         new FastButton(print, function () {
 
-                            printLabel(this.getAttribute("accession_number"), this.getAttribute("state"), "Drawn");
+                            printLabel(this.getAttribute("accession_number"), this.getAttribute("state"), "Drawn", this.getAttribute("test_code"), this.getAttribute("test_name"));
 
                         });
 
@@ -333,7 +337,7 @@
 
         }
 
-        function printLabel(accession_number, currentState, state){
+        function printLabel(accession_number, currentState, state, code, name){
 
             if(accession_number == undefined || currentState == undefined || state == undefined){
 
@@ -343,7 +347,7 @@
 
             if(currentState.trim().toLocaleLowerCase() == "ordered"){
 
-                var url = "/update_state/" + accession_number + "?state=" + state;
+                var url = "/update_state/" + accession_number + "?state=" + state + "&test_code=" + code + "&test_name=" + name;
 
                 var httpRequest = new XMLHttpRequest();
                 httpRequest.onreadystatechange = function () {
@@ -351,7 +355,34 @@
                     if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
                             httpRequest.status == 304)) {
 
-                        console.log(httpRequest.responseText);
+                        var datetime = (new Date()).getDate() + "/" + months[(new Date()).getMonth()] + "/" + (new Date()).getFullYear() +
+                                " " + (new Date()).getHours() + ":" + (new Date()).getMinutes();
+
+                        var currentTests = "";
+
+                        var tests = testNames[accession_number];
+
+                        for (var i = 0; i < tests.length; i++) {
+
+                            var short = shortnames[tests[i]["testName"]];
+
+                            if (short == undefined || short.trim().length == 0) {
+
+                                short = tests[i]["testName"];
+
+                            }
+
+                            currentTests += short + ";"
+
+                        }
+
+                        if (currentTests.trim().length > 12) {
+
+                            currentTests = currentTests.substr(0, 12) + "...";
+
+                        }
+
+                        printBarcode(datetime, currentTests, accession_number);
 
                     }
 
@@ -362,36 +393,38 @@
                 } catch (e) {
                 }
 
-            }
+            } else {
 
-            var datetime = (new Date()).getDate() + "/" + months[(new Date()).getMonth()] + "/" + (new Date()).getFullYear() +
-                    " " + (new Date()).getHours() + ":" + (new Date()).getMinutes();
+                var datetime = (new Date()).getDate() + "/" + months[(new Date()).getMonth()] + "/" + (new Date()).getFullYear() +
+                        " " + (new Date()).getHours() + ":" + (new Date()).getMinutes();
 
-            var currentTests = "";
+                var currentTests = "";
 
-            var tests = testNames[accession_number];
+                var tests = testNames[accession_number];
 
-            for (var i = 0; i < tests.length; i++) {
+                for (var i = 0; i < tests.length; i++) {
 
-                var short = shortnames[tests[i]["testName"]];
+                    var short = shortnames[tests[i]["testName"]];
 
-                if (short == undefined || short.trim().length == 0) {
+                    if (short == undefined || short.trim().length == 0) {
 
-                    short = tests[i]["testName"];
+                        short = tests[i]["testName"];
+
+                    }
+
+                    currentTests += short + ";"
 
                 }
 
-                currentTests += short + ";"
+                if (currentTests.trim().length > 12) {
+
+                    currentTests = currentTests.substr(0, 12) + "...";
+
+                }
+
+                printBarcode(datetime, currentTests, accession_number);
 
             }
-
-            if(currentTests.trim().length > 12){
-
-                currentTests = currentTests.substr(0, 12) + "...";
-
-            }
-
-            printBarcode(datetime, currentTests, accession_number);
 
         }
 
