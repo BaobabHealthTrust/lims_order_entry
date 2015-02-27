@@ -90,6 +90,8 @@ class LabProcessingController < ApplicationController
 
     @list = JSON.parse(tests)
 
+    # raise @list.inspect
+
     render :layout => "lab"
 
   end
@@ -370,7 +372,7 @@ class LabProcessingController < ApplicationController
 
     obr = HL7::Message::Segment::OBR.new
     obr.set_id = "1"
-    obr.universal_service_id = "#{params[:test] rescue nil}^#{params[:test] rescue nil}^LOINC"
+    obr.universal_service_id = "#{params[:test_code] rescue nil}^#{params[:test] rescue nil}^LOINC"
     obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
     obr.relevant_clinical_info = "Rule out diagnosis"
     obr.ordering_provider = "439234^Moyo^Chris"
@@ -411,8 +413,12 @@ class LabProcessingController < ApplicationController
 
     # raise msg.to_s.inspect
 
-    result = RestClient.post("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
-                                 "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["test_result_path"]}", {:hl7 => msg.to_s})
+    # result = RestClient.post("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+    #                             "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["test_result_path"]}", {:hl7 => msg.to_s})
+
+    result = RestClient.post("#{CONFIG["lab_state_update_protocol"]}://#{CONFIG["lab_state_update_server"]}:" +
+                                 "#{CONFIG["lab_state_update_port"]}#{CONFIG["lab_state_update_path"]}",
+                             msg.to_s, {:content_type => 'application/text'})
 
     # raise result.inspect
 
@@ -424,6 +430,138 @@ class LabProcessingController < ApplicationController
 
   def save_state(params)
 
+    patient = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+                                            "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["patient_by_acc_num_path"]}#{params[:id]}")).first
+
+    group_tests = JSON.parse(RestClient.get("#{CONFIG["lab_repo_protocol"]}://#{CONFIG["lab_repo_server"]}:#{CONFIG["lab_repo_port"]}#{CONFIG["lab_get_spacific_labs_path"]}#{params[:id]}")) rescue []
+
+    # create a message
+    msg = HL7::Message.new
+
+    # create a MSH segment for our new message
+    msh = HL7::Message::Segment::MSH.new
+    msh.enc_chars = "^~\&"
+    msh.sending_facility = "KCH^2.16.840.1.113883.3.5986.2.15^ISO"
+    msh.recv_facility = "KCH^2.16.840.1.113883.3.5986.2.15^ISO"
+    msh.time = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+    msh.message_type = "ORU^R01^ORU_R01"
+    msh.message_control_id = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+    msh.processing_id = "T"
+    msh.version_id = "2.5.1"
+
+    msg << msh # add the MSH segment to the message
+
+    name = patient["name"].split(" ")
+
+    fname = name[0] rescue nil
+    mname = (name.length > 2 ? name[1] : "")
+    lname = (name.length > 2 ? name[2] : name[1])
+
+    pid = HL7::Message::Segment::PID.new
+    pid.set_id = "1"
+    pid.patient_id_list = patient["surrogateId"] rescue nil
+    pid.patient_name = "#{lname}^#{fname}^#{mname}"
+    pid.patient_dob = patient["dob"].to_date.strftime("%Y%m%d") rescue nil
+    pid.admin_sex = patient["sex"] rescue nil
+
+    msg << pid # add the PID segment to the message
+
+    pv1 = HL7::Message::Segment::PV1.new
+
+    msg << pv1 # add the PV1 segment to the message
+
+    orc = HL7::Message::Segment::ORC.new
+    orc.entered_by = "1^Super^User"
+    orc.enterers_location = "^^^^^^^^Ward 4B"
+    orc.ordering_facility_name = "KCH"
+
+    msg << orc # add the ORC segment to the message
+
+    tests = group_tests.first["orders"][params[:id]]["results"].keys # rescue nil
+
+    i = 0
+    tests.each do |test_code|
+
+      next if test_code.blank?
+
+      test_name = group_tests.first["orders"][params[:id]]["results"][test_code]["test_name"]
+
+      i += 1
+
+      obr = HL7::Message::Segment::OBR.new
+      obr.set_id = i
+      obr.universal_service_id = "#{test_code rescue nil}^#{test_name rescue nil}^LOINC"
+      obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+      obr.relevant_clinical_info = "Rule out diagnosis"
+      obr.ordering_provider = "439234^Moyo^Chris"
+
+      msg << obr # add the OBR segment to the message
+
+      tq1 = HL7::Message::Segment::TQ1.new
+      tq1.set_id = i
+
+      msg << tq1 # add the TQ1 segment to the message
+
+    end
+
+=begin
+    tq1 = HL7::Message::Segment::TQ1.new
+    tq1.set_id = "1"
+    tq1.priority = "R^Routine^HL70485"
+
+    msg << tq1 # add the TQ1 segment to the message
+
+    obr = HL7::Message::Segment::OBR.new
+    obr.set_id = "1"
+    obr.universal_service_id = "#{params[:test_code] rescue nil}^#{params[:test_name] rescue nil}"
+    obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+    obr.relevant_clinical_info = "Rule out diagnosis"
+    obr.ordering_provider = "439234^Moyo^Chris"
+    # obr.result_status = "#{params[:state]}"
+
+    msg << obr # add the OBR segment to the message
+=end
+
+    obx = HL7::Message::Segment::OBX.new
+    obx.set_id = "#{nil}"
+    obx.value_type = "#{nil}"
+    obx.observation_id = "#{nil}"
+    obx.observation_value = "#{nil}"
+    obx.units = "#{nil}"
+    obx.references_range = "#{nil}"
+    obx.observation_result_status = "#{nil}"
+    obx.observation_date = "#{nil}"
+    obx.responsible_observer = "#{nil}"
+    obx.analysis_date = "#{nil}"
+    obx.performing_organization_name = "#{nil}"
+    obx.performing_organization_address = "#{nil}"
+    obx.performing_organization_medical_director = "#{nil}"
+
+    msg << obx # add the OBR segment to the message
+
+    spm = HL7::Message::Segment::SPM.new
+    spm.set_id = "1"
+    spm.specimen_id = "#{params[:id]}"
+    spm.specimen_type = "#{params[:specimen] rescue nil}^#{params[:specimen] rescue nil}"
+
+    msg << spm # add the SPM segment to the message
+
+    nte = HL7::Message::Segment::NTE.new
+    nte.set_id = "1"
+    nte.source = "P"
+    nte.comment = "#{params[:state] rescue nil}"
+
+    msg << nte # add the NTE segment to the message
+
+    # raise msg.to_s.inspect
+
+    # raise "#{CONFIG["lab_state_update_protocol"]}://#{CONFIG["lab_state_update_server"]}:#{CONFIG["lab_state_update_port"]}#{CONFIG["lab_state_update_path"]}"
+
+    result = RestClient.post("#{CONFIG["lab_state_update_protocol"]}://#{CONFIG["lab_state_update_server"]}:" +
+                                 "#{CONFIG["lab_state_update_port"]}#{CONFIG["lab_state_update_path"]}",
+                             msg.to_s, {:content_type => 'application/text'})
+
+=begin
     patient = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
                                             "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["patient_by_acc_num_path"]}#{params[:id]}")).first
 
@@ -512,9 +650,13 @@ class LabProcessingController < ApplicationController
 
     # raise msg.to_s.inspect
 
-    result = RestClient.post("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
-                                 "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["test_result_path"]}", {:hl7 => msg.to_s})
+    # result = RestClient.post("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+    #                             "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["test_result_path"]}", {:hl7 => msg.to_s})
 
+    result = RestClient.post("#{CONFIG["lab_state_update_protocol"]}://#{CONFIG["lab_state_update_server"]}:" +
+                                 "#{CONFIG["lab_state_update_port"]}#{CONFIG["lab_state_update_path"]}",
+                             msg.to_s, {:content_type => 'application/text'})
+=end
     # raise result.inspect
 
   end
