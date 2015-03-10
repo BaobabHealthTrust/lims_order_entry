@@ -1283,7 +1283,7 @@
                 for (var s = 0; s < sampleContainers.length; s++) {
 
                     var containerImg = document.createElement("img");
-                    containerImg.setAttribute("src", containerTypes[sampleContainers[s]]);
+                    containerImg.setAttribute("src", (containerTypes[sampleContainers[s]] == undefined ? unknown : containerTypes[sampleContainers[s]]));
                     containerImg.height = "100";
                     containerImg.style.margin = "10px";
 

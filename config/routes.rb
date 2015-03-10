@@ -2,6 +2,12 @@ Rails.application.routes.draw do
 
   root 'order#index'
 
+  get "/check_test_state" => "lab_processing#check_test_state"
+
+  post "/check_sample_state" => "lab_processing#check_sample_state"
+
+  get 'lab' => "lab_processing#index"
+
   get "/update_state/:id" => "order#update_state"
 
   get "/get_labs/:id" => "order#get_labs"
@@ -12,7 +18,7 @@ Rails.application.routes.draw do
 
   get "/list_rejection_reasons" => "lab_processing#list_rejection_reasons"
 
-  get "/rejection_reason/:id" => "lab_processing#rejection_reason"
+  post "/rejection_reason" => "lab_processing#rejection_reason"
 
   post "/reject_sample" => "lab_processing#reject_sample"
 

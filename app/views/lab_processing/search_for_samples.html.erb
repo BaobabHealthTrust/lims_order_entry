@@ -1,4 +1,4 @@
-<%= render 'location_check' %>
+<%#= render 'location_check' %>
 
 <style>
 
@@ -47,7 +47,7 @@
 
                 var barcode = __$("barcode").value.trim().replace(/\$/, "");
 
-                window.location = url + barcode + "?location=" + currentLocation;
+                window.location = url + barcode + "?location=<%= @location[:dept] rescue nil %>";
 
                 return;
 

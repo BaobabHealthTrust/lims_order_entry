@@ -1,0 +1,254 @@
+<%= form_tag("/check_sample_state", :method => :post) do -%>
+
+    <table style="margin: auto; margin-top: 15px;" cellpadding="0" width="80%">
+      <tr>
+        <th align="left" style="background-color: #23538a; color: #fff; padding: 10px; font-size: 18px;">
+          Select test from the following to work with:
+        </th>
+      </tr>
+      <tr>
+        <td style="padding: 5px; padding-left: 1px;">
+
+          <div style="height: 400px; border: 1px solid #23538a; width: 100%; padding: 1px; overflow: auto;">
+
+            <ul style="list-style: none; padding-left: 0px; margin: 0px;">
+
+              <% i = 0 %>
+              <% @tests.each do |key, value| %>
+
+                  <% code, specimen, status = value.strip.split("|") %>
+
+                  <% if !status.blank? and status.strip.downcase.match(/rejected/) %>
+
+                      <li style="padding: 15px; border: 1px dotted #ccc; color: red; font-weight: normal; font-style: italic;
+                              background-color: <%= i % 2 > 0 ? "#eee" : "#fff" %>"
+                          tag="<%= i % 2 > 0 ? "odd" : "even" %>" test_name="<%= key %>" test_code="<%= code %>" specimen="<%= specimen %>">
+                        <%= key %>
+                      </li>
+
+                  <% else %>
+
+                      <li style="padding: 15px; border: 1px dotted #ccc; cursor: pointer; background-color: <%= i % 2 > 0 ? "#eee" : "#fff" %>"
+                          tag="<%= i % 2 > 0 ? "odd" : "even" %>" onmouseover="if(this.getAttribute('selected') == null){ this.style.backgroundColor = '#f89e62';}"
+                          onmouseout="if(this.getAttribute('selected') == null){ <%= i % 2 > 0 ? "this.style.backgroundColor = '#eee';" : "this.style.backgroundColor = '#fff';" %>}"
+                          test_name="<%= key %>" test_code="<%= code %>" specimen="<%= specimen %>" onclick="process(this);">
+                        <%= key %>
+                      </li>
+
+                  <% end %>
+
+                  <% i += 1 %>
+
+              <% end %>
+
+            </ul>
+
+          </div>
+
+        </td>
+      </tr>
+
+    </table>
+
+    <input type="hidden" id="test_name" name="test_name" value=""/>
+
+    <input type="hidden" id="test_code" name="test_code" value=""/>
+
+    <input type="hidden" id="specimen" name="specimen" value=""/>
+
+    <input type="hidden" id="state" name="state" value=""/>
+
+    <input type="hidden" id="barcode" name="barcode" value="<%= @barcode rescue nil %>"/>
+
+    <input type="hidden" id="location" name="location" value="<%= @location[:dept] rescue nil %>"/>
+
+<% end %>
+
+<table style="margin: auto; margin-top: 15px;" cellpadding="0" width="80%">
+  <tr>
+    <td align="center">
+      <button id="btnReject" class="button_gray" style="float: right; margin-right: 10px;">Reject Test</button>
+      <button id="btnProcess" class="button_gray" style="float: right; margin-right: 10px;">Start Test</button>
+    </td>
+  </tr>
+</table>
+
+<script>
+
+    var selected;
+
+    function __$(id) {
+        return document.getElementById(id);
+    }
+
+    function process(control) {
+
+        if (!control) {
+            return;
+        }
+
+        if (selected) {
+            if (selected.getAttribute('tag') == 'odd') {
+                selected.style.backgroundColor = '#eee';
+            } else {
+                selected.style.backgroundColor = '#fff';
+            }
+            selected.removeAttribute('selected');
+        }
+
+        selected = control;
+
+        selected.setAttribute('selected', true);
+
+        selected.style.backgroundColor = 'lightblue';
+
+        checkTestState("<%= @barcode rescue nil %>", control.getAttribute('test_name'), control);
+
+    }
+
+    function checkTestState(barcode, test_name, control) {
+
+        var url = "/check_test_state?barcode=" + barcode + "&test_name=" + test_name;
+
+        var httpRequest = new XMLHttpRequest();
+
+        httpRequest.onreadystatechange = function () {
+
+            if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
+                    httpRequest.status == 304)) {
+
+                var result = httpRequest.responseText;
+
+                if (__$("btnReject")) {
+
+                    __$("btnReject").className = "button_blue";
+
+                    __$("btnReject").onclick = function () {
+
+                        __$('test_name').value = control.getAttribute('test_name');
+
+                        __$('test_code').value = control.getAttribute('test_code');
+
+                        __$('specimen').value = control.getAttribute('specimen');
+
+                        __$('state').value = "TEST REJECTED";
+
+                        document.forms[0].action = "/rejection_reason";
+
+                        confirmAction("Do you really want to reject the selected test?", "document.forms[0].submit()");
+
+                    }
+
+                }
+
+                if (__$("btnProcess")) {
+
+                    __$("btnProcess").className = "button_green";
+
+                    if (result.trim().toLowerCase() == "unknown") {
+
+                        __$("btnProcess").innerHTML = "Start Test";
+
+                        __$("btnProcess").onclick = function () {
+
+                            __$('test_name').value = control.getAttribute('test_name');
+
+                            __$('test_code').value = control.getAttribute('test_code');
+
+                            __$('specimen').value = control.getAttribute('specimen');
+
+                            __$('state').value = "TESTING";
+
+                            document.forms[0].method = "post";
+
+                            document.forms[0].submit();
+
+                        }
+
+                    } else if (result.trim().toLowerCase() == "testing") {
+
+                        __$("btnProcess").innerHTML = "Enter Result";
+
+                        __$("btnProcess").onclick = function () {
+
+                            __$('test_name').value = control.getAttribute('test_name');
+
+                            __$('test_code').value = control.getAttribute('test_code');
+
+                            __$('specimen').value = control.getAttribute('specimen');
+
+                            __$('state').value = "TESTED";
+
+                            document.forms[0].method = "get";
+
+                            document.forms[0].action = "/enter_results/<%= @barcode rescue nil %>?test_name=" +
+                                    control.getAttribute('test_name') + "&test_code=" + control.getAttribute('test_code');
+
+                            document.forms[0].submit();
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        };
+        try {
+            httpRequest.open('GET', url, true);
+            httpRequest.send(null);
+        } catch (e) {
+        }
+
+    }
+
+    function checkButton() {
+        if (__$("btnNext") && __$("nav")) {
+
+            /*__$("btnNext").className = "button_gray";
+
+             __$("btnNext").onclick = function () {
+
+             if (__$("test_name").value.trim().length > 0 && __$("test_code").value.trim().length > 0) {
+
+             document.forms[0].submit();
+
+             }
+
+             }*/
+
+            __$("btnNext").style.display = "none";
+
+            if (__$("btnProcess")) {
+
+                __$("nav").appendChild(__$("btnProcess"));
+
+            }
+
+            if (__$("btnReject")) {
+
+                __$("nav").appendChild(__$("btnReject"));
+
+            }
+
+            if (__$('btnLogout')) {
+
+                __$('btnLogout').innerHTML = "Cancel";
+
+                __$('btnLogout').onclick = function () {
+                    window.location = "/lab/"
+                }
+
+            }
+
+        } else {
+
+            setTimeout("checkButton()", 100);
+
+        }
+    }
+
+    setTimeout("checkButton()", 100);
+
+</script>

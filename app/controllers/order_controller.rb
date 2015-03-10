@@ -237,7 +237,7 @@ class OrderController < ApplicationController
 
     orc = HL7::Message::Segment::ORC.new
     orc.entered_by = "1^Super^User"
-    orc.enterers_location = "^^^^^^^^MEDICINE"
+    orc.enterers_location = "^^^^^^^^WARD 4B"
     orc.ordering_facility_name = "KCH"
 
     msg << orc # add the ORC segment to the message
@@ -251,22 +251,66 @@ class OrderController < ApplicationController
 
       test_name, test_code, priority = test.split("|")
 
-      i += 1
+      panels = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+                                             "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["panel_tests_path"]}#{test_code}"))
 
-      obr = HL7::Message::Segment::OBR.new
-      obr.set_id = i
-      obr.universal_service_id = "#{test_code rescue nil}^#{test_name rescue nil}^LOINC"
-      obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
-      obr.relevant_clinical_info = "Rule out diagnosis"
-      obr.ordering_provider = "439234^Moyo^Chris"
+      if panels.length > 1
 
-      msg << obr # add the OBR segment to the message
+        i += 1
 
-      tq1 = HL7::Message::Segment::TQ1.new
-      tq1.set_id = i
-      tq1.priority = priority
+        obr = HL7::Message::Segment::OBR.new
+        obr.set_id = i
+        obr.universal_service_id = "#{test_code rescue nil}^#{test_name rescue nil}^LOINC"
+        obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+        obr.relevant_clinical_info = "Rule out diagnosis"
+        obr.ordering_provider = "439234^Moyo^Chris"
 
-      msg << tq1 # add the TQ1 segment to the message
+        msg << obr # add the OBR segment to the message
+
+        tq1 = HL7::Message::Segment::TQ1.new
+        tq1.set_id = i
+        tq1.priority = priority
+
+        msg << tq1 # add the TQ1 segment to the message
+
+        nte = HL7::Message::Segment::NTE.new
+        nte.set_id = i
+        nte.source = "P"
+        nte.comment = "#{params[:status] rescue nil}^parent"
+
+        msg << nte # add the NTE segment to the message
+
+      end
+
+      panels.each do |panel|
+
+        id, name, code, short = panel.strip.split("|")
+
+        i += 1
+
+        obr = HL7::Message::Segment::OBR.new
+        obr.set_id = i
+        obr.universal_service_id = "#{code rescue nil}^#{name rescue nil}^LOINC"
+        obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+        obr.relevant_clinical_info = "Rule out diagnosis"
+        obr.ordering_provider = "439234^Moyo^Chris"
+
+        msg << obr # add the OBR segment to the message
+
+        tq1 = HL7::Message::Segment::TQ1.new
+        tq1.set_id = i
+        tq1.priority = priority
+
+        msg << tq1 # add the TQ1 segment to the message
+
+        nte = HL7::Message::Segment::NTE.new
+        nte.set_id = i
+        nte.source = "P"
+        nte.comment = "#{params[:status] rescue nil}^child^#{test_code}"
+
+        msg << nte # add the NTE segment to the message
+
+      end
 
     end
 
@@ -276,13 +320,6 @@ class OrderController < ApplicationController
     spm.specimen_type = "#{params[:specimen] rescue nil}^#{params[:specimen_code] rescue nil}"
 
     msg << spm # add the SPM segment to the message
-
-    nte = HL7::Message::Segment::NTE.new
-    nte.set_id = "1"
-    nte.source = "P"
-    nte.comment = "#{params[:status] rescue nil}"
-
-    msg << nte # add the NTE segment to the message
 
     # raise msg.to_s.inspect
 
@@ -391,6 +428,30 @@ class OrderController < ApplicationController
 
       msg << tq1 # add the TQ1 segment to the message
 
+      obx = HL7::Message::Segment::OBX.new
+      obx.set_id = i
+      obx.value_type = "#{nil}"
+      obx.observation_id = "#{nil}"
+      obx.observation_value = "#{nil}"
+      obx.units = "#{nil}"
+      obx.references_range = "#{nil}"
+      obx.observation_result_status = "#{nil}"
+      obx.observation_date = "#{nil}"
+      obx.responsible_observer = "#{nil}"
+      obx.analysis_date = "#{nil}"
+      obx.performing_organization_name = "#{nil}"
+      obx.performing_organization_address = "#{nil}"
+      obx.performing_organization_medical_director = "#{nil}"
+
+      msg << obx # add the OBR segment to the message
+
+      nte = HL7::Message::Segment::NTE.new
+      nte.set_id = i
+      nte.source = "P"
+      nte.comment = "#{params[:state] rescue nil}"
+
+      msg << nte # add the NTE segment to the message
+
     end
 
 =begin
@@ -411,36 +472,12 @@ class OrderController < ApplicationController
     msg << obr # add the OBR segment to the message
 =end
 
-    obx = HL7::Message::Segment::OBX.new
-    obx.set_id = "#{nil}"
-    obx.value_type = "#{nil}"
-    obx.observation_id = "#{nil}"
-    obx.observation_value = "#{nil}"
-    obx.units = "#{nil}"
-    obx.references_range = "#{nil}"
-    obx.observation_result_status = "#{nil}"
-    obx.observation_date = "#{nil}"
-    obx.responsible_observer = "#{nil}"
-    obx.analysis_date = "#{nil}"
-    obx.performing_organization_name = "#{nil}"
-    obx.performing_organization_address = "#{nil}"
-    obx.performing_organization_medical_director = "#{nil}"
-
-    msg << obx # add the OBR segment to the message
-
     spm = HL7::Message::Segment::SPM.new
     spm.set_id = "1"
     spm.specimen_id = "#{params[:id]}"
     spm.specimen_type = "#{params[:specimen] rescue nil}^#{params[:specimen] rescue nil}"
 
     msg << spm # add the SPM segment to the message
-
-    nte = HL7::Message::Segment::NTE.new
-    nte.set_id = "1"
-    nte.source = "P"
-    nte.comment = "#{params[:state] rescue nil}"
-
-    msg << nte # add the NTE segment to the message
 
     # raise msg.to_s.inspect
 

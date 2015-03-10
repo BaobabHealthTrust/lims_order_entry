@@ -11,7 +11,7 @@
 <table width="100%" cellspacing="0">
   <tr>
     <th colspan="2" style="background-color: #23538a; color: #fff; padding: 5px;">
-      Specify Reason For Sample Rejection
+      Specify Reason For <%= @state.strip.downcase.match(/test/) ? "Test" : "Sample" %> Rejection
     </th>
   </tr>
   <tr>
@@ -38,9 +38,17 @@
 
 <%= form_tag("/reject_sample", :method => :post) do -%>
 
-    <%= hidden_field_tag(:id, @sample) %>
+    <%= hidden_field_tag(:barcode, @barcode) %>
 
     <%= hidden_field_tag(:location, @dept) %>
+
+    <%= hidden_field_tag(:test_name, @test_name) %>
+
+    <%= hidden_field_tag(:test_code, @test_code) %>
+
+    <%= hidden_field_tag(:specimen, @specimen) %>
+
+    <%= hidden_field_tag(:state, @state) %>
 
     <%= hidden_field_tag(:reason, nil) %>
 
@@ -56,13 +64,15 @@
 
         if (document.getElementById("btnNext")) {
 
+            document.getElementById("btnNext").className = "button_gray";
+
             document.getElementById("btnNext").innerHTML = "Confirm Rejection";
 
             document.getElementById("btnNext").onclick = function () {
 
                 if(Object.keys(selectedReasons).length == 0){
 
-                    if(typeof(Android) != "undefined"){
+                    /*if(typeof(Android) != "undefined"){
 
                         Android.showMsg("Please select at least a reason for rejection!");
 
@@ -70,7 +80,7 @@
 
                         alert("Please select at least a reason for rejection!");
 
-                    }
+                    }*/
 
                     return;
                 }
@@ -195,15 +205,39 @@
 
                 new FastButton(li, function () {
 
-                    if (this.style.backgroundColor == "lightblue") {
+                    if (this.getAttribute("selected") != null) {
 
                         this.style.backgroundColor = (this.getAttribute("tag") == "odd" ? "#eee" : "");
 
+                        this.removeAttribute("selected");
+
+                        delete selectedReasons[this.getAttribute("reason")];
+
+                        if(Object.keys(selectedReasons).length <= 0){
+
+                            if (document.getElementById("btnNext")) {
+
+                                document.getElementById("btnNext").className = "button_gray";
+
+                            }
+
+                        }
+
+                    } else {
+
+                        this.setAttribute("selected", true);
+
+                        this.style.backgroundColor = "lightblue";
+
+                        selectedReasons[this.getAttribute("reason")] = true;
+
+                        if (document.getElementById("btnNext")) {
+
+                            document.getElementById("btnNext").className = "button_green";
+
+                        }
+
                     }
-
-                    this.style.backgroundColor = "lightblue";
-
-                    selectedReasons[this.getAttribute("reason")] = true;
 
                 });
 

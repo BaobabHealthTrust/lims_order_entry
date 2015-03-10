@@ -1,114 +1,330 @@
-<%= render 'location_check' %>
+<%#= render 'location_check' %>
 
 <%= form_tag("/save_result", :method => :post) do -%>
 
-    <%= hidden_field_tag(:id, @sample) %>
+    <input type="hidden" name="barcode" style="width: 96%; padding: 10px;" value="<%= @barcode %>"/>
 
-    <%= hidden_field_tag(:location, @dept) %>
+    <table style="margin: auto; margin-top: 10px; width: 100%;" cellpadding="5">
+    <tr>
+      <th colspan="3" align="left" style="font-size: 18px; border-bottom: 2px solid #333;" colspan="3">
+        <%= @test_name rescue nil %>
+      </th>
+    </tr>
 
-    <%= hidden_field_tag(:result, nil) %>
+    <% if @list.keys.length == 1 %>
 
-    <% @list.each do |test, measures| %>
+        <!--tr>
+          <th colspan="3" align="left" style="padding-left: 20px;">
+            Result
+          </th>
+        </tr-->
 
-        <%= hidden_field_tag(:test, test.split("|")[0]) %>
+        <tr>
+          <td colspan="3" style="padding-left: 20px;">
+            <div style="border-top: 1px dotted #eee; border-bottom: 1px dotted #eee; height: 500px; overflow-x: hidden; overflow-y: auto; padding-left: 20px;">
 
-        <%= hidden_field_tag(:test_id, test.split("|")[1]) %>
+              <table width="100%" cellpadding="10px">
 
-        <%= hidden_field_tag(:specimen, test.split("|")[2]) %>
+                <% @list.each do |key, values| %>
 
-        <%= hidden_field_tag(:test_code, test.split("|")[3]) %>
+                    <% id, name, code = key.split("|") %>
 
-        <table style="margin: auto; margin-top: 10px; width: 100%;" cellpadding="5">
-          <tr>
-            <th align="left" style="font-size: 18px; border-bottom: 2px solid #333;" colspan="3">
-              <%= test.split("|")[0] %>
-            </th>
-          </tr>
-          <tr>
-            <th align="left" style="padding-left: 20px;">
-              Result
-            </th>
-            <!--td>
-              &nbsp;
-            </td>
-            <th align="left">
-              Remark
-            </th-->
-          </tr>
+                    <tr>
+                      <td>
+                        &nbsp;
+                      </td>
+                      <th colspan="2" align="left" style="border-bottom: 1px solid #333;">
+                        <%= name %> Result
+                      </th>
+                    </tr>
 
-          <% measures.each do |measure| %>
+                    <% if values.length > 1 %>
 
-              <% if !measure["range"].strip.blank? %>
+                        <tr>
+                          <td>
+                            &nbsp;
+                          </td>
+                          <td align="right">
+                            Units:
+                          </td>
+                          <td>
+                            <select style="width: 100%; padding: 10px;" onchange="__$('lbl' + this.getAttribute('tag')).innerHTML = this.value;" tag="<%= id %>">
+                              <% values.each do |value| %>
 
-                  <tr>
+                                  <option><%= value["name"] %></option>
 
-                    <% if measure["range"].strip.match(/\//) %>
+                              <% end %>
 
-                        <% elements = measure["range"].strip.split("/") %>
-
-                        <td style="padding-left: 40px; padding-right: 40px;">
-                          <ul style="list-style: none; padding-left: 0px; border: 1px solid #ccc; width: 100%; margin: 0px; height: 200px; overflow: auto;">
-
-                            <% i = 0 %>
-
-                            <% elements.each do |element| %>
-
-                                <li id="<%= "#{test}_#{element}" %>" style="border: 1px dotted #ccc; padding: 10px; cursor: pointer; margin: 2px; font-size: 18px;
-                                        background-color: <%= i % 2 > 0 ? '#eee' : '' %>" cat="<%= i % 2 > 0 ? 'odd' : 'even' %>" tag="<%= test %>" ><%= element %></li>
-
-                                <% i += 1 %>
-
-                                <script>
-
-                                    new FastButton(document.getElementById("<%= "#{test}_#{element}" %>"), function () {
-                                        if(selectedControls[this.getAttribute('tag')]){
-                                            selectedControls[this.getAttribute('tag')].style.backgroundColor = (selectedControls[this.getAttribute('tag')].getAttribute('cat') == 'odd' ? '#eee' : '');
-                                        }; this.style.backgroundColor = 'lightblue';
-                                        selectedControls[this.getAttribute('tag')] = this;
-                                        selectedResult[this.getAttribute('tag')] = this.innerHTML.trim();
-                                    });
-
-                                </script>
-
-                            <% end %>
-
-                          </ul>
-                        </td>
-
-                    <% else %>
+                            </select>
+                          </td>
+                        </tr>
 
                     <% end %>
 
-                    <!--td>
-                      &nbsp;
-                    </td>
-                    <td style="padding-left: 40px; padding-right: 40px; width: 50%;">
-                      <textarea id="remark" name="remark" style="width: 100%; height: 200px;"></textarea>
+                    <tr>
+                      <td>
+                        &nbsp;
+                      </td>
+                      <td id="lbl<%= id %>" align="right" style="vertical-align: top; padding-top: 20px;">
+                        <%= values[0]["name"] rescue "Result" %>:
+                      </td>
+                      <td>
 
-                      <script>
+                        <% if (values[0]["type"] rescue "freetext").downcase.strip == "list" %>
 
-                          new FastButton(document.getElementById("remark"), function () {
-                              if(typeof(Android) != "undefined"){
+                            <ul style="list-style: none; padding-left: 0px; border: 1px solid #ccc; width: 100%; margin: 0px; height: 200px; overflow: auto;">
 
-                                  Android.showInputDialog("Enter remark");
+                              <% i = 0 %>
 
-                                  Android.showMsg(Android.mString);
-                              }
-                          });
+                              <% values[0]["options"].each do |measure| %>
 
-                      </script>
+                                  <li id="<%= "#{@test_name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>"
+                                      style="border: 1px dotted #ccc; padding: 10px; cursor: pointer; margin: 2px; font-size: 18px;
+                                              background-color: <%= i % 2 > 0 ? '#eee' : '' %>" cat="<%= i % 2 > 0 ? 'odd' : 'even' %>"
+                                      tag="<%= name %>" target="test_result_<%= @test_code.strip.gsub(/\-/, "_") %>"><%= measure %></li>
 
-                    </td-->
+                                  <% i += 1 %>
 
-                  </tr>
+                                  <script>
 
-              <% end %>
+                                      new FastButton(document.getElementById("<%= "#{@test_name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>"), function () {
+                                          if (selectedControls[this.getAttribute('tag')]) {
+                                              selectedControls[this.getAttribute('tag')].style.backgroundColor = (selectedControls[this.getAttribute('tag')].getAttribute('cat') == 'odd' ? '#eee' : '');
+                                          }
+                                          ;
+                                          this.style.backgroundColor = 'lightblue';
+                                          selectedControls[this.getAttribute('tag')] = this;
 
-          <% end %>
+                                          if (__$(this.getAttribute("target"))) {
 
-        </table>
+                                              __$(this.getAttribute("target")).value = this.innerHTML.trim();
+
+                                              selectedResult[this.getAttribute('tag')] = this.innerHTML.trim();
+
+                                          }
+
+                                      });
+
+                                  </script>
+
+                              <% end %>
+
+                            </ul>
+
+                            <input type="hidden" id="test_result_<%= @test_code.strip.gsub(/\-/, "_") %>"
+                                   name="test_result[<%= @test_code %>]" style="width: 96%; padding: 10px;"
+                                   field_type="<%= values[0]["type"] rescue "freetext" %>" value=""/>
+
+                        <% else %>
+
+                            <input type="text" id="test_result_<%= @test_code.strip.gsub(/\-/, "_") %>"
+                                   name="test_result[<%= @test_code %>]" style="width: 96%; padding: 10px;" lbl="<%= id %>"
+                                   field_type="<%= values[0]["type"] rescue "freetext" %>" value="" onclick="captureFreetext(this, true, <%= ((values[0]["type"] rescue "freetext") == "numeric" ? true : false) %>)"/>
+
+                        <% end %>
+
+                        <input type="hidden" name="test_name[<%= @test_code %>]" style="width: 96%; padding: 10px;" value="<%= @test_name %>"/>
+                        <input type="hidden" name="test_code[<%= @test_code %>]" style="width: 96%; padding: 10px;" value="<%= @test_code %>"/>
+                        <input type="hidden" name="test_barcode[<%= @test_code %>]" style="width: 96%; padding: 10px;" value="<%= @barcode %>"/>
+                        <input type="hidden" name="test_dept[<%= @test_code %>]" style="width: 96%; padding: 10px;" value="<%= @dept %>"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        &nbsp;
+                      </td>
+                      <td align="right" style="vertical-align: top; padding-top: 20px;">
+                        Remarks:
+                      </td>
+                      <td>
+                        <textarea style="width: 96%; height: 100px; padding: 10px;" id="remark_<%= @test_code.strip.gsub(/\-/, "_") %>"
+                                  name="test_remark[<%= @test_code %>]" onclick="captureFreetext(this)"></textarea>
+                      </td>
+                    </tr>
+
+                <% end %>
+
+              </table>
+
+            </div>
+          </td>
+        </tr>
+
+    <% else %>
+
+        <tr>
+          <th colspan="3" align="left" style="padding-left: 20px;">
+            Results
+          </th>
+        </tr>
+
+        <tr>
+          <td colspan="3" style="padding-left: 20px;">
+            <div style="border-top: 1px dotted #eee; border-bottom: 1px dotted #eee; height: 500px; overflow-x: hidden; overflow-y: auto; padding-left: 20px;">
+
+              <table width="100%" cellpadding="10px">
+
+                <script>
+                    <!--
+
+                    var selections = {};
+
+                    //-->
+                </script>
+
+                <% @list.each do |key, values| %>
+
+                    <% id, name, code = key.split("|") %>
+
+                    <script>
+                        <!--
+
+                        selections["<%= id %>"] = {};
+
+                        //-->
+                    </script>
+
+                    <tr>
+                      <td>
+                        &nbsp;
+                      </td>
+                      <th colspan="2" align="left" style="border-bottom: 1px solid #333;">
+                        <%= name %> Result
+                      </th>
+                    </tr>
+
+                    <% if values.length > 1 %>
+
+                        <tr>
+                          <td>
+                            &nbsp;
+                          </td>
+                          <td align="right">
+                            Units:
+                          </td>
+                          <td>
+                            <select style="width: 100%; padding: 10px;" onchange="if(__$('test_result_<%= code.strip.gsub(/\-/, "_") %>')){
+                                    __$('test_result_<%= code.strip.gsub(/\-/, "_") %>').setAttribute('units', this.value);
+                                    var num = __$('test_result_<%= code.strip.gsub(/\-/, "_") %>').value.trim().match(/^\d+/);
+                                    if(num != null){
+                                        __$('test_result_<%= code.strip.gsub(/\-/, "_") %>').value = num[0] + ' ' + this.value;
+                                    }
+                                    __$('test_units_<%= code.strip.gsub(/\-/, "_") %>').value = this.value;
+                                }; __$('lbl' + this.getAttribute('tag')).innerHTML = selections[this.getAttribute('tag')][this.value];" tag="<%= id %>">
+
+                              <% values.each do |value| %>
+
+                                  <script>
+                                      <!--
+
+                                      selections["<%= id %>"]["<%= value["unit"] %>"] = "<%= value["name"] %>";
+
+                                      //-->
+                                  </script>
+
+                                  <option value="<%= value["unit"] rescue nil %>"><%= value["name"] %></option>
+
+                              <% end %>
+
+                            </select>
+                          </td>
+                        </tr>
+
+                    <% end %>
+
+                    <tr>
+                      <td>
+                        &nbsp;
+                      </td>
+                      <td id="lbl<%= id %>" align="right" style="vertical-align: top; padding-top: 20px;">
+                        <%= values[0]["name"] rescue "Result" %>:
+                      </td>
+                      <td>
+
+                        <% if (values[0]["type"] rescue "freetext").downcase.strip == "list" %>
+
+                            <ul style="list-style: none; padding-left: 0px; border: 1px solid #ccc; width: 100%; margin: 0px; height: 200px; overflow: auto;">
+
+                              <% i = 0 %>
+
+                              <% values[0]["options"].each do |measure| %>
+
+                                  <li id="<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>"
+                                      style="border: 1px dotted #ccc; padding: 10px; cursor: pointer; margin: 2px; font-size: 18px;
+                                              background-color: <%= i % 2 > 0 ? '#eee' : '' %>" cat="<%= i % 2 > 0 ? 'odd' : 'even' %>"
+                                      tag="<%= name %>" target="test_result_<%= code.strip.gsub(/\-/, "_") %>"><%= measure %></li>
+
+                                  <% i += 1 %>
+
+                                  <script>
+
+                                      new FastButton(document.getElementById("<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>"), function () {
+                                          if (selectedControls[this.getAttribute('tag')]) {
+                                              selectedControls[this.getAttribute('tag')].style.backgroundColor = (selectedControls[this.getAttribute('tag')].getAttribute('cat') == 'odd' ? '#eee' : '');
+                                          }
+                                          ;
+                                          this.style.backgroundColor = 'lightblue';
+                                          selectedControls[this.getAttribute('tag')] = this;
+
+                                          if (__$(this.getAttribute("target"))) {
+
+                                              __$(this.getAttribute("target")).value = this.innerHTML.trim();
+
+                                              selectedResult[this.getAttribute('tag')] = this.innerHTML.trim();
+
+                                          }
+
+                                      });
+
+                                  </script>
+
+                              <% end %>
+
+                            </ul>
+
+                            <input type="hidden" id="test_result_<%= code.strip.gsub(/\-/, "_") %>"
+                                   name="test_result[<%= code %>]" style="width: 96%; padding: 10px;"
+                                   field_type="<%= values[0]["type"] rescue "freetext" %>" value=""/>
+
+                        <% else %>
+
+                            <input type="text" name="test_result[<%= code %>]" style="width: 96%; padding: 10px;"
+                                   id="test_result_<%= code.strip.gsub(/\-/, "_") %>"
+                                   field_type="<%= values[0]["type"] rescue "freetext" %>" value="" units="<%= values[0]["unit"] rescue nil %>"
+                                   onclick="captureFreetext(this, true, <%= ((values[0]["type"] rescue "freetext") == "numeric" ? true : false) %>)"/>
+
+                        <% end %>
+
+                        <input type="hidden" name="test_name[<%= code %>]" style="width: 96%; padding: 10px;" value="<%= name %>"/>
+                        <input type="hidden" name="test_code[<%= code %>]" style="width: 96%; padding: 10px;" value="<%= code %>"/>
+                        <input type="hidden" name="test_barcode[<%= code %>]" style="width: 96%; padding: 10px;" value="<%= @barcode %>"/>
+                        <input type="hidden" id="test_units_<%= code.strip.gsub(/\-/, "_") %>" name="test_units[<%= code %>]" style="width: 96%; padding: 10px;" value=""/>
+                        <input type="hidden" id="test_range_<%= code.strip.gsub(/\-/, "_") %>" name="test_range[<%= code %>]" style="width: 96%; padding: 10px;" value=""/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        &nbsp;
+                      </td>
+                      <td align="right" style="vertical-align: top; padding-top: 20px;">
+                        Remarks:
+                      </td>
+                      <td>
+                        <textarea style="width: 96%; height: 100px; padding: 10px;" id="remark_<%= code.strip.gsub(/\-/, "_") %>" name="test_remark[<%= code %>]" onclick="captureFreetext(this)"></textarea>
+                      </td>
+                    </tr>
+
+                <% end %>
+
+              </table>
+
+            </div>
+          </td>
+        </tr>
 
     <% end %>
+
+    </table>
 
 <% end %>
 
@@ -117,6 +333,10 @@
     var selectedControls = {};
     var selectedResult = {};
 
+    function __$(id) {
+        return document.getElementById(id);
+    }
+
     function changeLabels() {
 
         if (document.getElementById("btnNext")) {
@@ -124,27 +344,6 @@
             document.getElementById("btnNext").innerHTML = "Save Result";
 
             document.getElementById("btnNext").onclick = function () {
-
-                if(Object.keys(selectedResult).length == 0){
-
-                    if(typeof(Android) != "undefined"){
-
-                        Android.showMsg("Please enter a valid result first!");
-
-                    } else {
-
-                        alert("Please enter a valid result first!");
-
-                    }
-
-                    return;
-                }
-
-                if(__$("result")){
-
-                    __$("result").value = selectedResult[Object.keys(selectedResult)[0]].trim();
-
-                }
 
                 document.forms[0].submit();
 

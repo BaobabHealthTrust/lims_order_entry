@@ -431,7 +431,7 @@
     </tr>
     <tr>
       <td id="location" style="font-size: 11px; vertical-align: top; text-align: left; padding-left: 3px;">
-
+        <%= (!@location.blank? ? "#{@location[:dept] rescue nil}#{(!(@location[:dept] rescue nil).blank? ? ":" : "")}#{@location[:bench] rescue nil}" : "") %>
       </td>
     </tr>
   </table>
@@ -475,6 +475,8 @@
 
     var overwriteNumber = true;
 
+    var globalControl;
+
     function __$(id) {
         return document.getElementById(id);
     }
@@ -494,7 +496,14 @@
         return [w, h, t, l];
     }
 
-    function showKeyboard(ctrl, container, disabled, numbers, caps) {
+    function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
+
+        if(!__$(container_id)){
+            return;
+        }
+
+        var container = __$(container_id);
+
         if (__$('popupkeyboard') && numbers == undefined) {
 
             container.removeChild(__$('popupkeyboard'));
@@ -504,20 +513,20 @@
             if (ctrl == undefined || container == undefined)
                 return;
 
-            container.innerHTML = "";
-
             if (__$('popupkeyboard')) {
-                document.body.removeChild(__$('popupkeyboard'));
+                // container.removeChild(__$('popupkeyboard'));
             }
 
-            if (!__$("main")) {
+            container.innerHTML = "";
+
+            /*if (!__$("main")) {
                 var main = document.createElement("div");
                 main.id = "main";
 
                 container.appendChild(main);
-            }
+            }*/
 
-            target = ctrl;
+            var target = ctrl;
 
             var pos = checkCtrl(ctrl);
 
@@ -535,7 +544,7 @@
             div.id = 'popupkeyboard';
             div.style.margin = 'auto';
             div.style.borderRadius = '10px';
-            div.style.backgroundColor = 'rgba(255,255,255,0.8)';
+            div.style.backgroundColor = 'rgba(255,255,255,1.0)';
 
             container.appendChild(div);
 
@@ -547,7 +556,7 @@
                     [1, 2, 3, ':'],
                     [4, 5, 6, '/'],
                     [7, 8, 9, '.'],
-                    ['&larr;', 0, '', 'abc']
+                    ['&larr;', 0, '', 'abc', "Done"]
                 ];
 
             } else {
@@ -558,7 +567,7 @@
                         ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
                         ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
                         ['', "Z", "X", "C", "V", "B", "N", "M", '', "CAP"],
-                        ['', '&nbsp;', '&larr;', ":", ".", "/", "num", "abc"]
+                        ['', '&nbsp;', '&larr;', ":", ".", "/", "num", "abc", "Done"]
                     ];
 
                 } else {
@@ -567,7 +576,7 @@
                         ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
                         ["J", "K", "L", "M", "N", "O", "P", "Q", "R"],
                         ["S", "T", "U", "V", "W", "X", "Y", "Z", "CAP"],
-                        ['', '&nbsp;', '&larr;', ":", ".", "/", "num", "qwe"]
+                        ['', '&nbsp;', '&larr;', ":", ".", "/", "num", "qwe", "Done"]
                     ];
 
                 }
@@ -610,6 +619,7 @@
                     button.style.minHeight = '40px';
                     button.style.margin = '2px';
                     button.style.fontSize = "24px";
+                    button.setAttribute("parent", container.id);
 
                     button.id = keys[i][j];
 
@@ -623,7 +633,13 @@
 
                     if (keys[i][j] == "hide") {
 
-                        button.style.fontSize = "0.9em";
+                        button.style.fontSize = "20px";
+                        button.style.padding = "18px";
+
+                    } else if (keys[i][j] == "Done") {
+
+                        button.style.fontSize = "20px";
+                        button.style.padding = "18px";
 
                     }
 
@@ -642,7 +658,7 @@
                     } else {
                         button.setAttribute('class', 'button_blue');
 
-                        button.onclick = function () {
+                        new FastButton(button, function () {
 
                             if (this.innerHTML.trim().charCodeAt(0) == 8592) {
                                 if (target) {
@@ -653,7 +669,7 @@
 
                                 currentKeysNumeric = true;
 
-                                showKeyboard(__$(target.id), disabled, currentKeysNumeric, currentCaseUpper);
+                                showKeyboard(__$(target.id), this.getAttribute("parent"), disabled, currentKeysNumeric, currentCaseUpper);
 
                             } else if (this.innerHTML.trim() == 'abc') {
 
@@ -661,7 +677,7 @@
 
                                 currentKeysNumeric = false;
 
-                                showKeyboard(__$(target.id), disabled, currentKeysNumeric, currentCaseUpper);
+                                showKeyboard(__$(target.id), this.getAttribute("parent"), disabled, currentKeysNumeric, currentCaseUpper);
 
                             } else if (this.innerHTML.trim() == 'qwe') {
 
@@ -669,7 +685,7 @@
 
                                 currentKeysNumeric = false;
 
-                                showKeyboard(__$(target.id), disabled, currentKeysNumeric, currentCaseUpper);
+                                showKeyboard(__$(target.id), this.getAttribute("parent"), disabled, currentKeysNumeric, currentCaseUpper);
 
                             } else if (this.innerHTML.trim() == '?') {
 
@@ -705,6 +721,14 @@
                             } else if (this.innerHTML.trim() == '&nbsp;') {
 
                                 target.value += " ";
+
+                            } else if (this.innerHTML.trim() == 'Done') {
+
+                                globalControl.value = target.value.trim() + (attachUnits && target.value.trim().length > 0 ? " " + currentUnits : "");
+
+                                captureFreetext(target);
+
+                                return;
 
                             } else {
 
@@ -754,7 +778,7 @@
                                 __$('.').setAttribute('class', 'button_blue');
                             }
 
-                        }
+                        });
                     }
 
 
@@ -769,54 +793,147 @@
                 }
             }
 
-            if (__$("popupkeyboard")) {
+        }
+    }
 
-                // [w, h, t, l]
-                var kpos = checkCtrl(__$("popupkeyboard"));
-                var w = window.innerWidth;
-                var h = window.innerHeight;
+    function confirmAction(msg, action) {
 
-                if (kpos[0] + kpos[3] > w) {
+        if (typeof(Android) != "undefined") {
 
-                    __$("popupkeyboard").style.left = (w - kpos[0] - 10) + "px";
+            Android.confirmAction(msg, action);
 
-                }
+        } else {
 
-                if (kpos[1] + kpos[2] > h) {
+            if (confirm(msg)) {
 
-                    __$("popupkeyboard").style.top = (pos[2] - kpos[1] - 2) + "px";
-
-                }
+                eval(action);
 
             }
 
         }
+
     }
 
+    function showMsg(msg) {
+
+        if (typeof(Android) != "undefined") {
+
+            Android.showMsg(msg);
+
+        } else {
+
+            alert(msg);
+
+        }
+
+    }
+
+    var attachUnits = false;
+
+    var currentUnits = "";
+
+    function captureFreetext(targetControl, addUnits, numeric){
+
+        if(__$("target")){
+
+            document.body.removeChild(__$("target"));
+
+        } else {
+
+            if(addUnits == undefined){
+
+                addUnits = false;
+
+            }
+
+            attachUnits = addUnits;
+
+            globalControl = targetControl;
+
+            currentUnits = globalControl.getAttribute("units");
+
+            if(currentUnits == null){
+
+                currentUnits = "";
+
+            }
+
+            var myString = (attachUnits ? targetControl.value.trim().replace(currentUnits, "").trim() : targetControl.value.trim());
+
+            var divTarget = document.createElement("div");
+            divTarget.id = "target";
+            divTarget.style.position = "absolute";
+            divTarget.style.left = "0px";
+            divTarget.style.top = "0px";
+            divTarget.style.height = "100%";
+            divTarget.style.width = "100%";
+            divTarget.style.backgroundColor = "rgba(0,0,0,0.8)";
+            divTarget.style.padding = "10px";
+
+            document.body.appendChild(divTarget);
+
+            var table = document.createElement("table");
+            table.id = "myTable";
+            table.style.margin = "auto";
+
+            divTarget.appendChild(table);
+
+            var tbody = document.createElement("tbody");
+
+            table.appendChild(tbody);
+
+            var tr1 = document.createElement("tr");
+
+            tbody.appendChild(tr1);
+
+            var tr2 = document.createElement("tr");
+
+            tbody.appendChild(tr2);
+
+            var td1 = document.createElement("td");
+
+            tr1.appendChild(td1);
+
+            var td2 = document.createElement("td");
+
+            tr2.appendChild(td2);
+
+            var inDiv = document.createElement("div");
+            inDiv.style.height = "300px";
+            inDiv.style.width = "100%";
+
+            td1.appendChild(inDiv);
+
+            var keysDiv = document.createElement("div");
+            keysDiv.id = "keysDiv";
+            keysDiv.style.width = "100%";
+
+            td2.appendChild(keysDiv);
+
+            var textArea = document.createElement("textarea");
+            textArea.id = "textArea";
+            textArea.style.width = "96%";
+            textArea.style.height = "90%";
+            textArea.style.padding = "10px";
+            textArea.style.fontSize = "24px";
+
+            textArea.value = myString;
+
+            inDiv.appendChild(textArea);
+
+            showKeyboard(textArea, "keysDiv", undefined, numeric);
+
+        }
+
+    }
 
     <% if !flash[:error].blank? %>
 
-    if (typeof(Android) != "undefined") {
-
-        Android.showMsg("ERROR: <%= flash[:error] %>");
-
-    } else {
-
-        alert("ERROR: <%= flash[:error] %>");
-
-    }
+    showMsg("ERROR: <%= flash[:error] %>");
 
     <% elsif !flash[:notice].blank? %>
 
-    if (typeof(Android) != "undefined") {
-
-        Android.showMsg("INFO: <%= flash[:notice] %>");
-
-    } else {
-
-        alert("INFO: <%= flash[:notice] %>");
-
-    }
+    showMsg("INFO: <%= flash[:notice] %>");
 
     <% end %>
 
