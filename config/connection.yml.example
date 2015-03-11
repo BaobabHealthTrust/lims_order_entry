@@ -27,6 +27,16 @@ default: &default
   lab_state_update_server: localhost
   lab_state_update_port: 3004
   lab_state_update_path: /update_state/
+  user_management_protocol: http
+  user_management_server: localhost
+  user_management_port: 3009
+  user_management_login: /remote_login/
+  user_management_logout: /remote_logout/
+  user_management_authenticate: /remote_authentication/
+  user_management_wards: /get_wards
+  user_management_names: /get_user_names
+  user_management_names: /get_user_names
+
 
 development:
   <<: *default
