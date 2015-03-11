@@ -30,6 +30,15 @@ default: &default
   specimen_status_path: /blis/htdocs/api/get_status.php?accession_number=
   panel_info_path: /blis/htdocs/api/remote_calls.php?action=get_panel_info&loinc_code=<<LOINC_CODE>>&accession_num=<<ACCESSION_NUMBER>>
   panel_tests_path: /blis/htdocs/api/remote_calls.php?action=get_panel_tests_by_loinc_code&loinc_code=
+  user_management_protocol: http
+  user_management_server: localhost
+  user_management_port: 3009
+  user_management_login: /remote_login/
+  user_management_logout: /remote_logout/
+  user_management_authenticate: /remote_authentication/
+  user_management_wards: /get_wards
+  user_management_names: /get_user_names
+  user_management_names: /get_user_names
 
 
 development:

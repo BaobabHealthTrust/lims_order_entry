@@ -1,0 +1,39 @@
+<script type="text/javascript">
+
+</script>
+<style>
+  #nav{
+      display: none;
+  }
+  div, input{
+      font-size: 30px;
+  }
+
+</style>
+<%= form_tag("/sessions/login", :method => :post) do -%>
+
+  <div id="mainContent" style="border: 1px solid #23538a; border-radius: 15px; min-width:40%;max-width:80%;margin-left: 5%;padding: 20px;margin-top:20px;">
+    <span style="color: #23538a;font-size: 32px;">Login Details</span><br/><br/>
+    <div style="display: table;">
+      <div style="display: table-row;">
+        <div style="display: table-cell;padding: 10px;">Username</div>
+        <div style="display: table-cell;padding: 10px;">:</div>
+        <div style="display: table-cell;padding: 10px;"><input type="text" name="username" id="username"></div>
+      </div>
+
+      <div style="display: table-row;">
+        <div style="display: table-cell;padding: 10px;">Password</div>
+        <div style="display: table-cell;padding: 10px;">:</div>
+        <div style="display: table-cell;padding: 10px;"><input type="password" name="password" id="password"></div>
+      </div>
+      <div style="display: table-row;">
+        <div style="display: table-cell;padding: 10px;"><input type="submit" value="Login" class="button_green long"></div>
+      </div>
+    </div>
+  </div>
+
+<% end %>
+
+<div id="popupkeyboard" style="display:none;border: 1px solid #23538a; border-radius: 15px; min-width:40%;max-width:80%;margin-left: 5%;padding: 20px;margin-top:20px;">
+
+</div>

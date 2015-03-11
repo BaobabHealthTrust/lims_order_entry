@@ -237,7 +237,7 @@ class OrderController < ApplicationController
 
     orc = HL7::Message::Segment::ORC.new
     orc.entered_by = "1^Super^User"
-    orc.enterers_location = "^^^^^^^^WARD 4B"
+    orc.enterers_location = "^^^^^^^^#{session[:location]}"
     orc.ordering_facility_name = "KCH"
 
     msg << orc # add the ORC segment to the message
@@ -254,16 +254,15 @@ class OrderController < ApplicationController
       panels = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
                                              "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["panel_tests_path"]}#{test_code}"))
 
-      if panels.length > 1
 
-        i += 1
+      if panels.length > 1
 
         obr = HL7::Message::Segment::OBR.new
         obr.set_id = i
         obr.universal_service_id = "#{test_code rescue nil}^#{test_name rescue nil}^LOINC"
         obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
         obr.relevant_clinical_info = "Rule out diagnosis"
-        obr.ordering_provider = "439234^Moyo^Chris"
+        obr.ordering_provider = "439234^#{session[:user_person_names]['last_name']}^#{session[:user_person_names]['first_name']}"
 
         msg << obr # add the OBR segment to the message
 
@@ -398,7 +397,7 @@ class OrderController < ApplicationController
 
     orc = HL7::Message::Segment::ORC.new
     orc.entered_by = "1^Super^User"
-    orc.enterers_location = "^^^^^^^^Ward 4B"
+    orc.enterers_location = "^^^^^^^^#{session[:location]}"
     orc.ordering_facility_name = "KCH"
 
     msg << orc # add the ORC segment to the message
@@ -419,7 +418,7 @@ class OrderController < ApplicationController
       obr.universal_service_id = "#{test_code rescue nil}^#{test_name rescue nil}^LOINC"
       obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
       obr.relevant_clinical_info = "Rule out diagnosis"
-      obr.ordering_provider = "439234^Moyo^Chris"
+      obr.ordering_provider = "439234^#{session[:user_person_names]['last_name']}^#{session[:user_person_names]['first_name']}"
 
       msg << obr # add the OBR segment to the message
 

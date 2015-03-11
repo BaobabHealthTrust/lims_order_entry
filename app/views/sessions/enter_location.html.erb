@@ -1,0 +1,168 @@
+<script type="text/javascript">
+
+
+    function checkLocation() {
+
+        var mac;
+
+        if (typeof(Android) != "undefined") {
+
+            mac = Android.getMac();
+
+        } else {
+
+            mac = "<%= request.ip %>".replace(/\./g, "_");      // Substitute with IP Address
+
+        }
+
+        var url = "/check_location/" + mac;
+
+        var httpRequest = new XMLHttpRequest();
+
+        httpRequest.onreadystatechange = function () {
+
+            if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
+                    httpRequest.status == 304)) {
+
+                var result = httpRequest.responseText;
+
+
+
+                if (result.trim().length == 0) {
+
+                    __$('placeHolder').style.display = "none";
+                    __$('mainDiv').style.display = "block"
+
+                }
+                else
+                {
+                    window.location = '/search_for_samples'
+                }
+
+            }
+
+        };
+        try {
+            httpRequest.open('GET', url, true);
+            httpRequest.send(null);
+        } catch (e) {
+        }
+
+    }
+
+
+    var selectedWard
+  function initialize(){
+      __$('btnLogout').innerHTML = "Cancel"
+      __$('btnNext').setAttribute("onclick", "saveWard()")
+      checkLocation()
+  }
+  setTimeout('initialize()', 1000)
+
+  function enableWards()
+  {
+      __$('btnNext').style.display = 'block';
+      __$('mainContent').style.display = 'block';
+      __$('mainOptions').style.display = 'none';
+      __$('btnLogout').innerHTML = "Back";
+      __$('btnLogout').setAttribute('onclick','disableWards()');
+
+  }
+
+  function disableWards(){
+      __$('btnNext').style.display = 'none';
+      __$('mainContent').style.display = 'none';
+      __$('mainOptions').style.display = 'block';
+      __$('btnLogout').innerHTML = "Cancel";
+      __$('btnLogout').setAttribute('onclick',"window.location='/logout'");
+  }
+
+  function selectWard(selected)
+  {
+      if (selectedWard)
+      {
+          selectedWard.style.backgroundColor = (selectedWard.getAttribute("class") == "odd" ? "#eee" : "");
+      }
+
+      selectedWard = selected;
+      selected.style.backgroundColor = "lightblue";
+  }
+
+  function saveWard()
+  {
+      if (selectedWard)
+      {
+          __$('location').value = selectedWard.getAttribute('ward')
+          document.forms[0].submit();
+      }
+      else
+      {
+          if (typeof(Android) != "undefined") {
+
+              Android.showMsg("Please select a ward before proceeding");
+
+          } else {
+
+              alert("Please select a ward before proceeding");
+
+          }
+
+      }
+  }
+</script>
+
+<style>
+  #btnNext{
+      display: none;
+  }
+  li.odd{
+    padding: 10px;
+    cursor: pointer;
+    margin: 1px;
+    font-size: 28px;
+    background-color: rgb(238, 238, 238);
+  }
+
+  li.even{
+      padding: 10px;
+      cursor: pointer;
+      margin: 1px;
+      font-size: 28px;
+      border-top: 1px dotted rgb(204, 204, 204);
+      border-bottom: 1px dotted rgb(204, 204, 204);
+  }
+</style>
+
+<div id="placeHolder" style="margin-left: auto; margin-right: auto;text-align: center; margin-top: 20%;">
+    <span style="font-size: 25px;">Loading, please wait ...</span>
+</div>
+
+<div id="mainDiv" style="display: none;">
+  <div id="mainOptions" style="border: 1px solid #23538a; border-radius: 15px; min-width:40%;max-width:80%;margin-left: 5%;padding: 20px;margin-top:20px;">
+    <span style="color: #23538a;font-size: 32px;">Choose Location Type</span><br/><br/>
+    <div style="display: table-row">
+      <div style="display: table-cell;padding: 10px;">
+        <button class="button_blue long" onmousedown="enableWards()" style="margin: 10px;width: 200px;">Ward</button>
+      </div>
+      <div style="display: table-cell;padding: 10px;">
+        <button class="button_blue long" style="margin: 10px;width: 200px;" onmousedown="window.location= '/lab_processing/capture_location'">Laboratory</button>
+      </div>
+    </div>
+  </div>
+  <div id="mainContent" style="display:none;border: 1px solid #23538a; border-radius: 15px; min-width:40%;max-width:80%;margin-left: 5%;padding: 20px;margin-top:20px;">
+    <span style="color: #23538a;font-size: 32px;">Select Ward</span><br/><br/>
+    <div style="display: table-row">
+      <div style="display: table-cell;padding: 10px;">
+        <ul id="ulwards" style="list-style: outside none none;padding-left: 0px;overflow: auto; height: 50vh;">
+          <% (@wards || []).each do |ward| %>
+              <li class=<%= cycle('odd','even')%> ward='<%= ward %>' onmousedown="selectWard(this)"><%= ward %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <%= form_tag("/enter_location", :method => :post) do -%>
+      <%= hidden_field_tag(:location, nil) %>
+  <% end %>
+</div>

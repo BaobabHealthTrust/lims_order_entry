@@ -191,7 +191,7 @@
         if (__$("btnLogout")) {
 
             __$("btnLogout").innerHTML = "Cancel";
-
+            __$("btnLogout").setAttribute("onClick", "window.location='/'")
         } else {
 
             setTimeout("renameBtn()", 100);
