@@ -11,6 +11,7 @@ class SessionsController < ApplicationController
     else
      session[:user_token] = status
      session[:user] = params[:username]
+     session[:user_person_names] = get_user_person_name(params[:username])
      redirect_to "/enter_location" and return
     end
    end
@@ -24,6 +25,7 @@ class SessionsController < ApplicationController
    if logout_status
     session[:user_token] = nil
     session[:user] = nil
+    session[:user_person_name] = nil
     flash[:notice] = "You have been logged out!"
     redirect_to "/login" and return
    else
@@ -35,7 +37,7 @@ class SessionsController < ApplicationController
     session[:location]= params[:location]
     redirect_to "/" and return
    end
-     session[:location] = nil
+   session[:location] = nil
    get_wards_link = "#{CONFIG["user_management_protocol"]}://#{CONFIG["user_management_server"]}:#{CONFIG["user_management_port"]}#{CONFIG["user_management_wards"]}"
    @wards = JSON.parse(RestClient.get(get_wards_link))
 
@@ -44,4 +46,9 @@ class SessionsController < ApplicationController
   def location
   end
 
+ def get_user_person_name(username)
+  names_link = "#{CONFIG["user_management_protocol"]}://#{CONFIG["user_management_server"]}:#{CONFIG["user_management_port"]}#{CONFIG["user_management_names"]}"
+  user_names = JSON.parse(RestClient.post(names_link, {"username" => username}))
+  return user_names
+ end
 end
