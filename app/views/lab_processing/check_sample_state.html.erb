@@ -121,22 +121,29 @@
 
                 if (__$("btnReject")) {
 
-                    __$("btnReject").className = "button_blue";
+                    if (result.trim().toLowerCase() == "verified") {
 
-                    __$("btnReject").onclick = function () {
+                        __$("btnReject").innerHTML = "Dispose Sample";
 
-                        __$('test_name').value = control.getAttribute('test_name');
+                    } else {
 
-                        __$('test_code').value = control.getAttribute('test_code');
+                        __$("btnReject").className = "button_blue";
 
-                        __$('specimen').value = control.getAttribute('specimen');
+                        __$("btnReject").onclick = function () {
 
-                        __$('state').value = "TEST REJECTED";
+                            __$('test_name').value = control.getAttribute('test_name');
 
-                        document.forms[0].action = "/rejection_reason";
+                            __$('test_code').value = control.getAttribute('test_code');
 
-                        confirmAction("Do you really want to reject the selected test?", "document.forms[0].submit()");
+                            __$('specimen').value = control.getAttribute('specimen');
 
+                            __$('state').value = "TEST REJECTED";
+
+                            document.forms[0].action = "/rejection_reason";
+
+                            confirmAction("Do you really want to reject the selected test?", "document.forms[0].submit()");
+
+                        }
                     }
 
                 }
@@ -182,11 +189,46 @@
                             document.forms[0].method = "get";
 
                             document.forms[0].action = "/enter_results/<%= @barcode rescue nil %>?test_name=" +
-                                    control.getAttribute('test_name') + "&test_code=" + control.getAttribute('test_code');
+                                    control.getAttribute('test_name') + "&test_code=" + control.getAttribute('test_code') +
+                                    "&state=" + "TESTED";
 
                             document.forms[0].submit();
 
                         }
+
+                    } else if (result.trim().toLowerCase() == "tested") {
+
+                        __$("btnProcess").innerHTML = "Verify Result";
+
+                        __$("btnProcess").onclick = function () {
+
+                            __$('test_name').value = control.getAttribute('test_name');
+
+                            __$('test_code').value = control.getAttribute('test_code');
+
+                            __$('specimen').value = control.getAttribute('specimen');
+
+                            __$('state').value = "VERIFIED";
+
+                            document.forms[0].method = "get";
+
+                            document.forms[0].action = "/enter_results/<%= @barcode rescue nil %>?test_name=" +
+                                    control.getAttribute('test_name') + "&test_code=" + control.getAttribute('test_code') +
+                                    "&state=" + "VERIFIED";
+
+                            document.forms[0].submit();
+
+                        }
+
+                    } else if (result.trim().toLowerCase() == "verified") {
+
+                        __$("btnProcess").innerHTML = "Verified";
+
+                        __$("btnProcess").className = "button_gray";
+
+                    } else {
+
+                        __$("btnProcess").className = "button_gray";
 
                     }
 

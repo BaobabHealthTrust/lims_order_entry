@@ -18,11 +18,11 @@
 
         function renameBtn() {
 
-            if(__$("btnLogout")){
+            if (__$("btnLogout")) {
 
                 __$("btnLogout").innerHTML = "Cancel";
 
-            }else {
+            } else {
 
                 setTimeout("renameBtn()", 100);
 
@@ -127,32 +127,32 @@
       </tr>
       <tr>
         <td colspan="6">
-            <div id="resultsParent" style="width: 95%; border-top: 1px solid #23538a; margin: auto; border: 1px solid #ccc;">
+          <div id="resultsParent" style="width: 95%; border-top: 1px solid #23538a; margin: auto; border: 1px solid #ccc;">
 
-              <table width="100%">
-                <tr style="background-color: #ccc; color: #333; font-size: 18px;">
-                  <th style="width: 120px; padding: 5px;">
-                    Date
-                  </th>
-                  <th style="width: 30%; padding: 5px;">
-                    Test
-                  </th>
-                  <th style=" padding: 5px;">
-                    Result/Status
-                  </th>
-                  <th style="width: 90px; padding: 5px;">
-                    Print Label
-                  </th>
-                </tr>
-                <tr>
-                  <td colspan="4">
-                    <div id="results" style="height: 400px; overflow: auto; border: 1px solid #ccc; text-align: center; width: 100%;">
-                    </div>
-                  </td>
-                </tr>
-              </table>
+            <table width="100%">
+              <tr style="background-color: #ccc; color: #333; font-size: 18px;">
+                <th style="width: 120px; padding: 5px;">
+                  Date
+                </th>
+                <th style="width: 30%; padding: 5px;">
+                  Test
+                </th>
+                <th style=" padding: 5px;">
+                  Result/Status
+                </th>
+                <th style="width: 90px; padding: 5px;">
+                  Print Label
+                </th>
+              </tr>
+              <tr>
+                <td colspan="4">
+                  <div id="results" style="height: 400px; overflow: auto; border: 1px solid #ccc; text-align: center; width: 100%;">
+                  </div>
+                </td>
+              </tr>
+            </table>
 
-            </div>
+          </div>
         </td>
       </tr>
     </table>
@@ -171,7 +171,7 @@
 
         var codes = <%= @codes.to_json.html_safe %>;
 
-        var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
         function attachBtn() {
 
@@ -185,7 +185,7 @@
 
             }
 
-            if(__$("btnLogout")){
+            if (__$("btnLogout")) {
 
                 __$("btnLogout").innerHTML = "Cancel";
 
@@ -193,11 +193,11 @@
 
         }
 
-        function padZeros(number, positions){
+        function padZeros(number, positions) {
             var zeros = parseInt(positions) - String(number).length;
             var padded = "";
 
-            for(var i = 0; i < zeros; i++){
+            for (var i = 0; i < zeros; i++) {
                 padded += "0";
             }
 
@@ -206,13 +206,13 @@
             return padded;
         }
 
-        function loadResults(){
+        function loadResults() {
 
-            if(__$("results")){
+            if (__$("results")) {
 
                 __$("results").innerHTML = "";
 
-                if(results.length == 0){
+                if (results.length == 0) {
 
                     __$("results").innerHTML = "<div style='margin: auto; font-weight: normal; font-style: italic; " +
                             "margin-top: 40px; font-size: 24px; color: #23538a;'>No tests or results available!</div>";
@@ -237,7 +237,7 @@
 
                 var c = 0;
 
-                for(var i = 0; i < keys.length; i++){
+                for (var i = 0; i < keys.length; i++) {
 
                     var key = keys[i];
 
@@ -245,7 +245,7 @@
 
                     var kids = Object.keys(result[key]["results"]);
 
-                    for(var j = 0; j < kids.length; j++){
+                    for (var j = 0; j < kids.length; j++) {
 
                         var kid = kids[j];
 
@@ -253,7 +253,7 @@
 
                         var tr = document.createElement("tr");
 
-                        if(c % 2 > 0){
+                        if (c % 2 > 0) {
 
                             tr.style.backgroundColor = "#eee";
 
@@ -263,7 +263,7 @@
 
                         var date = "";
 
-                        if(result[key]["results"][kid]["result_date_time"] != null && result[key]["results"][kid]["result_date_time"].trim().length > 0) {
+                        if (result[key]["results"][kid]["result_date_time"] != null && result[key]["results"][kid]["result_date_time"].trim().length > 0) {
 
                             var datetime = result[key]["results"][kid]["result_date_time"];
                             var year = parseInt(datetime.substr(0, 4));
@@ -311,7 +311,10 @@
                         tr.appendChild(td4);
 
                         var print = document.createElement("img");
-                        print.src = (result[key]["results"][kid]["status"].toLowerCase().trim() == "ordered" ? printer_red : printer_green);
+                        print.src = (result[key]["results"][kid]["status"].toLowerCase().trim() == "ordered" ||
+                                result[key]["results"][kid]["status"].toLowerCase().trim() == "tested" ||
+                                result[key]["results"][kid]["status"].toLowerCase().trim() == "verified" ? printer_red : printer_green);
+
                         print.height = 50;
                         print.setAttribute("state", result[key]["results"][kid]["status"]);
                         print.setAttribute("accession_number", key);
@@ -337,15 +340,15 @@
 
         }
 
-        function printLabel(accession_number, currentState, state, code, name){
+        function printLabel(accession_number, currentState, state, code, name) {
 
-            if(accession_number == undefined || currentState == undefined || state == undefined){
+            if (accession_number == undefined || currentState == undefined || state == undefined) {
 
                 return;
 
             }
 
-            if(currentState.trim().toLocaleLowerCase() == "ordered"){
+            if (currentState.trim().toLocaleLowerCase() == "ordered") {
 
                 var url = "/update_state/" + accession_number + "?state=" + state + "&test_code=" + code + "&test_name=" + name;
 
@@ -393,6 +396,91 @@
                 } catch (e) {
                 }
 
+            } else if (currentState.trim().toLocaleLowerCase() == "verified" || currentState.trim().toLocaleLowerCase() == "tested") {
+
+                var url = "/update_state/" + accession_number + "?state=Reviewed&test_code=" + code + "&test_name=" + name;
+
+                var httpRequest = new XMLHttpRequest();
+                httpRequest.onreadystatechange = function () {
+
+                    if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
+                            httpRequest.status == 304)) {
+
+                        var datetime = (new Date()).getDate() + "/" + months[(new Date()).getMonth()] + "/" + (new Date()).getFullYear() +
+                                " " + (new Date()).getHours() + ":" + (new Date()).getMinutes();
+
+                        var currentTests = "";
+
+                        if (currentState.trim().toLocaleLowerCase() == "reviewed" || currentState.trim().toLocaleLowerCase() == "verified" || currentState.trim().toLocaleLowerCase() == "tested") {
+
+                            var tests = results[0]["orders"][accession_number]["results"];
+
+                            var keys = Object.keys(tests);
+
+                            for (var i = 0; i < keys.length; i++) {
+
+                                var test = tests[keys[i]]["test_name"];
+
+                                var result = tests[keys[i]]["result"];
+
+                                if (result.trim().length == 0) {
+                                    continue;
+                                }
+
+                                var datetime = tests[keys[i]]["result_date_time"];
+
+                                var yr = datetime.substr(0, 4);
+
+                                var month = months[parseInt(datetime.substr(4, 2)) - 1];
+
+                                var date = parseInt(datetime.substr(6, 2));
+
+                                var hr = datetime.substr(8, 2);
+
+                                var min = datetime.substr(10, 2);
+
+                                var dateFormatted = date + "/" + month + "/" + yr + " " + hr + ":" + min;
+
+                                currentTests += dateFormatted + "|" + test + "|" + result + ";"
+
+                            }
+
+                        } else {
+
+                            var tests = testNames[accession_number];
+
+                            for (var i = 0; i < tests.length; i++) {
+
+                                var short = shortnames[tests[i]["testName"]];
+
+                                if (short == undefined || short.trim().length == 0) {
+
+                                    short = tests[i]["testName"];
+
+                                }
+
+                                currentTests += short + ";"
+
+                            }
+
+                            if (currentTests.trim().length > 12) {
+
+                                currentTests = currentTests.substr(0, 12) + "...";
+
+                            }
+                        }
+
+                        printBarcode(datetime, currentTests, accession_number, undefined, "reviewed");
+
+                    }
+
+                };
+                try {
+                    httpRequest.open('GET', url, true);
+                    httpRequest.send(null);
+                } catch (e) {
+                }
+
             } else {
 
                 var datetime = (new Date()).getDate() + "/" + months[(new Date()).getMonth()] + "/" + (new Date()).getFullYear() +
@@ -400,35 +488,73 @@
 
                 var currentTests = "";
 
-                var tests = testNames[accession_number];
+                if (currentState.trim().toLocaleLowerCase() == "reviewed" || currentState.trim().toLocaleLowerCase() == "verified" || currentState.trim().toLocaleLowerCase() == "tested") {
 
-                for (var i = 0; i < tests.length; i++) {
+                    var tests = results[0]["orders"][accession_number]["results"];
 
-                    var short = shortnames[tests[i]["testName"]];
+                    var keys = Object.keys(tests);
 
-                    if (short == undefined || short.trim().length == 0) {
+                    for (var i = 0; i < keys.length; i++) {
 
-                        short = tests[i]["testName"];
+                        var test = tests[keys[i]]["test_name"];
+
+                        var result = tests[keys[i]]["result"];
+
+                        if (result.trim().length == 0) {
+                            continue;
+                        }
+
+                        var datetime = tests[keys[i]]["result_date_time"];
+
+                        var yr = datetime.substr(0, 4);
+
+                        var month = months[parseInt(datetime.substr(4, 2)) - 1];
+
+                        var date = parseInt(datetime.substr(6, 2));
+
+                        var hr = datetime.substr(8, 2);
+
+                        var min = datetime.substr(10, 2);
+
+                        var dateFormatted = date + "/" + month + "/" + yr + " " + hr + ":" + min;
+
+                        currentTests += dateFormatted + "|" + test + "|" + result + ";"
 
                     }
 
-                    currentTests += short + ";"
+                } else {
+
+                    var tests = testNames[accession_number];
+
+                    for (var i = 0; i < tests.length; i++) {
+
+                        var short = shortnames[tests[i]["testName"]];
+
+                        if (short == undefined || short.trim().length == 0) {
+
+                            short = tests[i]["testName"];
+
+                        }
+
+                        currentTests += short + ";"
+
+                    }
+
+                    if (currentTests.trim().length > 12) {
+
+                        currentTests = currentTests.substr(0, 12) + "...";
+
+                    }
 
                 }
 
-                if (currentTests.trim().length > 12) {
-
-                    currentTests = currentTests.substr(0, 12) + "...";
-
-                }
-
-                printBarcode(datetime, currentTests, accession_number);
+                printBarcode(datetime, currentTests, accession_number, undefined, currentState.trim().toLocaleLowerCase());
 
             }
 
         }
 
-        function printBarcode(messageDatetime, testsTBD, accessionNumber, ward) {
+        function printBarcode(messageDatetime, testsTBD, accessionNumber, ward, state) {
 
             if (ward == undefined) {
 
@@ -436,18 +562,38 @@
 
             }
 
+            if (state == undefined) {
+
+                state = "";
+
+            }
+
             var npid = "<%= @patient[:national_id] %>"
             var full_name = "<%= @patient[:full_name] rescue nil %>";
 
-            // printBarcode(String name, String npid, String datetime, String ward, String test, String barcode)
-            if (typeof(Android) != "undefined") {
+            if (state == "reviewed") {
 
-                Android.printBarcode(full_name, npid, messageDatetime, ward, testsTBD, accessionNumber);
+                if (typeof(Android) != "undefined") {
+
+                    Android.printResultBarcode(full_name, npid, messageDatetime, ward, testsTBD, accessionNumber);
+
+                } else {
+
+                    alert("Results: " + testsTBD);
+
+                }
 
             } else {
+                // printBarcode(String name, String npid, String datetime, String ward, String test, String barcode)
+                if (typeof(Android) != "undefined") {
 
-                alert("Accession Number: " + accessionNumber);
+                    Android.printBarcode(full_name, npid, messageDatetime, ward, testsTBD, accessionNumber);
 
+                } else {
+
+                    alert("Accession Number: " + accessionNumber);
+
+                }
             }
 
             window.location = window.location.href;

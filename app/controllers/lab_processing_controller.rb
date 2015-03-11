@@ -407,10 +407,16 @@ class LabProcessingController < ApplicationController
 
     msg << msh # add the MSH segment to the message
 
+    name = patient["name"].split(" ")
+
+    fname = name[0] rescue nil
+    mname = (name.length > 2 ? name[1] : "")
+    lname = (name.length > 2 ? name[2] : name[1])
+
     pid = HL7::Message::Segment::PID.new
     pid.set_id = "1"
     pid.patient_id_list = patient["surrogateId"] rescue nil
-    pid.patient_name = "#{patient["name"] rescue nil}"
+    pid.patient_name = "#{lname}^#{fname}^#{mname}"
     pid.patient_dob = patient["dob"].to_date.strftime("%Y%m%d") rescue nil
     pid.admin_sex = patient["sex"] rescue nil
 
@@ -427,9 +433,17 @@ class LabProcessingController < ApplicationController
 
     msg << orc # add the ORC segment to the message
 
+    finished = true
+
     params[:test_result].each do |code, result|
 
-      next if result.blank?
+      if result.blank?
+
+        finished = false
+
+        next
+
+      end
 
       tq1 = HL7::Message::Segment::TQ1.new
       tq1.set_id = "1"
@@ -467,9 +481,53 @@ class LabProcessingController < ApplicationController
       nte = HL7::Message::Segment::NTE.new
       nte.set_id = "1"
       nte.source = "P"
-      nte.comment = "Tested^#{params[:test_remark][code]}"
+      nte.comment = "#{params[:state] rescue "Tested"}^#{params[:test_remark][code]}"
 
       msg << nte # add the NTE segment to the message
+
+    end
+
+    if finished and (!params[:ispanel].blank? and params[:ispanel])
+
+      tq1 = HL7::Message::Segment::TQ1.new
+      tq1.set_id = "1"
+      tq1.priority = "R^Routine^HL70485"
+
+      msg << tq1 # add the TQ1 segment to the message
+
+      obr = HL7::Message::Segment::OBR.new
+      obr.set_id = "1"
+      obr.universal_service_id = "#{params[:testcode] rescue nil}^#{params[:testname] rescue nil}^LOINC"
+      obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+      obr.relevant_clinical_info = "Rule out diagnosis"
+      obr.ordering_provider = "439234^Moyo^Chris"
+      # obr.result_status = "Tested"
+
+      msg << obr # add the OBR segment to the message
+
+      obx = HL7::Message::Segment::OBX.new
+      obx.set_id = "1"
+      obx.value_type = "CE"
+      obx.observation_id = "#{params[:testcode] rescue nil}^#{params[:testname]}^ISO"
+      obx.observation_value = nil
+      obx.units = nil
+      obx.references_range = nil
+      obx.observation_result_status = "F"
+      obx.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+      obx.responsible_observer = "439234^Moyo^Chris"
+      obx.analysis_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+      obx.performing_organization_name = "KCH Laboratory"
+      obx.performing_organization_address = "^^Lilongwe^^^Malawi"
+      obx.performing_organization_medical_director = "Limula^Henry"
+
+      msg << obx # add the OBR segment to the message
+
+      nte = HL7::Message::Segment::NTE.new
+      nte.set_id = "1"
+      nte.source = "P"
+      nte.comment = "#{params[:state] rescue "Tested"}^"
+
+      msg << nte
 
     end
 
@@ -491,7 +549,7 @@ class LabProcessingController < ApplicationController
 
     # raise result.inspect
 
-    flash[:notice] = "Result saved!"
+    flash[:notice] = "Result #{(params[:state] rescue "Tested").titleize == "Verified" ? "verified" : "saved!"}"
 
     redirect_to "/lab/" and return
 
@@ -574,7 +632,7 @@ class LabProcessingController < ApplicationController
       nte = HL7::Message::Segment::NTE.new
       nte.set_id = i
       nte.source = "P"
-      nte.comment = "#{params[:state] rescue nil}"
+      nte.comment = "#{params[:state] rescue nil}^"
 
       msg << nte # add the NTE segment to the message
 
@@ -699,7 +757,7 @@ class LabProcessingController < ApplicationController
     nte = HL7::Message::Segment::NTE.new
     nte.set_id = "1"
     nte.source = "P"
-    nte.comment = "#{params[:state] rescue nil}"
+    nte.comment = "#{params[:state] rescue nil}^"
 
     msg << nte # add the NTE segment to the message
 
@@ -715,6 +773,8 @@ class LabProcessingController < ApplicationController
         "#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["specimen_status_path"]}#{params[:barcode]}"
 
     @status = RestClient.get(status_link).strip rescue nil
+
+    # raise @status.inspect
 
     if @status.strip.downcase == "drawn"
 

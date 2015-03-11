@@ -448,7 +448,7 @@ class OrderController < ApplicationController
       nte = HL7::Message::Segment::NTE.new
       nte.set_id = i
       nte.source = "P"
-      nte.comment = "#{params[:state] rescue nil}"
+      nte.comment = "#{params[:state] rescue nil}^"
 
       msg << nte # add the NTE segment to the message
 
