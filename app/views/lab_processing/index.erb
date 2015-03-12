@@ -2,9 +2,9 @@
 
 <style>
 
-  .long {
-      min-width: 245px;
-  }
+    .long {
+        min-width: 245px;
+    }
 
 </style>
 <!--div id="shell" style="height: 295px; overflow: auto; text-align: center;">
@@ -58,7 +58,7 @@
 
             <input type="text" id="barcode" name="barcode" value="" style="width: 80%; border: none; border-bottom: 1px #ccc dotted; font-size: 24px; padding: 10px;"/>
 
-            <input type="hidden" id="location" name="location" value="<%= @location[:dept] rescue nil %>" />
+            <input type="hidden" id="location" name="location" value="<%= @location[:dept] rescue nil %>"/>
 
         <% end %>
       </td>
@@ -101,13 +101,13 @@
 
         }
 
-        if(__$("btnNext")){
+        if (__$("btnNext")) {
 
             __$("btnNext").style.display = "none";
 
         }
 
-        if(__$("btnLogout")){
+        if (__$("btnLogout")) {
 
             __$("btnLogout").innerHTML = "Cancel";
 
@@ -119,40 +119,40 @@
 
     checkBarcode();
 
-  function changeLabels(){
+    function changeLabels() {
 
-      if(document.getElementById("btnNext")){
+        if (document.getElementById("btnNext")) {
 
-          document.getElementById("btnNext").style.display = "none";
+            document.getElementById("btnNext").style.display = "none";
 
-      } else {
+        } else {
 
-          setTimeout("changeLabels()", 10);
+            setTimeout("changeLabels()", 10);
 
-          return;
+            return;
 
-      }
+        }
 
-      if(document.getElementById("btnLogout")){
+        if (document.getElementById("btnLogout")) {
 
-          document.getElementById("btnLogout").innerHTML = "Logout";
+            document.getElementById("btnLogout").innerHTML = "Logout";
 
-          document.getElementById("btnLogout").onclick = function(){
+            document.getElementById("btnLogout").onclick = function () {
 
-              window.location = "/lab_processing/index";
+                window.location = "/lab_processing/index";
 
-          }
+            }
 
-      } else {
+        } else {
 
-          setTimeout("changeLabels()", 10);
+            setTimeout("changeLabels()", 10);
 
-          return;
+            return;
 
-      }
+        }
 
-  }
+    }
 
-  setTimeout("changeLabels()", 10);
+    setTimeout("changeLabels()", 10);
 
 </script>

@@ -431,7 +431,15 @@
     </tr>
     <tr>
       <td id="location" style="font-size: 11px; vertical-align: top; text-align: left; padding-left: 3px;">
-        <%= (!@location.blank? ? "#{@location[:dept] rescue nil}#{(!(@location[:dept] rescue nil).blank? ? ":" : "")}#{@location[:bench] rescue nil}" : "") %>
+        <% if !session[:location].blank? %>
+
+            <%= session[:location] rescue nil %>
+
+        <% else %>
+
+            <%= (!@location.blank? ? "#{@location[:dept] rescue nil}#{(!(@location[:dept] rescue nil).blank? ? ":" : "")}#{@location[:bench] rescue nil}" : "") %>
+
+        <% end %>
       </td>
     </tr>
   </table>
@@ -498,7 +506,7 @@
 
     function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
 
-        if(!__$(container_id)){
+        if (!__$(container_id)) {
             return;
         }
 
@@ -520,11 +528,11 @@
             container.innerHTML = "";
 
             /*if (!__$("main")) {
-                var main = document.createElement("div");
-                main.id = "main";
+             var main = document.createElement("div");
+             main.id = "main";
 
-                container.appendChild(main);
-            }*/
+             container.appendChild(main);
+             }*/
 
             var target = ctrl;
 
@@ -832,15 +840,15 @@
 
     var currentUnits = "";
 
-    function captureFreetext(targetControl, addUnits, numeric){
+    function captureFreetext(targetControl, addUnits, numeric) {
 
-        if(__$("target")){
+        if (__$("target")) {
 
             document.body.removeChild(__$("target"));
 
         } else {
 
-            if(addUnits == undefined){
+            if (addUnits == undefined) {
 
                 addUnits = false;
 
@@ -852,7 +860,7 @@
 
             currentUnits = globalControl.getAttribute("units");
 
-            if(currentUnits == null){
+            if (currentUnits == null) {
 
                 currentUnits = "";
 
@@ -919,9 +927,25 @@
 
             textArea.value = myString;
 
+            textArea.onkeydown = function (e) {
+
+                if (typeof(Android) == "undefined" && e.keyCode == 13) {
+
+                    if (__$("Done")) {
+
+                        __$("Done").click();
+
+                    }
+
+                }
+
+            }
+
             inDiv.appendChild(textArea);
 
             showKeyboard(textArea, "keysDiv", undefined, numeric);
+
+            textArea.focus();
 
         }
 

@@ -1,7 +1,18 @@
 Rails.application.routes.draw do
 
-
   root 'order#index'
+
+  get '/login' => 'sessions#login'
+
+  get '/logout' => 'sessions#logout'
+
+  get '/enter_location' => 'sessions#enter_location'
+
+  post '/enter_location' => 'sessions#enter_location'
+
+  get 'sessions/location'
+
+  post 'sessions/login'
 
   get "/check_test_state" => "lab_processing#check_test_state"
 
@@ -74,18 +85,6 @@ Rails.application.routes.draw do
   get 'order/print_results'
 
   get 'order/print_order'
-
-  get '/login' => 'sessions#login'
-
-  get '/logout' => 'sessions#logout'
-
-  get '/enter_location' => 'sessions#enter_location'
-
-  post '/enter_location' => 'sessions#enter_location'
-
-  get 'sessions/location'
-
-  post 'sessions/login'
 
  # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

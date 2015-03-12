@@ -1,4 +1,4 @@
-class LabProcessingController < ApplicationController
+class LabProcessingController < ActionController::Base  # ApplicationController
 
   before_filter :check_device_location, :only => [:index, :search_for_samples, :check_sample_state, :enter_results, :rejection_reason]
 

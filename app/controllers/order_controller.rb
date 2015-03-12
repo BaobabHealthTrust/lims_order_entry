@@ -4,16 +4,20 @@ class OrderController < ApplicationController
                                            :patient, :place_order]
 
   def index
+    render :layout => "lab"
   end
 
   def search
     @cat = params["target"] rescue nil
+
+    render :layout => "lab"
   end
 
   def place_order
 
     @patient = @request.get_patient_by_npid(params[:id]).first rescue nil
 
+    render :layout => "lab"
   end
 
   def review_results
@@ -204,6 +208,8 @@ class OrderController < ApplicationController
 
     end
 
+    render :layout => "lab"
+    
   end
 
   def process_order
