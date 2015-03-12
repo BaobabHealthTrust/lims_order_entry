@@ -34,6 +34,8 @@
 
     var url = "<%= @target rescue nil %>";
     var tmrHnd;
+    var status;
+    var barcode;
 
     function checkBarcode() {
 
@@ -45,9 +47,11 @@
 
             if (__$("barcode").value.trim().match(/[A-Z0-9]+\$/)) {
 
-                var barcode = __$("barcode").value.trim().replace(/\$/, "");
+                barcode = __$("barcode").value.trim().replace(/\$/, "");
 
-                window.location = url + barcode + "?location=<%= @location[:dept] rescue nil %>";
+                // window.location = url + barcode + "?location=<%= @location[:dept] rescue nil %>";
+
+                ajaxTasks();
 
                 return;
 
@@ -75,11 +79,11 @@
 
     }
 
-    function ajaxTasks(barcode) {
+    function ajaxTasks() {
 
-        clearTimeout(timerHnd);
+        clearTimeout(tmrHnd);
 
-        var url = "/search_by_npid/" + barcode;
+        var url = "/sample_status?barcode=" + barcode;
 
         var httpRequest = new XMLHttpRequest();
         httpRequest.onreadystatechange = function () {
@@ -98,11 +102,154 @@
         if (aXMLHttpRequest.readyState == 4 && (aXMLHttpRequest.status == 200 ||
                 aXMLHttpRequest.status == 304)) {
 
-            var result = JSON.parse(aXMLHttpRequest.responseText);
+            status = aXMLHttpRequest.responseText;
 
-            people = result;
+            __$("barcode").value = "";
+
+            if(status.trim().toLowerCase() == "drawn") {
+
+                confirmValidity();
+
+            } else {
+
+                showMsg("Sample status is: " + status.toUpperCase());
+
+            }
+
+            tmrHnd = setTimeout("checkBarcode()", 100);
 
         }
+    }
+
+    function confirmValidity(){
+
+        if (!__$("shield")) {
+
+            showShield();
+
+        }
+
+        var popup = document.createElement("div");
+        popup.id = "popup";
+        popup.style.position = "absolute";
+        popup.style.minHeight = "200px";
+        popup.style.top = "20%";
+        popup.style.width = "405px";
+        popup.style.left = ((window.innerWidth - 405) / 2) + "px";
+        popup.style.backgroundColor = "#fff";
+        popup.style.zIndex = 120;
+        popup.style.border = "2px outset #fff";
+        popup.style.borderRadius = "8px";
+
+        document.body.appendChild(popup);
+
+        var table = document.createElement("table");
+        table.width = "100%";
+        table.style.fontSize = "24px";
+
+        popup.appendChild(table);
+
+        var tbody = document.createElement("tbody");
+
+        table.appendChild(tbody);
+
+        var tr1 = document.createElement("tr");
+
+        tbody.appendChild(tr1);
+
+        var th = document.createElement("th");
+        th.innerHTML = "Sample Validity: " + barcode;
+        th.style.backgroundColor = "#345d8c";
+        th.style.color = "#fff";
+        th.style.borderTopLeftRadius = "8px";
+        th.style.borderTopRightRadius = "8px";
+        th.style.border = "2px outset #23538a";
+        th.colSpan = "2";
+
+        tr1.appendChild(th);
+
+        var tr2 = document.createElement("tr");
+
+        tbody.appendChild(tr2);
+
+        var td1_1 = document.createElement("td");
+        td1_1.colSpan = "2";
+        td1_1.style.padding = "10px";
+        td1_1.style.paddingTop = "20px";
+        td1_1.style.paddingBottom = "20px";
+        td1_1.align = "center";
+        td1_1.innerHTML = "What is the viability of this sample?";
+
+        tr2.appendChild(td1_1);
+
+        var tr3 = document.createElement("tr");
+
+        tbody.appendChild(tr3);
+
+        var td2_1 = document.createElement("td");
+        td2_1.align = "center";
+        td2_1.style.padding = "20px";
+
+        tr3.appendChild(td2_1);
+
+        var td2_2 = document.createElement("td");
+        td2_2.align = "center";
+        td2_2.style.padding = "20px";
+
+        tr3.appendChild(td2_2);
+
+        var btnNonViable = document.createElement("button");
+        btnNonViable.className = "button_red";
+        btnNonViable.innerHTML = "Non-viable";
+        btnNonViable.style.width = "160px";
+        btnNonViable.style.cursor = "pointer";
+
+        td2_1.appendChild(btnNonViable);
+
+        var btnViable = document.createElement("button");
+        btnViable.className = "button_green";
+        btnViable.innerHTML = "Viable";
+        btnViable.style.width = "160px";
+        btnViable.style.cursor = "pointer";
+
+        td2_2.appendChild(btnViable);
+
+        new FastButton(btnViable, function () {
+
+            if (__$("popup")) {
+
+                document.body.removeChild(__$("popup"));
+
+            }
+
+            if (__$("shield")) {
+
+                document.body.removeChild(__$("shield"));
+
+            }
+
+            window.location = url + barcode + "?location=<%= @location[:dept] rescue nil %>&sample_viablility=viable";
+
+        });
+
+        new FastButton(btnNonViable, function () {
+
+            if (__$("popup")) {
+
+                document.body.removeChild(__$("popup"));
+
+            }
+
+            if (__$("shield")) {
+
+                document.body.removeChild(__$("shield"));
+
+            }
+
+            window.location = url + barcode + "?location=<%= @location[:dept] rescue nil %>&sample_viablility=nonviable";
+
+        });
+
     }
 
     checkBarcode();

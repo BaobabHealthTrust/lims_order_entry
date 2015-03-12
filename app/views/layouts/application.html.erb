@@ -363,30 +363,6 @@
         return document.getElementById(id);
     }
 
-    function load() {
-
-        /*new FastButton(document.getElementById('btnOrder'), function () {
-            window.location = '/order/search?target=order';
-        });*/
-
-        new FastButton(document.getElementById('btnView'), function () {
-            window.location = '/order/search?target=view';
-        });
-
-        new FastButton(document.getElementById('btnPrint'), function () {
-            window.location = '/order/search?target=print';
-        });
-
-        new FastButton(document.getElementById('btnLogout'), function () {
-            clear();
-        });
-
-        new FastButton(document.getElementById('showKeyboard'), function () {
-            showKeyboard(kybdnumeric);
-        });
-
-    }
-
     function resizePage() {
 
         if(__$("main")){
@@ -415,15 +391,28 @@
 </Script>
 
 </head>
-<body onload="resizePage(); load();" onresize="resizePage()">
+<body onload="resizePage();" onresize="resizePage()">
 
 <div style="width: 100%; position: absolute; top: 0px; left: 0px; height: 55px;
         border-bottom: 1px solid #23538a; text-align: right; font-size: 28px; color: #23538a;">
 
-  <table style="float: left; margin: 8px; margin-bottom: 0px;">
+  <table style="float: left; margin: 0px; vertical-align: bottom;">
     <tr>
       <td onclick="var v = navigator.sayswho; Android.showMsg(v);">
         Lab Order Entry
+      </td>
+    </tr>
+    <tr>
+      <td id="location" style="font-size: 11px; vertical-align: top; text-align: left; padding-left: 3px;">
+        <% if !session[:location].blank? and params[:controller].strip.downcase == "order" %>
+
+            <%= session[:location] rescue nil %>
+
+        <% else %>
+
+            <%= (!@location.blank? ? "#{@location[:dept] rescue nil}#{(!(@location[:dept] rescue nil).blank? ? ":" : "")}#{@location[:bench] rescue nil}" : "") %>
+
+        <% end %>
       </td>
     </tr>
   </table>

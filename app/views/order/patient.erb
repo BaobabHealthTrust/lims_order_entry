@@ -193,6 +193,13 @@
 
             }
 
+            if (__$("btnNext")) {
+
+                __$("btnNext").innerHTML = "Refresh";
+
+
+            }
+
         }
 
         function padZeros(number, positions) {
@@ -312,25 +319,33 @@
 
                         tr.appendChild(td4);
 
-                        var print = document.createElement("img");
-                        print.src = (result[key]["results"][kid]["status"].toLowerCase().trim() == "ordered" ||
-                                result[key]["results"][kid]["status"].toLowerCase().trim() == "tested" ||
-                                result[key]["results"][kid]["status"].toLowerCase().trim() == "verified" ? printer_red : printer_green);
+                        if(!result[key]["results"][kid]["status"].toLowerCase().trim().match(/rejected/)) {
 
-                        print.height = 50;
-                        print.setAttribute("state", result[key]["results"][kid]["status"]);
-                        print.setAttribute("accession_number", key);
-                        print.setAttribute("test_code", codes[result[key]["results"][kid]["test_name"]]);
-                        print.setAttribute("test_name", result[key]["results"][kid]["test_name"]);
-                        print.style.cursor = "pointer";
+                            var print = document.createElement("img");
+                            print.src = (result[key]["results"][kid]["status"].toLowerCase().trim() == "ordered" ||
+                                    result[key]["results"][kid]["status"].toLowerCase().trim() == "tested" ||
+                                    result[key]["results"][kid]["status"].toLowerCase().trim() == "verified" ? printer_red : printer_green);
 
-                        td4.appendChild(print);
+                            print.height = 50;
+                            print.setAttribute("state", result[key]["results"][kid]["status"]);
+                            print.setAttribute("accession_number", key);
+                            print.setAttribute("test_code", codes[result[key]["results"][kid]["test_name"]]);
+                            print.setAttribute("test_name", result[key]["results"][kid]["test_name"]);
+                            print.style.cursor = "pointer";
 
-                        new FastButton(print, function () {
+                            td4.appendChild(print);
 
-                            printLabel(this.getAttribute("accession_number"), this.getAttribute("state"), "Drawn", this.getAttribute("test_code"), this.getAttribute("test_name"));
+                            new FastButton(print, function () {
 
-                        });
+                                printLabel(this.getAttribute("accession_number"), this.getAttribute("state"), "Drawn", this.getAttribute("test_code"), this.getAttribute("test_name"));
+
+                            });
+
+                        } else {
+
+                            td4.innerHTML = "<div style='height: 50px; width: 50px;'>&nbsp;</div>";
+
+                        }
 
                         c++;
 

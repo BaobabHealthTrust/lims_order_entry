@@ -1,6 +1,7 @@
-class LabProcessingController < ActionController::Base  # ApplicationController
+class LabProcessingController < ActionController::Base # ApplicationController
 
-  before_filter :check_device_location, :only => [:index, :search_for_samples, :check_sample_state, :enter_results, :rejection_reason]
+  before_filter :check_device_location, :only => [:index, :search_for_samples, :check_sample_state, :enter_results,
+                                                  :rejection_reason, :reject_sample]
 
   def index
 
@@ -47,10 +48,14 @@ class LabProcessingController < ActionController::Base  # ApplicationController
     status = RestClient.get(status_link)
 
     if status.strip.upcase == "REJECTED"
+
       flash[:error] = "Sample with ID #{params[:id]} was rejected and cannot be processed further!"
+
     elsif status.strip.upcase == "RECEIVED AT RECEPTION"
+
       flash[:notice] = "Sample with ID #{params[:id]} already received!"
-    elsif status.strip.upcase == "DRAWN"
+
+    elsif status.strip.upcase == "DRAWN" and !params[:sample_viablility].blank? and params[:sample_viablility].downcase == "viable"
 
       link = "#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["search_by_acc_num_path"]}#{params[:id]}"
 
@@ -77,6 +82,38 @@ class LabProcessingController < ActionController::Base  # ApplicationController
       save_group_state(parameters)
 
       flash[:notice] = "Sample with ID #{params[:id]} recorded as received!"
+
+    elsif status.strip.upcase == "DRAWN" and !params[:sample_viablility].blank? and params[:sample_viablility].downcase == "nonviable"
+
+      link = "#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["search_by_acc_num_path"]}#{params[:id]}"
+
+      tests = RestClient.get(link)
+
+      list = JSON.parse(tests).keys.first.split("|") rescue nil
+
+      if list.blank?
+
+        flash[:error] = "ERROR: Test or specimen details extracting failed!"
+
+        redirect_to "/search_for_samples?target=receive_samples" and return
+
+      end
+
+      barcode = params[:id].strip
+
+      test_name = CGI.escape(list[0])
+
+      test_code = CGI.escape(list[3])
+
+      specimen = CGI.escape(list[2])
+
+      state = CGI.escape("Sample Rejected")
+
+      redirect_to "/rejection_reason?barcode=#{barcode}&test_name=#{test_name}&test_code=#{test_code}&specimen=#{specimen}&state=#{state}" and return
+
+    elsif status.strip.upcase == "DRAWN"
+
+      # redirect_to "/sample_status?id=#{params[:id]}" and return
 
     end
 
@@ -181,6 +218,12 @@ class LabProcessingController < ActionController::Base  # ApplicationController
 
   def sample_status
 
+    status_link = "#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@" +
+        "#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["specimen_status_path"]}#{params[:barcode]}"
+
+    status = RestClient.get(status_link).strip # rescue nil
+
+    render :text => status.strip
 
   end
 
@@ -322,9 +365,9 @@ class LabProcessingController < ActionController::Base  # ApplicationController
       end
 
       parameters = {
-          :id => params[:id].strip,
+          :id => params[:barcode].strip,
           :test => list[0],
-          :state => "Rejected",
+          :state => params[:state].titleize,
           :specimen => list[2],
           :location => "#{dept.strip.upcase.gsub(/\_/, " ").titleize}"
       }

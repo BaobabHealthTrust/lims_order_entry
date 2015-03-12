@@ -2,6 +2,8 @@ Rails.application.routes.draw do
 
   root 'order#index'
 
+  get "/lab_logout" => "lab_processing#index"
+
   get '/login' => 'sessions#login'
 
   get '/logout' => 'sessions#logout'
@@ -29,6 +31,8 @@ Rails.application.routes.draw do
   get "/dispose_sample/:id" => "lab_processing#dispose_sample"
 
   get "/list_rejection_reasons" => "lab_processing#list_rejection_reasons"
+
+  get "/rejection_reason" => "lab_processing#rejection_reason"
 
   post "/rejection_reason" => "lab_processing#rejection_reason"
 
