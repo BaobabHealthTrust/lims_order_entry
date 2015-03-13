@@ -1,7 +1,4 @@
-<script type="text/javascript">
-
-</script>
-<style>
+<!--style>
   #nav{
       display: none;
   }
@@ -9,31 +6,76 @@
       font-size: 30px;
   }
 
-</style>
+</style-->
 <%= form_tag("/sessions/login", :method => :post) do -%>
 
-  <div id="mainContent" style="border: 1px solid #23538a; border-radius: 15px; min-width:40%;max-width:80%;margin-left: 5%;padding: 20px;margin-top:20px;">
-    <span style="color: #23538a;font-size: 32px;">Login Details</span><br/><br/>
-    <div style="display: table;">
-      <div style="display: table-row;">
-        <div style="display: table-cell;padding: 10px;">Username</div>
-        <div style="display: table-cell;padding: 10px;">:</div>
-        <div style="display: table-cell;padding: 10px;"><input type="text" name="username" id="username"></div>
-      </div>
+    <div id="mainContent" style="border: 1px solid #23538a; width: 350px; border-top-right-radius: 150px;
+            border-bottom-right-radius: 150px; margin: auto; border-left: none;
+            background-image: linear-gradient(to right, #fff 1%, #23538a);
+            padding: 20px; margin-top:20px; text-align: center; font-size: 18px; padding-bottom:40px;">
+      <span style="color: #23538a;font-size: 22px;">User Login</span><br/><br/>
 
-      <div style="display: table-row;">
-        <div style="display: table-cell;padding: 10px;">Password</div>
-        <div style="display: table-cell;padding: 10px;">:</div>
-        <div style="display: table-cell;padding: 10px;"><input type="password" name="password" id="password"></div>
-      </div>
-      <div style="display: table-row;">
-        <div style="display: table-cell;padding: 10px;"><input type="submit" value="Login" class="button_green long"></div>
+      <div style="display: table; border-spacing: 10px;">
+        <div style="display: table-row;">
+          <div style="display: table-cell;padding: 5px; color: #23538a;">Username</div>
+          <div style="display: table-cell;padding: 1px;">:</div>
+          <div style="display: table-cell;padding: 5px; padding-right: 20px;">
+            <input type="text" name="username" id="username" style="width: 100%; padding: 8px; border-top-right-radius: 40px;
+                    border: 1px solid #23538a; border-left: none;" onclick="captureFreetext(this)" />
+          </div>
+        </div>
+
+        <div style="display: table-row;">
+          <div style="display: table-cell;padding: 5px; color: #23538a;">Password</div>
+          <div style="display: table-cell;padding: 1px;">:</div>
+          <div style="display: table-cell;padding: 5px; padding-right: 20px;">
+            <input type="password" name="password" id="password" style="width: 100%; padding: 8px; border-bottom-right-radius: 40px;
+                    border: 1px solid #23538a; border-left: none;" onclick="captureFreetext(this)" />
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
 <% end %>
 
-<div id="popupkeyboard" style="display:none;border: 1px solid #23538a; border-radius: 15px; min-width:40%;max-width:80%;margin-left: 5%;padding: 20px;margin-top:20px;">
+<script>
 
-</div>
+    function changeLabels() {
+
+        if (document.getElementById("btnNext")) {
+
+            document.getElementById("btnNext").innerHTML = "Login";
+
+            document.getElementById("btnNext").onclick = function () {
+
+                document.forms[0].submit();
+
+            }
+
+        } else {
+
+            setTimeout("changeLabels()", 10);
+
+            return;
+
+        }
+
+        if (document.getElementById("btnLogout")) {
+
+            document.getElementById("btnLogout").innerHTML = "Logout";
+
+            document.getElementById("btnLogout").style.display = "none";
+
+        } else {
+
+            setTimeout("changeLabels()", 10);
+
+            return;
+
+        }
+
+    }
+
+    setTimeout("changeLabels()", 10);
+
+</script>

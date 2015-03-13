@@ -365,27 +365,42 @@
         return document.getElementById(id);
     }
 
-    function load() {
+    function showShield() {
 
-        /*new FastButton(document.getElementById('btnOrder'), function () {
-         window.location = '/order/search?target=order';
-         });*/
+        if (__$("shield")) {
 
-        new FastButton(document.getElementById('btnView'), function () {
-            window.location = '/order/search?target=view';
-        });
+            document.removeChild(__$("shield"));
 
-        new FastButton(document.getElementById('btnPrint'), function () {
-            window.location = '/order/search?target=print';
-        });
+        } else {
 
-        new FastButton(document.getElementById('btnLogout'), function () {
-            clear();
-        });
+            var shield = document.createElement("div");
+            shield.id = "shield";
+            shield.style.position = "absolute";
+            shield.style.width = "100%";
+            shield.style.height = "100%";
+            shield.style.top = "0px";
+            shield.style.left = "0px";
+            shield.style.backgroundColor = "rgba(200,200,200,0.5)";
+            shield.style.zIndex = 110;
 
-        new FastButton(document.getElementById('showKeyboard'), function () {
-            showKeyboard(kybdnumeric);
-        });
+            document.body.appendChild(shield);
+
+            new FastButton(shield, function () {
+
+                if (__$("popup")) {
+
+                    document.body.removeChild(__$("popup"));
+
+                }
+
+                if (__$("shield")) {
+
+                    document.body.removeChild(__$("shield"));
+
+                }
+
+            });
+        }
 
     }
 
@@ -418,7 +433,7 @@
 </Script>
 
 </head>
-<body onload="resizePage(); load();" onresize="resizePage()">
+<body onload="resizePage();" onresize="resizePage()">
 
 <div style="width: 100%; position: absolute; top: 0px; left: 0px; height: 55px;
         border-bottom: 1px solid #23538a; text-align: right; font-size: 28px; color: #23538a;">
@@ -431,7 +446,15 @@
     </tr>
     <tr>
       <td id="location" style="font-size: 11px; vertical-align: top; text-align: left; padding-left: 3px;">
-        <%= (!@location.blank? ? "#{@location[:dept] rescue nil}#{(!(@location[:dept] rescue nil).blank? ? ":" : "")}#{@location[:bench] rescue nil}" : "") %>
+        <% if !session[:location].blank? and params[:controller].strip.downcase == "order" %>
+
+            <%= session[:location] rescue nil %>
+
+        <% else %>
+
+            <%= (!@location.blank? ? "#{@location[:dept] rescue nil}#{(!(@location[:dept] rescue nil).blank? ? ":" : "")}#{@location[:bench] rescue nil}" : "") %>
+
+        <% end %>
       </td>
     </tr>
   </table>
@@ -462,7 +485,7 @@
 </div>
 
 <div id="nav" style="position: absolute; bottom: 0px; left: 0px; width: 100%; height: 60px; background-color: #333; padding: 5px;">
-  <button id="btnLogout" class="button_red" style="float: left;" onclick="window.location = '/logout'">Logout</button>
+  <button id="btnLogout" class="button_red" style="float: left;" onclick="window.location = '/lab_logout'">Logout</button>
 
   <button id="btnNext" class="button_green" style="float: right; margin-right: 15px;" onclick="window.location = '/lab_processing/index'">Finish</button>
 </div>
@@ -498,7 +521,7 @@
 
     function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
 
-        if(!__$(container_id)){
+        if (!__$(container_id)) {
             return;
         }
 
@@ -520,11 +543,11 @@
             container.innerHTML = "";
 
             /*if (!__$("main")) {
-                var main = document.createElement("div");
-                main.id = "main";
+             var main = document.createElement("div");
+             main.id = "main";
 
-                container.appendChild(main);
-            }*/
+             container.appendChild(main);
+             }*/
 
             var target = ctrl;
 
@@ -832,15 +855,15 @@
 
     var currentUnits = "";
 
-    function captureFreetext(targetControl, addUnits, numeric){
+    function captureFreetext(targetControl, addUnits, numeric) {
 
-        if(__$("target")){
+        if (__$("target")) {
 
             document.body.removeChild(__$("target"));
 
         } else {
 
-            if(addUnits == undefined){
+            if (addUnits == undefined) {
 
                 addUnits = false;
 
@@ -852,7 +875,7 @@
 
             currentUnits = globalControl.getAttribute("units");
 
-            if(currentUnits == null){
+            if (currentUnits == null) {
 
                 currentUnits = "";
 
@@ -919,9 +942,25 @@
 
             textArea.value = myString;
 
+            textArea.onkeydown = function (e) {
+
+                if (typeof(Android) == "undefined" && e.keyCode == 13) {
+
+                    if (__$("Done")) {
+
+                        __$("Done").click();
+
+                    }
+
+                }
+
+            }
+
             inDiv.appendChild(textArea);
 
             showKeyboard(textArea, "keysDiv", undefined, numeric);
+
+            textArea.focus();
 
         }
 
