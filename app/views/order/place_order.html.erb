@@ -157,10 +157,10 @@
 
     var liSpecSelect, liTestSelect;
 
-    var selectedSample = null;
-    var selectedTest = null;
+    var selectedSample = ("<%= @specimen %>".trim().length > 0 ? "<%= @specimen %>" : null);
+    var selectedTest = ("<%= @test_name %>".trim().length > 0 ? "<%= @test_name %>" : null);
     var selectedOrderTests = [];
-    var selectedTestSpecimen = null;
+    var selectedTestSpecimen = ("<%= @specimen %>".trim().length > 0 ? "<%= @specimen %>" : null);
 
     var selectedTests = {};
 
@@ -173,6 +173,16 @@
     var selectedOrder = null;
 
     var selectedTestPriority = "R";
+
+    var preSelectedSpecimen = "<%= @specimen %>";
+
+    var preSelectedTest = "<%= @test_name %>";
+
+    var preSelectedTestCode = "<%= @test_code %>";
+
+    var preSelectAccessionNumber = "<%= @accession_number %>";
+
+    var preSelectedState = "<%= @state %>";
 
     var containerTypes = {
         "EDTA": purpletop,
@@ -263,8 +273,14 @@
 
                 var key = keys[i];
 
+                if(preSelectedSpecimen.trim().length > 0 && preSelectedSpecimen.trim().toLowerCase() != key.trim().toLowerCase()){
+
+                    continue;
+
+                }
+
                 var li = document.createElement("li");
-                li.innerHTML = key;
+                li.innerHTML = key + (preSelectedSpecimen.trim().toLowerCase() == key.trim().toLowerCase() ? "<i style='float: right; color: red;'>(Pre-selected)</i>" : "");
                 li.style.padding = "10px";
                 li.style.cursor = "pointer";
                 li.style.margin = "1px";
@@ -434,8 +450,14 @@
 
                 var key = associations[specimen][i];
 
+                if(preSelectedTest.trim().length > 0 && preSelectedTest.trim().toLowerCase() != key.trim().toLowerCase()){
+
+                    continue;
+
+                }
+
                 var li = document.createElement("li");
-                li.innerHTML = key;
+                li.innerHTML = key + (preSelectedTest.trim().toLowerCase() == key.trim().toLowerCase() ? "<i style='float: right; color: red;'>(Pre-selected)</i>" : "");
                 li.style.padding = "10px";
                 li.style.cursor = "pointer";
                 li.style.margin = "1px";
@@ -796,49 +818,6 @@
         }
 
         showSelections();
-    }
-
-    function showShield() {
-
-        if (__$("shield")) {
-
-            document.removeChild(__$("shield"));
-
-        } else {
-
-            var shield = document.createElement("div");
-            shield.id = "shield";
-            shield.style.position = "absolute";
-            shield.style.width = "100%";
-            shield.style.height = "100%";
-            shield.style.top = "0px";
-            shield.style.left = "0px";
-            shield.style.backgroundColor = "rgba(200,200,200,0.5)";
-            shield.style.zIndex = 110;
-
-            document.body.appendChild(shield);
-
-            new FastButton(shield, function () {
-
-                selectedTest = null;
-
-                selectedTestSpecimen = null;
-
-                if (__$("popup")) {
-
-                    document.body.removeChild(__$("popup"));
-
-                }
-
-                if (__$("shield")) {
-
-                    document.body.removeChild(__$("shield"));
-
-                }
-
-            });
-        }
-
     }
 
     function actOnSelection() {
@@ -1313,13 +1292,13 @@
 
                 new FastButton(check, function () {
 
-                // check.onclick = function () {
+                    // check.onclick = function () {
 
                     if (drawingSamples) {
 
                         var checks = document.getElementsByClassName("checks");
 
-                        for(var z = 0; z < checks.length; z++) {
+                        for (var z = 0; z < checks.length; z++) {
 
                             if (checks[z].getAttribute("selected") != null) {
 
@@ -1452,7 +1431,7 @@
 
                     }
 
-                // }
+                    // }
 
                 });
 
@@ -1747,6 +1726,15 @@
 
         var status = (drawingSamples ? "Drawn" : "Ordered");
 
+        if(preSelectedTest.trim().length > 0){
+
+            status = preSelectedState;
+
+        }
+
+        var aux = "&old_test_name=" + preSelectedTest + "&old_test_code=" + preSelectedTestCode + "&old_specimen_id=" +
+                preSelectAccessionNumber + "&old_specimen=" + preSelectedSpecimen;
+
         var url = "/process_order?npid=" + npid +
                 "&test_name=" + (test_name == "" ? "" : encodeURI(test_name)) +
                 "&specimen_code=" + (specimen_code == null ? specimen : specimen_code) +
@@ -1755,7 +1743,7 @@
                 "&last_name=" + (last_name == null ? "" : last_name) +
                 "&middle_name=" + (middle_name == null ? "" : middle_name) +
                 "&date_of_birth=" + (date_of_birth == null ? "" : date_of_birth) +
-                "&sex=" + (sex == null ? "" : sex) + "&status=" + status;
+                "&sex=" + (sex == null ? "" : sex) + "&status=" + status + (preSelectedTest.trim().length > 0 ? aux : "");
 
         var httpRequest = new XMLHttpRequest();
 
@@ -1845,13 +1833,13 @@
 
                 }
 
-                if(currentTests.trim().length > 12){
+                if (currentTests.trim().length > 12) {
 
                     currentTests = currentTests.substr(0, 12) + "...";
 
                 }
 
-                if (drawingSamples) {
+                if (drawingSamples && preSelectedTest.trim().length == 0) {
 
                     printBarcode(npid, result["messageDatetime"], currentTests, result["accessionNumber"]);
 
