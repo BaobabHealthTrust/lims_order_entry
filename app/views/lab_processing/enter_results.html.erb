@@ -206,7 +206,17 @@
                                   onclick="captureFreetext(this)"><%= remark rescue nil %></textarea>
                       </td>
                     </tr>
-
+                    <tr>
+                      <td>
+                        &nbsp;
+                      </td>
+                      <td align="right" style="vertical-align: top; padding-top: 20px;">
+                        Date:
+                      </td>
+                      <td>
+                        <input type="text" id="testtime_<%= code.strip.gsub(/\-/, "_") %>" name="testtime[<%= code %>]" style="width: 96%; padding: 10px;" onmousedown="enterDate(this)" value='<%= Time.now().strftime("%Y-%b-%d %H:%M")%>'/>
+                      </td>
+                    </tr>
                 <% end %>
 
               </table>
@@ -392,7 +402,17 @@
                                   onclick="captureFreetext(this)"><%= remark rescue nil %></textarea>
                       </td>
                     </tr>
-
+                    <tr>
+                      <td>
+                        &nbsp;
+                      </td>
+                      <td align="right" style="vertical-align: top; padding-top: 20px;">
+                        Date:
+                      </td>
+                      <td>
+                        <input type="text" id="testtime_<%= code.strip.gsub(/\-/, "_") %>" name="testtime[<%= code %>]" style="width: 96%; padding: 10px;" onmousedown="enterDate(this)" value='<%= Time.now().strftime("%Y-%b-%d %H:%M")%>'/>
+                      </td>
+                    </tr>
                 <% end %>
 
               </table>
