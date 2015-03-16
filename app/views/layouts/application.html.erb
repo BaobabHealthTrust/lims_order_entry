@@ -386,6 +386,183 @@
         }
 
     }
+
+    function confirmAction(msg, action) {
+
+        showShield();
+
+        if (!__$("shield")) {
+
+            showShield();
+
+        }
+
+        var popup = document.createElement("div");
+        popup.id = "popup";
+        popup.style.position = "absolute";
+        popup.style.minHeight = "200px";
+        popup.style.top = "20%";
+        popup.style.width = "330px";
+        popup.style.left = ((window.innerWidth - 330) / 2) + "px";
+        popup.style.backgroundColor = "#fff";
+        popup.style.zIndex = 120;
+        popup.style.border = "2px outset #fff";
+        popup.style.borderRadius = "8px";
+
+        document.body.appendChild(popup);
+
+        var table = document.createElement("table");
+        table.width = "100%";
+        table.style.fontSize = "24px";
+
+        popup.appendChild(table);
+
+        var tbody = document.createElement("tbody");
+
+        table.appendChild(tbody);
+
+        var tr1 = document.createElement("tr");
+
+        tbody.appendChild(tr1);
+
+        var th = document.createElement("th");
+        th.innerHTML = "Confirmation";
+        th.style.backgroundColor = "#345d8c";
+        th.style.color = "#fff";
+        th.style.borderTopLeftRadius = "8px";
+        th.style.borderTopRightRadius = "8px";
+        th.style.border = "2px outset #23538a";
+        th.colSpan = "2";
+
+        tr1.appendChild(th);
+
+        var tr2 = document.createElement("tr");
+
+        tbody.appendChild(tr2);
+
+        var td1_1 = document.createElement("td");
+        td1_1.colSpan = "2";
+        td1_1.style.padding = "10px";
+        td1_1.style.paddingTop = "20px";
+        td1_1.style.paddingBottom = "20px";
+        td1_1.align = "center";
+        td1_1.innerHTML = msg;
+
+        tr2.appendChild(td1_1);
+
+        var tr3 = document.createElement("tr");
+
+        tbody.appendChild(tr3);
+
+        var td2_1 = document.createElement("td");
+        td2_1.align = "center";
+        td2_1.style.padding = "20px";
+
+        tr3.appendChild(td2_1);
+
+        var td2_2 = document.createElement("td");
+        td2_2.align = "center";
+        td2_2.style.padding = "20px";
+
+        tr3.appendChild(td2_2);
+
+        var btnNo = document.createElement("button");
+        btnNo.className = "button_green";
+        btnNo.innerHTML = "No";
+        btnNo.style.width = "120px";
+        btnNo.style.cursor = "pointer";
+
+        td2_1.appendChild(btnNo);
+
+        var btnYes = document.createElement("button");
+        btnYes.className = "button_red";
+        btnYes.innerHTML = "Yes";
+        btnYes.style.width = "120px";
+        btnYes.style.cursor = "pointer";
+
+        td2_2.appendChild(btnYes);
+
+        new FastButton(btnYes, function () {
+
+            if (__$("popup")) {
+
+                document.body.removeChild(__$("popup"));
+
+            }
+
+            if (__$("shield")) {
+
+                document.body.removeChild(__$("shield"));
+
+            }
+
+            eval(action);
+
+        });
+
+        new FastButton(btnNo, function () {
+
+            if (__$("popup")) {
+
+                document.body.removeChild(__$("popup"));
+
+            }
+
+            if (__$("shield")) {
+
+                document.body.removeChild(__$("shield"));
+
+            }
+
+        });
+
+    }
+
+    function showShield() {
+
+        if (__$("shield")) {
+
+            document.removeChild(__$("shield"));
+
+        } else {
+
+            var shield = document.createElement("div");
+            shield.id = "shield";
+            shield.style.position = "absolute";
+            shield.style.width = "100%";
+            shield.style.height = "100%";
+            shield.style.top = "0px";
+            shield.style.left = "0px";
+            shield.style.backgroundColor = "rgba(200,200,200,0.5)";
+            shield.style.zIndex = 110;
+
+            document.body.appendChild(shield);
+
+            new FastButton(shield, function () {
+
+                if (typeof(selectedTest) != "undefined")
+                    selectedTest = null;
+
+                if (typeof(selectedTestSpecimen) != "undefined")
+                    selectedTestSpecimen = null;
+
+                if (__$("popup")) {
+
+                    document.body.removeChild(__$("popup"));
+
+                }
+
+                if (__$("shield")) {
+
+                    document.body.removeChild(__$("shield"));
+
+                }
+
+            });
+        }
+
+    }
+
     navigator.sayswho= (function(){
         var ua= navigator.userAgent, tem,
                 M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];

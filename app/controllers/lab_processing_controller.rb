@@ -543,7 +543,7 @@ class LabProcessingController < ActionController::Base # ApplicationController
       obr.universal_service_id = "#{params[:testcode] rescue nil}^#{params[:testname] rescue nil}^LOINC"
       obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
       obr.relevant_clinical_info = "Rule out diagnosis"
-      obr.ordering_provider = "439234^Moyo^Chris"
+      obr.ordering_provider = "439234^#{session[:user_person_names]['last_name'] rescue "Unknown"}^#{session[:user_person_names]['first_name'] rescue "Unknown"}"
       # obr.result_status = "Tested"
 
       msg << obr # add the OBR segment to the message
@@ -557,7 +557,7 @@ class LabProcessingController < ActionController::Base # ApplicationController
       obx.references_range = nil
       obx.observation_result_status = "F"
       obx.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
-      obx.responsible_observer = "439234^Moyo^Chris"
+      obx.responsible_observer = "439234^#{session[:user_person_names]['last_name'] rescue "Unknown"}^#{session[:user_person_names]['first_name'] rescue "Unknown"}"
       obx.analysis_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
       obx.performing_organization_name = "KCH Laboratory"
       obx.performing_organization_address = "^^Lilongwe^^^Malawi"
@@ -769,7 +769,7 @@ class LabProcessingController < ActionController::Base # ApplicationController
     obr.universal_service_id = "#{params[:test_code] rescue nil}^#{params[:test_name] rescue nil}"
     obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
     obr.relevant_clinical_info = "Rule out diagnosis"
-    obr.ordering_provider = "439234^Moyo^Chris"
+    obr.ordering_provider = "439234^#{session[:user_person_names]['last_name'] rescue "Unknown"}^#{session[:user_person_names]['first_name'] rescue "Unknown"}"
 
     msg << obr # add the OBR segment to the message
 

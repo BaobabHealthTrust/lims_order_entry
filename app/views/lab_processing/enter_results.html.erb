@@ -20,7 +20,7 @@
 
     <input type="hidden" name="testcode" style="width: 96%; padding: 10px;" value="<%= @test_code %>"/>
 
-    <input type="hidden" name="state" style="width: 96%; padding: 10px;" value="<%= params[:state].titleize rescue "Tested" %>"/>
+    <input type="hidden" id="state" name="state" style="width: 96%; padding: 10px;" value="<%= params[:state].titleize rescue "Tested" %>"/>
 
     <table style="margin: auto; margin-top: 10px; width: 100%;" cellpadding="5">
     <tr>
@@ -466,6 +466,35 @@
             return;
 
         }
+
+        <% if !params[:state].blank? and params[:state].strip.upcase == "VERIFIED" %>
+
+            if(__$("nav")){
+
+                var btnCorrect = document.createElement("button");
+                btnCorrect.id = "btnCorrect";
+                btnCorrect.innerHTML = "Save Correction";
+                btnCorrect.className = "button_blue";
+                btnCorrect.style.cssFloat = "right";
+                btnCorrect.style.marginRight = "10px";
+
+                btnCorrect.onclick = function() {
+
+                    if(__$("state")){
+
+                        __$("state").value = "Tested";
+
+                    }
+
+                    document.forms[0].submit();
+
+                }
+
+                __$("nav").appendChild(btnCorrect);
+
+            }
+
+        <% end %>
 
     }
 

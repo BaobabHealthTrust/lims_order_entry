@@ -12,6 +12,30 @@ class OrderController < ApplicationController
 
   def place_order
 
+    link = "#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["search_by_acc_num_path"]}#{params[:accession_number]}" rescue nil
+
+    tests = JSON.parse(RestClient.get(link).strip) rescue nil
+
+    @accession_number = params[:accession_number] rescue nil
+
+    @state = params[:state] rescue nil
+
+    @test_code = params[:test_code] rescue nil
+
+    @test_name = params[:test_name] rescue nil
+
+    @specimen = nil
+
+    @parent_test_code = nil
+
+    @parent_test_name = nil
+
+    if !tests.blank?
+
+      @parent_test_name, id, @specimen, @parent_test_code = tests.keys.first.split("|") rescue [nil, nil, nil, nil]
+
+    end
+
     @patient = @request.get_patient_by_npid(params[:id]).first rescue nil
 
   end
@@ -246,6 +270,8 @@ class OrderController < ApplicationController
 
     tests = params[:test_name].split(",")
 
+    priority = "R"
+
     i = 0
     tests.each do |test|
 
@@ -264,7 +290,7 @@ class OrderController < ApplicationController
         obr.universal_service_id = "#{test_code rescue nil}^#{test_name rescue nil}^LOINC"
         obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
         obr.relevant_clinical_info = "Rule out diagnosis"
-        obr.ordering_provider = "439234^#{session[:user_person_names]['last_name']}^#{session[:user_person_names]['first_name']}"
+        obr.ordering_provider = "439234^#{session[:user_person_names]['last_name'] rescue "Unknown"}^#{session[:user_person_names]['first_name'] rescue "Unknown"}"
 
         msg << obr # add the OBR segment to the message
 
@@ -294,7 +320,8 @@ class OrderController < ApplicationController
         obr.universal_service_id = "#{code rescue nil}^#{name rescue nil}^LOINC"
         obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
         obr.relevant_clinical_info = "Rule out diagnosis"
-        obr.ordering_provider = "439234^#{session[:user_person_names]['last_name']}^#{session[:user_person_names]['first_name']}"
+        obr.ordering_provider = "439234^#{session[:user_person_names]['last_name'] rescue "Unknown"}^#{session[:user_person_names]['first_name'] rescue "Unknown"}"
+
 
         msg << obr # add the OBR segment to the message
 
@@ -315,9 +342,37 @@ class OrderController < ApplicationController
 
     end
 
+    i += 1
+
+    if !params[:old_test_code].blank? and !params[:old_test_name].blank? and !params[:old_specimen_id].blank? and !params[:specimen].blank? and false
+
+      obr = HL7::Message::Segment::OBR.new
+      obr.set_id = i
+      obr.universal_service_id = "#{params[:old_test_code] rescue nil}^#{params[:old_test_name] rescue nil}^LOINC"
+      obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+      obr.relevant_clinical_info = "Rule out diagnosis"
+      obr.ordering_provider = "439234^#{session[:user_person_names]['last_name'] rescue "Unknown"}^#{session[:user_person_names]['first_name'] rescue "Unknown"}"
+
+      msg << obr # add the OBR segment to the message
+
+      tq1 = HL7::Message::Segment::TQ1.new
+      tq1.set_id = i
+      tq1.priority = priority
+
+      msg << tq1 # add the TQ1 segment to the message
+
+      nte = HL7::Message::Segment::NTE.new
+      nte.set_id = i
+      nte.source = "P"
+      nte.comment = "Voided^"
+
+      msg << nte # add the NTE segment to the message
+
+    end
+
     spm = HL7::Message::Segment::SPM.new
     spm.set_id = "1"
-    spm.specimen_id = ""
+    spm.specimen_id = "#{params[:old_specimen_id]}"
     spm.specimen_type = "#{params[:specimen] rescue nil}^#{params[:specimen_code] rescue nil}"
 
     msg << spm # add the SPM segment to the message
@@ -420,7 +475,7 @@ class OrderController < ApplicationController
       obr.universal_service_id = "#{test_code rescue nil}^#{test_name rescue nil}^LOINC"
       obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
       obr.relevant_clinical_info = "Rule out diagnosis"
-      obr.ordering_provider = "439234^#{session[:user_person_names]['last_name']}^#{session[:user_person_names]['first_name']}"
+      obr.ordering_provider = "439234^#{session[:user_person_names]['last_name'] rescue "Unknown"}^#{session[:user_person_names]['first_name'] rescue "Unknown"}"
 
       msg << obr # add the OBR segment to the message
 

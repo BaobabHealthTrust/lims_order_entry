@@ -132,16 +132,16 @@
 
             <table width="100%">
               <tr style="background-color: #ccc; color: #333; font-size: 18px;">
-                <th style="width: 120px; padding: 5px;">
+                <th style="width: 148px; padding: 5px;">
                   Date
                 </th>
-                <th style="width: 30%; padding: 5px;">
+                <th style="width: 29.5%; padding: 5px;">
                   Test
                 </th>
                 <th style=" padding: 5px;">
                   Result/Status
                 </th>
-                <th style="width: 90px; padding: 5px;">
+                <th style="width: 113px; padding: 5px;">
                   Print Label
                 </th>
               </tr>
@@ -302,6 +302,30 @@
                         td2.style.border = "1px dotted #ccc";
 
                         tr.appendChild(td2);
+
+                        if(result[key]["results"][kid]["status"].toLowerCase().trim().match(/ordered/) || result[key]["results"][kid]["status"].toLowerCase().trim().match(/drawn/)) {
+
+                            var edit = document.createElement("img");
+                            edit.src = pencil;
+
+                            edit.height = 30;
+                            edit.style.cssFloat = "right";
+                            edit.style.marginRight = "5px";
+                            td2.setAttribute("state", result[key]["results"][kid]["status"]);
+                            td2.setAttribute("accession_number", key);
+                            td2.setAttribute("test_code", codes[result[key]["results"][kid]["test_name"]]);
+                            td2.setAttribute("test_name", result[key]["results"][kid]["test_name"]);
+                            td2.style.cursor = "pointer";
+
+                            td2.appendChild(edit);
+
+                            new FastButton(td2, function () {
+
+                                editTest(this.getAttribute("accession_number"), this.getAttribute("state"), this.getAttribute("test_code"), this.getAttribute("test_name"));
+
+                            });
+
+                        }
 
                         var td3 = document.createElement("td");
                         td3.innerHTML = (result[key]["results"][kid]["result"] != null && String(result[key]["results"][kid]["result"]).trim().length > 0 ?
@@ -642,6 +666,160 @@
 
                 loadResults();
 
+            }
+        }
+
+        function editTest(accession_number, currentState, code, name){
+
+            if (!__$("shield")) {
+
+                showShield();
+
+            }
+
+            var popup = document.createElement("div");
+            popup.id = "popup";
+            popup.style.position = "absolute";
+            popup.style.minHeight = "200px";
+            popup.style.top = "20%";
+            popup.style.width = "330px";
+            popup.style.left = ((window.innerWidth - 330) / 2) + "px";
+            popup.style.backgroundColor = "#fff";
+            popup.style.zIndex = 120;
+            popup.style.border = "2px outset #fff";
+            popup.style.borderRadius = "8px";
+
+            document.body.appendChild(popup);
+
+            var table = document.createElement("table");
+            table.width = "100%";
+            table.style.fontSize = "24px";
+
+            popup.appendChild(table);
+
+            var tbody = document.createElement("tbody");
+
+            table.appendChild(tbody);
+
+            var tr1 = document.createElement("tr");
+
+            tbody.appendChild(tr1);
+
+            var th = document.createElement("th");
+            th.innerHTML = "Edit/Delete Test " + name + " for Order #" + accession_number;
+            th.style.backgroundColor = "#345d8c";
+            th.style.color = "#fff";
+            th.style.borderTopLeftRadius = "8px";
+            th.style.borderTopRightRadius = "8px";
+            th.style.border = "2px outset #23538a";
+            th.colSpan = "2";
+
+            tr1.appendChild(th);
+
+            var tr2 = document.createElement("tr");
+
+            tbody.appendChild(tr2);
+
+            var td1_1 = document.createElement("td");
+            td1_1.colSpan = "2";
+            td1_1.style.padding = "10px";
+            td1_1.style.paddingTop = "20px";
+            td1_1.style.paddingBottom = "20px";
+            td1_1.align = "center";
+            td1_1.innerHTML = "What do you want to do with this test?";
+
+            tr2.appendChild(td1_1);
+
+            var tr3 = document.createElement("tr");
+
+            tbody.appendChild(tr3);
+
+            var td2_1 = document.createElement("td");
+            td2_1.align = "center";
+            td2_1.style.padding = "20px";
+
+            tr3.appendChild(td2_1);
+
+            var td2_2 = document.createElement("td");
+            td2_2.align = "center";
+            td2_2.style.padding = "20px";
+
+            tr3.appendChild(td2_2);
+
+            var btnDelete = document.createElement("button");
+            btnDelete.className = "button_red";
+            btnDelete.innerHTML = "Delete";
+            btnDelete.style.width = "120px";
+            btnDelete.style.cursor = "pointer";
+
+            td2_1.appendChild(btnDelete);
+
+            var btnEdit = document.createElement("button");
+            btnEdit.className = "button_gray";
+            btnEdit.innerHTML = "Change";
+            btnEdit.style.width = "120px";
+            btnEdit.style.cursor = "pointer";
+
+            td2_2.appendChild(btnEdit);
+
+            /*new FastButton(btnEdit, function () {
+
+                if (__$("popup")) {
+
+                    document.body.removeChild(__$("popup"));
+
+                }
+
+                if (__$("shield")) {
+
+                    document.body.removeChild(__$("shield"));
+
+                }
+
+                window.location = "/place_order/<%= @patient[:national_id] %>?accession_number=" + accession_number +
+                        "&state=" + currentState + "&test_code=" + code + "&test_name=" + name;
+
+            });*/
+
+            new FastButton(btnDelete, function () {
+
+                if (__$("popup")) {
+
+                    document.body.removeChild(__$("popup"));
+
+                }
+
+                if (__$("shield")) {
+
+                    document.body.removeChild(__$("shield"));
+
+                }
+
+                confirmAction("Are you sure about deleting this test?", "deleteTest('" + accession_number + "')");
+
+            });
+
+        }
+
+        function deleteTest(id){
+
+            var url = "/update_state/" + id + "?state=Voided";
+
+            var httpRequest = new XMLHttpRequest();
+            httpRequest.onreadystatechange = function () {
+                if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
+                        httpRequest.status == 304)) {
+
+                    var results = httpRequest.responseText;
+
+                    window.location = window.location.href;
+
+                }
+            };
+            try {
+                httpRequest.open('GET', url, true);
+                httpRequest.send(null);
+            } catch (e) {
             }
         }
 
