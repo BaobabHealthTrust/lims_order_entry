@@ -427,7 +427,7 @@ class LabProcessingController < ActionController::Base # ApplicationController
 
   def save_result
 
-    # raise params.inspect
+     #raise params.inspect
 
     patient = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
                                             "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["patient_by_acc_num_path"]}#{params[:barcode]}")).first
@@ -442,7 +442,7 @@ class LabProcessingController < ActionController::Base # ApplicationController
     msh.enc_chars = "^~\&"
     msh.sending_facility = "KCH^2.16.840.1.113883.3.5986.2.15^ISO"
     msh.recv_facility = "KCH^2.16.840.1.113883.3.5986.2.15^ISO"
-    msh.time = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+    msh.time = "#{params[:testtime].to_datetime.strftime("%Y%m%d%H%M%S") }"
     msh.message_type = "ORU^R01^ORU_R01"
     msh.message_control_id = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
     msh.processing_id = "T"
@@ -497,7 +497,7 @@ class LabProcessingController < ActionController::Base # ApplicationController
       obr = HL7::Message::Segment::OBR.new
       obr.set_id = "1"
       obr.universal_service_id = "#{code rescue nil}^#{params[:test_name][code] rescue nil}^LOINC"
-      obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+      obr.observation_date = "#{params[:testtime].to_datetime.strftime("%Y%m%d%H%M%S") rescue Time.now.strftime("%Y%m%d%H%M%S")}"
       obr.relevant_clinical_info = "Rule out diagnosis"
       obr.ordering_provider = "439234^#{session[:user_person_names]['last_name']}^#{session[:user_person_names]['first_name']}"
       # obr.result_status = "Tested"
@@ -512,9 +512,9 @@ class LabProcessingController < ActionController::Base # ApplicationController
       obx.units = "#{params[:test_units][code]}"
       obx.references_range = "#{params[:test_range][code]}"
       obx.observation_result_status = "F"
-      obx.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+      obx.observation_date = "#{params[:testtime].to_datetime.strftime("%Y%m%d%H%M%S") rescue Time.now.strftime("%Y%m%d%H%M%S")}"
       obx.responsible_observer = "439234^#{session[:user_person_names][:last_name]}^#{session[:user_person_names][:first_name]}"
-      obx.analysis_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+      obx.analysis_date = "#{params[:testtime].to_datetime.strftime("%Y%m%d%H%M%S") rescue Time.now.strftime("%Y%m%d%H%M%S")}"
       obx.performing_organization_name = "KCH Laboratory"
       obx.performing_organization_address = "^^Lilongwe^^^Malawi"
       obx.performing_organization_medical_director = "Limula^Henry"
@@ -541,7 +541,7 @@ class LabProcessingController < ActionController::Base # ApplicationController
       obr = HL7::Message::Segment::OBR.new
       obr.set_id = "1"
       obr.universal_service_id = "#{params[:testcode] rescue nil}^#{params[:testname] rescue nil}^LOINC"
-      obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+      obr.observation_date = "#{params[:testtime].to_datetime.strftime("%Y%m%d%H%M%S") rescue Time.now.strftime("%Y%m%d%H%M%S")}"
       obr.relevant_clinical_info = "Rule out diagnosis"
       obr.ordering_provider = "439234^#{session[:user_person_names]['last_name'] rescue "Unknown"}^#{session[:user_person_names]['first_name'] rescue "Unknown"}"
       # obr.result_status = "Tested"
@@ -556,7 +556,7 @@ class LabProcessingController < ActionController::Base # ApplicationController
       obx.units = nil
       obx.references_range = nil
       obx.observation_result_status = "F"
-      obx.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+      obx.observation_date = "#{params[:testtime].to_datetime.strftime("%Y%m%d%H%M%S") rescue Time.now.strftime("%Y%m%d%H%M%S")}"
       obx.responsible_observer = "439234^#{session[:user_person_names]['last_name'] rescue "Unknown"}^#{session[:user_person_names]['first_name'] rescue "Unknown"}"
       obx.analysis_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
       obx.performing_organization_name = "KCH Laboratory"
