@@ -44,7 +44,7 @@ class SessionsController < ApplicationController
     get_wards_link = "#{CONFIG["user_management_protocol"]}://#{CONFIG["user_management_server"]}:#{CONFIG["user_management_port"]}#{CONFIG["user_management_wards"]}"
     @wards = JSON.parse(RestClient.get(get_wards_link))
 
-    render :layout => "lab"
+
   end
 
   def location

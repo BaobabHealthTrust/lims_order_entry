@@ -80,7 +80,15 @@
 
                 }
 
-                document.forms[0].submit();
+                if (selectedDept == null || selectedDev == null)
+                {
+                    showMsg("Please select lab department and workstation")
+                }
+                else
+                {
+                    document.forms[0].submit();
+                }
+
 
             }
 
@@ -98,7 +106,7 @@
 
             document.getElementById("btnLogout").onclick = function () {
 
-                window.location = "/enter_location";
+                window.location = "/lab_processing/index";
 
             }
 

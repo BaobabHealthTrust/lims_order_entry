@@ -322,6 +322,7 @@ class OrderController < ApplicationController
         obr.relevant_clinical_info = "Rule out diagnosis"
         obr.ordering_provider = "439234^#{session[:user_person_names]['last_name'] rescue "Unknown"}^#{session[:user_person_names]['first_name'] rescue "Unknown"}"
 
+
         msg << obr # add the OBR segment to the message
 
         tq1 = HL7::Message::Segment::TQ1.new

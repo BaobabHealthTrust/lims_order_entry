@@ -369,6 +369,20 @@
         return document.getElementById(id);
     }
 
+    function showMsg(msg) {
+
+        if (typeof(Android) != "undefined") {
+
+            Android.showMsg(msg);
+
+        } else {
+
+            alert(msg);
+
+        }
+
+    }
+
     function resizePage() {
 
         if(__$("main")){
