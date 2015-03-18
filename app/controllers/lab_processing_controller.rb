@@ -968,9 +968,11 @@ class LabProcessingController < ActionController::Base # ApplicationController
 
         end
 
-        flash[:notice] = "Locked " + params[:id] + " to " + ip
+        # flash[:notice] = "Locked " + params[:id] + " to " + ip
 
       else
+
+        flash[:error] = "Patient record locked!"
 
         redirect_to "/lab/" and return
 
@@ -1029,7 +1031,7 @@ class LabProcessingController < ActionController::Base # ApplicationController
 
         file = File.delete(name)
 
-        flash[:notice] = "Unlocked " + params[:id] + " from " + ip
+        # flash[:notice] = "Unlocked " + params[:id] + " from " + ip
 
       end
 
