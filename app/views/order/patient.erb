@@ -616,11 +616,11 @@
 
                 if (typeof(Android) != "undefined") {
 
-                    Android.printResultBarcode(full_name, npid, messageDatetime, ward, testsTBD, accessionNumber);
-
+                    Android.printResultBarcode(testsTBD);
+                    
                 } else {
 
-                    alert("Results: " + testsTBD);
+                    alert(testsTBD);
 
                 }
 
