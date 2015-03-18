@@ -342,6 +342,11 @@
         color: #000;
     }
 
+    input {
+        -webkit-user-modify: read-write-plaintext-only;
+        -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    }
+
 </style>
 
 <style>
@@ -579,7 +584,7 @@
                     [1, 2, 3, ':'],
                     [4, 5, 6, '/'],
                     [7, 8, 9, '.'],
-                    ['&larr;', 0, '', 'abc', "Done"]
+                    ['&larr;', 0, '', 'abc', "OK"]
                 ];
 
             } else {
@@ -590,7 +595,7 @@
                         ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
                         ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
                         ['', "Z", "X", "C", "V", "B", "N", "M", '', "CAP"],
-                        ['', '&nbsp;', '&larr;', ":", ".", "/", "num", "abc", "Done"]
+                        ['', '&nbsp;', '&larr;', ":", ".", "/", "num", "abc", "OK"]
                     ];
 
                 } else {
@@ -599,7 +604,7 @@
                         ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
                         ["J", "K", "L", "M", "N", "O", "P", "Q", "R"],
                         ["S", "T", "U", "V", "W", "X", "Y", "Z", "CAP"],
-                        ['', '&nbsp;', '&larr;', ":", ".", "/", "num", "qwe", "Done"]
+                        ['', '&nbsp;', '&larr;', ":", ".", "/", "num", "qwe", "OK"]
                     ];
 
                 }
@@ -636,7 +641,7 @@
 
                     var button = document.createElement('button');
                     button.setAttribute('class', (disabled[keys[i][j]] ? 'button_gray' : 'button_blue'));
-                    button.style.width = '65px';
+                    button.style.width = '45px';
                     button.style.height = '60px';
                     button.style.minWidth = '40px';
                     button.style.minHeight = '40px';
@@ -656,13 +661,14 @@
 
                     if (keys[i][j] == "hide") {
 
-                        button.style.fontSize = "20px";
-                        button.style.padding = "18px";
+                        button.style.fontSize = "12px";
+                        button.style.padding = "0px";
 
-                    } else if (keys[i][j] == "Done") {
+                    } else if (keys[i][j] == "OK" || keys[i][j] == "num"  || keys[i][j] == "qwe" || keys[i][j] == "abc" || keys[i][j] == "cap" || keys[i][j] == "CAP") {
 
-                        button.style.fontSize = "20px";
-                        button.style.padding = "18px";
+                        button.style.fontSize = "14px";
+                        button.style.padding = "0px";
+                        // button.style.marginTop = "-10px";
 
                     }
 
@@ -745,7 +751,7 @@
 
                                 target.value += " ";
 
-                            } else if (this.innerHTML.trim() == 'Done') {
+                            } else if (this.innerHTML.trim() == 'OK') {
 
                                 globalControl.value = target.value.trim() + (attachUnits && target.value.trim().length > 0 ? " " + currentUnits : "");
 
@@ -922,7 +928,7 @@
             tr2.appendChild(td2);
 
             var inDiv = document.createElement("div");
-            inDiv.style.height = "300px";
+            inDiv.style.height = "150px";
             inDiv.style.width = "100%";
 
             td1.appendChild(inDiv);
@@ -935,8 +941,8 @@
 
             var textArea = document.createElement("textarea");
             textArea.id = "textArea";
-            textArea.style.width = "96%";
-            textArea.style.height = "90%";
+            textArea.style.width = "95%";
+            textArea.style.height = "80%";
             textArea.style.padding = "10px";
             textArea.style.fontSize = "24px";
 
@@ -946,9 +952,9 @@
 
                 if (typeof(Android) == "undefined" && e.keyCode == 13) {
 
-                    if (__$("Done")) {
+                    if (__$("OK")) {
 
-                        __$("Done").click();
+                        __$("OK").click();
 
                     }
 

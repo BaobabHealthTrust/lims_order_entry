@@ -3,6 +3,8 @@ class LabProcessingController < ActionController::Base # ApplicationController
   before_filter :check_device_location, :only => [:index, :search_for_samples, :check_sample_state, :enter_results,
                                                   :rejection_reason, :reject_sample]
 
+  after_filter :unlock_specimen, :only => [:enter_results]
+
   def index
 
     redirect_to "/lab_processing/capture_location" and return if @location.empty?
@@ -499,7 +501,7 @@ class LabProcessingController < ActionController::Base # ApplicationController
       obr.universal_service_id = "#{code rescue nil}^#{params[:test_name][code] rescue nil}^LOINC"
       obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
       obr.relevant_clinical_info = "Rule out diagnosis"
-      obr.ordering_provider = "439234^#{session[:user_person_names]['last_name']}^#{session[:user_person_names]['first_name']}"
+      obr.ordering_provider = "439234^#{session[:user_person_names]['last_name'] rescue "Unknown"}^#{session[:user_person_names]['first_name'] rescue "Unknown"}"
       # obr.result_status = "Tested"
 
       msg << obr # add the OBR segment to the message
@@ -513,7 +515,7 @@ class LabProcessingController < ActionController::Base # ApplicationController
       obx.references_range = "#{params[:test_range][code]}"
       obx.observation_result_status = "F"
       obx.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
-      obx.responsible_observer = "439234^#{session[:user_person_names][:last_name]}^#{session[:user_person_names][:first_name]}"
+      obx.responsible_observer = "439234^#{session[:user_person_names][:last_name] rescue "Unknown"}^#{session[:user_person_names][:first_name] rescue "Unknown"}"
       obx.analysis_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
       obx.performing_organization_name = "KCH Laboratory"
       obx.performing_organization_address = "^^Lilongwe^^^Malawi"
@@ -663,7 +665,7 @@ class LabProcessingController < ActionController::Base # ApplicationController
       obr.universal_service_id = "#{test_code rescue nil}^#{test_name rescue nil}^LOINC"
       obr.observation_date = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
       obr.relevant_clinical_info = "Rule out diagnosis"
-      obr.ordering_provider = "439234^#{session[:user_person_names][:last_name]}^#{session[:user_person_names][:first_name]}"
+      obr.ordering_provider = "439234^#{session[:user_person_names][:last_name] rescue "Unknown"}^#{session[:user_person_names][:first_name] rescue "Unknown"}"
 
       msg << obr # add the OBR segment to the message
 
@@ -950,6 +952,32 @@ class LabProcessingController < ActionController::Base # ApplicationController
   # Check if device location is set
   def check_device_location
 
+    if params[:action].match(/enter_results/)
+
+      ip = request.env["REMOTE_ADDR"]
+
+      locks = Dir.glob("#{Rails.root}/tmp/#{params[:id]}*")
+
+      if locks.length == 0
+
+        Tempfile.open("#{params[:id]}", "tmp") do |f|
+
+          f.print("#{params[:id]}")
+
+          f.flush;
+
+        end
+
+        flash[:notice] = "Locked " + params[:id] + " to " + ip
+
+      else
+
+        redirect_to "/lab/" and return
+
+      end
+
+    end
+
     # arp -H ether 192.168.15.104 | awk 'FNR==2 {print $3}'
 
     target = `arp -H ether #{request.env["REMOTE_ADDR"]} | awk 'FNR==2 {print $3}'`
@@ -989,5 +1017,24 @@ class LabProcessingController < ActionController::Base # ApplicationController
 
   end
 
+  def unlock_specimen
+
+    locks = Dir.glob("#{Rails.root}/tmp/#{params[:id]}*")
+
+    if locks.length > 0
+
+      locks.each do |name|
+
+        ip = File.open(name).read
+
+        file = File.delete(name)
+
+        flash[:notice] = "Unlocked " + params[:id] + " from " + ip
+
+      end
+
+    end
+
+  end
 
 end
