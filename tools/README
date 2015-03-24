@@ -9,13 +9,22 @@ Device USB Configuration Instructions
 
 4. Close menu
 
-5. Connect the device to the configuration PC using the Android Device to PC cable
+5. On "Settings" menu, enable "WLAN" and select the menu
 
-6. On a commandline console, run "sudo su" and enter password
+6. Add device to network which can provide access to the target server instance
 
-7. Run command "./config.sh"
+7. Close menu
 
-8. When running the application, point it to the specific target application 
+8. Connect the device to the configuration PC using the Android Device to PC cable
+
+9. On a commandline console, run "sudo su" and enter password
+
+10. Run command "./config.sh"
+
+11. On the device, to run the application, click the "Home" button and select 
+		the "LIMS Mobile" and set it as the default application to open
+
+12. When running the application, point it to the specific target application 
 		server path whether Order entry for wards:
 		
 		e.g. "{PROTOCOL}://{IP ADDRESS}:{PORT}/"
