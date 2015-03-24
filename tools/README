@@ -1,0 +1,33 @@
+Device USB Configuration Instructions
+=====================================
+
+1. On the device, select "Settings"
+
+2. Click menu entry "{} Developer options"
+
+3. Make sure option "USB debugging" is checked
+
+4. Close menu
+
+5. Connect the device to the configuration PC using the Android Device to PC cable
+
+6. On a commandline console, run "sudo su" and enter password
+
+7. Run command "./config.sh"
+
+8. When running the application, point it to the specific target application 
+		server path whether Order entry for wards:
+		
+		e.g. "{PROTOCOL}://{IP ADDRESS}:{PORT}/"
+		
+		or Lab for laboratories
+
+		e.g. "{PROTOCOL}://{IP ADDRESS}:{PORT}/lab"
+		
+		where:
+		
+		PROTOCOL: 	is http / https
+		IP ADDRESS: is server IP address e.g. 127.0.0.1
+		PORT:				is server port e.g. 3000
+		
+		
