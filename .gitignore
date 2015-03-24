@@ -19,3 +19,8 @@
 .idea/
 config/*.yml
 *~
+tools/GooglePlay.apk
+tools/Launcher2.apk
+tools/MarketUpdater.apk
+tools/manifest-merger-release-report.txt
+
