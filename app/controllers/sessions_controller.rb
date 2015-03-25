@@ -17,7 +17,6 @@ class SessionsController < ApplicationController
       end
     end
 
-    render :layout => "lab"
   end
 
   def logout
