@@ -189,7 +189,7 @@
             if (__$("btnLogout")) {
 
                 __$("btnLogout").innerHTML = "Cancel";
-                __$("btnLogout").setAttribute("onClick", "window.location='/'")
+                __$("btnLogout").setAttribute("onClick", "window.location='/?cancel=true'")
 
             }
 
@@ -328,7 +328,9 @@
                         }
 
                         var td3 = document.createElement("td");
-                        td3.innerHTML = (result[key]["results"][kid]["result"] != null && String(result[key]["results"][kid]["result"]).trim().length > 0 ?
+                        td3.innerHTML = (result[key]["results"][kid]["result"] != null &&
+                                (String(result[key]["results"][kid]["result"]).trim().length > 0 &&
+                                        result[key]["results"][kid]["status"].trim().toLowerCase() != "tested") ?
                                 result[key]["results"][kid]["result"] : result[key]["results"][kid]["status"]);
                         td3.style.textAlign = "left";
                         td3.style.paddingLeft = "10px";
@@ -347,7 +349,6 @@
 
                             var print = document.createElement("img");
                             print.src = (result[key]["results"][kid]["status"].toLowerCase().trim() == "ordered" ||
-                                    result[key]["results"][kid]["status"].toLowerCase().trim() == "tested" ||
                                     result[key]["results"][kid]["status"].toLowerCase().trim() == "verified" ? printer_red : printer_green);
 
                             print.height = 50;
@@ -404,7 +405,7 @@
 
                         var currentTests = "";
 
-                        var tests = testNames[accession_number];
+                        var tests = Object.keys(testNames[accession_number]);
 
                         for (var i = 0; i < tests.length; i++) {
 
@@ -412,7 +413,7 @@
 
                             if (short == undefined || short.trim().length == 0) {
 
-                                short = tests[i]["testName"];
+                                short = tests[i];
 
                             }
 
@@ -420,9 +421,9 @@
 
                         }
 
-                        if (currentTests.trim().length > 12) {
+                        if (currentTests.trim().length > 10) {
 
-                            currentTests = currentTests.substr(0, 12) + "...";
+                            currentTests = currentTests.substr(0, 10) + "...";
 
                         }
 
@@ -437,7 +438,7 @@
                 } catch (e) {
                 }
 
-            } else if (currentState.trim().toLocaleLowerCase() == "verified" || currentState.trim().toLocaleLowerCase() == "tested") {
+            } else if (currentState.trim().toLocaleLowerCase() == "verified") {
 
                 var url = "/update_state/" + accession_number + "?state=Reviewed&test_code=" + code + "&test_name=" + name;
 
@@ -488,7 +489,7 @@
 
                         } else {
 
-                            var tests = testNames[accession_number];
+                            var tests = Object.keys(testNames[accession_number]);
 
                             for (var i = 0; i < tests.length; i++) {
 
@@ -496,7 +497,7 @@
 
                                 if (short == undefined || short.trim().length == 0) {
 
-                                    short = tests[i]["testName"];
+                                    short = tests[i];
 
                                 }
 
@@ -504,9 +505,9 @@
 
                             }
 
-                            if (currentTests.trim().length > 12) {
+                            if (currentTests.trim().length > 10) {
 
-                                currentTests = currentTests.substr(0, 12) + "...";
+                                currentTests = currentTests.substr(0, 10) + "...";
 
                             }
                         }
@@ -565,7 +566,7 @@
 
                 } else {
 
-                    var tests = testNames[accession_number];
+                    var tests = Object.keys(testNames[accession_number]);
 
                     for (var i = 0; i < tests.length; i++) {
 
@@ -573,7 +574,7 @@
 
                         if (short == undefined || short.trim().length == 0) {
 
-                            short = tests[i]["testName"];
+                            short = tests[i];
 
                         }
 
@@ -581,9 +582,9 @@
 
                     }
 
-                    if (currentTests.trim().length > 12) {
+                    if (currentTests.trim().length > 10) {
 
-                        currentTests = currentTests.substr(0, 12) + "...";
+                        currentTests = currentTests.substr(0, 10) + "...";
 
                     }
 
@@ -616,7 +617,8 @@
 
                 if (typeof(Android) != "undefined") {
 
-                    Android.printResultBarcode(testsTBD);
+                    // public void printResultBarcode(String testsTBD, String identifier, String name)
+                    Android.printResultBarcode(testsTBD, npid, full_name);
                     
                 } else {
 
@@ -632,7 +634,7 @@
 
                 } else {
 
-                    alert("Accession Number: " + accessionNumber);
+                    alert("Accession Number: " + accessionNumber + "; testsTBD: " + testsTBD);
 
                 }
             }
