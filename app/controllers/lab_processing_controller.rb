@@ -434,7 +434,7 @@ class LabProcessingController < ActionController::Base # ApplicationController
     patient = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
                                             "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["patient_by_acc_num_path"]}#{params[:barcode]}")).first
 
-    # raise patient.inspect
+    # raise params[:testtime].inspect
 
     # create a message
     msg = HL7::Message.new
@@ -755,7 +755,7 @@ class LabProcessingController < ActionController::Base # ApplicationController
 
     orc = HL7::Message::Segment::ORC.new
     orc.entered_by = "1^Super^User"
-    orc.enterers_location = "^^^^^^^^Ward 4B"
+    orc.enterers_location = "^^^^^^^^#{params[:location]}"
     orc.ordering_facility_name = "KCH"
 
     msg << orc # add the ORC segment to the message
