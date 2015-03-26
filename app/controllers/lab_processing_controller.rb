@@ -472,7 +472,12 @@ class LabProcessingController < RemoteSessionsController
     msg << pv1 # add the PV1 segment to the message
 
     orc = HL7::Message::Segment::ORC.new
-    orc.entered_by = "1^Super^User"
+    
+    username = session[:user].gsub(/\s+/, "_") rescue 1
+    usernames = session[:user_person_names]
+    r = usernames.split(/\s+/)
+        
+    orc.entered_by = "#{username}^#{(r.length > 2 ? r[r.length - 1] : r[1])}^#{r[0]}^#{(r.length > 2 ? r[1] : nil)}"
     orc.enterers_location = "^^^^^^^^#{params[:location]}"
     orc.ordering_facility_name = "KCH"
 
@@ -643,7 +648,12 @@ class LabProcessingController < RemoteSessionsController
     msg << pv1 # add the PV1 segment to the message
 
     orc = HL7::Message::Segment::ORC.new
-    orc.entered_by = "1^Super^User"
+    
+    username = session[:user].gsub(/\s+/, "_") rescue 1
+    usernames = session[:user_person_names]
+    r = usernames.split(/\s+/)
+        
+    orc.entered_by = "#{username}^#{(r.length > 2 ? r[r.length - 1] : r[1])}^#{r[0]}^#{(r.length > 2 ? r[1] : nil)}"
     orc.enterers_location = "^^^^^^^^#{params[:location]}"
     orc.ordering_facility_name = "KCH"
 
@@ -754,7 +764,11 @@ class LabProcessingController < RemoteSessionsController
     msg << pv1 # add the PV1 segment to the message
 
     orc = HL7::Message::Segment::ORC.new
-    orc.entered_by = "1^Super^User"
+    username = session[:user].gsub(/\s+/, "_") rescue 1
+    usernames = session[:user_person_names]
+    r = usernames.split(/\s+/)
+        
+    orc.entered_by = "#{username}^#{(r.length > 2 ? r[r.length - 1] : r[1])}^#{r[0]}^#{(r.length > 2 ? r[1] : nil)}"
     orc.enterers_location = "^^^^^^^^#{params[:location]}"
     orc.ordering_facility_name = "KCH"
 

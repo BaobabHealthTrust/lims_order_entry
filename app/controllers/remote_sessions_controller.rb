@@ -33,7 +33,7 @@ class RemoteSessionsController < ActionController::Base
       else
         session[:user_token] = remote_status['token']
         session[:user] = remote_status['username']
-        session[:user_person_names] = [remote_status['name']]  
+        session[:user_person_names] = remote_status['name']
                 
         redirect_to "/lab_processing/index" and return
       end
