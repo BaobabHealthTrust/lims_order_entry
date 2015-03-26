@@ -5,8 +5,14 @@ Rails.application.routes.draw do
   get "/lab_logout" => "lab_processing#index"
 
   get '/login' => 'sessions#login'
+  
+  get '/remote_login' => 'remote_sessions#remote_login'
+  
+  post '/remote_login' => 'remote_sessions#remote_login'
 
   get '/logout' => 'sessions#logout'
+  
+  get '/remote_logout' => 'remote_sessions#remote_logout'
 
   get '/enter_location' => 'sessions#enter_location'
 
