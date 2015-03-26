@@ -2,6 +2,14 @@
 
 clear
 
+STR=$'\n\n\tConnect device to PC using the PC device USB cable and then press [ENTER]:'
+
+echo "$STR"
+
+read result
+
+clear
+
 STR=$'\n\n\tOn the device, select "Settings" and then press [ENTER]:'
 
 echo "$STR"
@@ -202,6 +210,8 @@ sleep 1
 adb shell pm disable com.android.systemui
 
 adb shell pm disable com.google.android.apps.maps
+
+adb shell reboot
 
 clear
 
