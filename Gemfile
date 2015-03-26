@@ -30,7 +30,7 @@ gem 'redcarpet', '3.2.2'
 gem 'ruby-hl7', '1.1.0'
 
 gem 'rest-client', '1.7.2'
-
+gem 'passenger', '4.0.48'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
