@@ -4,6 +4,17 @@ class OrderController < ApplicationController
                                            :patient, :place_order]
 
   def index
+
+    if !session[:patient_id].blank? and !params[:cancel].blank?
+
+      session[:patient_id] = nil
+
+    elsif !session[:patient_id].blank? and params[:cancel].blank?
+
+      redirect_to "/patient/#{session[:patient_id]}" and return
+
+    end
+
   end
 
   def search
@@ -155,10 +166,18 @@ class OrderController < ApplicationController
 
   def patient
 
+    # raise session[:patient_id].inspect
+
     @patient = @request.get_patient_by_npid(params[:id]).first rescue nil
 
     cat = RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
                              "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["avaialble_tests_path"]}")
+
+    if !@patient.blank?
+
+      session[:patient_id] = @patient[:national_id] rescue nil
+
+    end
 
     list = JSON.parse(cat)
 
