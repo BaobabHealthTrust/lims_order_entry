@@ -281,7 +281,7 @@ class OrderController < ApplicationController
     msg << pid # add the PID segment to the message
 
     orc = HL7::Message::Segment::ORC.new
-    orc.entered_by = "1^Super^User"
+    orc.entered_by = "439234^#{session[:user_person_names]['last_name'] rescue "Unknown"}^#{session[:user_person_names]['first_name'] rescue "Unknown"}"
     orc.enterers_location = "^^^^^^^^#{session[:location]}"
     orc.ordering_facility_name = "KCH"
 
@@ -472,7 +472,7 @@ class OrderController < ApplicationController
     msg << pv1 # add the PV1 segment to the message
 
     orc = HL7::Message::Segment::ORC.new
-    orc.entered_by = "1^Super^User"
+    orc.entered_by = "439234^#{session[:user_person_names]['last_name'] rescue "Unknown"}^#{session[:user_person_names]['first_name'] rescue "Unknown"}"
     orc.enterers_location = "^^^^^^^^#{session[:location]}"
     orc.ordering_facility_name = "KCH"
 
