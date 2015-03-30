@@ -996,7 +996,7 @@ class LabProcessingController < RemoteSessionsController
 
     # arp -H ether 192.168.15.104 | awk 'FNR==2 {print $3}'
 
-    target = `arp -H ether #{request.env["REMOTE_ADDR"]} | awk 'FNR==2 {print $3}'`
+    target = "" #`arp -H ether #{request.env["REMOTE_ADDR"]} | awk 'FNR==2 {print $3}'`
 
     target = request.env["REMOTE_ADDR"] if target.blank?
 
