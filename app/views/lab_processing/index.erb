@@ -109,7 +109,12 @@
 
         if (__$("btnLogout")) {
 
-            __$("btnLogout").innerHTML = "Cancel";
+            __$("btnLogout").innerHTML = "Logout";
+            __$("btnLogout").onclick = function () {
+
+                window.location = "/remote_logout";
+
+            }
 
         }
 
@@ -139,7 +144,7 @@
 
             document.getElementById("btnLogout").onclick = function () {
 
-                window.location = "/lab_processing/index";
+                window.location = "/remote_logout";
 
             }
 
