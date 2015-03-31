@@ -644,6 +644,8 @@
 
             currentCaseUpper = caps;
 
+            // alert(currentCaseUpper)
+
             currentKeysNumeric = numbers;
 
             var div = document.createElement('div');
@@ -907,7 +909,7 @@
 
     var currentUnits = "";
 
-    function captureFreetext(targetControl, addUnits, numeric) {
+    function captureFreetext(targetControl, addUnits, numeric, password) {
 
         if (__$("target")) {
 
@@ -1018,7 +1020,13 @@
 
             inDiv.appendChild(textArea);
 
-            showKeyboard(textArea, "keysDiv", undefined, numeric);
+            if(typeof(password) == "undefined"){
+
+                password = false;
+
+            }
+
+            showKeyboard(textArea, "keysDiv", undefined, numeric, password);
 
             textArea.focus();
 
