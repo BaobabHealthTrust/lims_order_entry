@@ -192,6 +192,7 @@
                         <input type="hidden" name="test_barcode[<%= code %>]" style="width: 96%; padding: 10px;" value="<%= @barcode %>"/>
                         <input type="hidden" id="test_units_<%= code.strip.gsub(/\-/, "_") %>" name="test_units[<%= code %>]" style="width: 96%; padding: 10px;" value=""/>
                         <input type="hidden" id="test_range_<%= code.strip.gsub(/\-/, "_") %>" name="test_range[<%= code %>]" style="width: 96%; padding: 10px;" value=""/>
+                        <input type="hidden" id="testtime_<%= code.strip.gsub(/\-/, "_") %>" name="testtime" value='<%= Time.now().strftime("%Y-%b-%d %H:%M:%S")%>'/>
                       </td>
                     </tr>
                     <tr>
@@ -206,6 +207,7 @@
                                   onclick="captureFreetext(this)"><%= remark rescue nil %></textarea>
                       </td>
                     </tr>
+<!--
                     <tr>
                       <td>
                         &nbsp;
@@ -214,9 +216,9 @@
                         Date:
                       </td>
                       <td>
-                        <input type="text" id="testtime_<%= code.strip.gsub(/\-/, "_") %>" name="testtime" style="width: 96%; padding: 10px;" onmousedown="enterDate(this)" value='<%= Time.now().strftime("%Y-%b-%d %H:%M")%>'/>
+                        <input type="text" id="testtime_<%#= code.strip.gsub(/\-/, "_") %>" name="testtime" style="width: 96%; padding: 10px;" onmousedown="enterDate(this)" value='<%#= Time.now().strftime("%Y-%b-%d %H:%M")%>'/>
                       </td>
-                    </tr>
+                    </tr> //-->
                 <% end %>
 
               </table>
@@ -388,6 +390,7 @@
                         <input type="hidden" name="test_barcode[<%= code %>]" style="width: 96%; padding: 10px;" value="<%= @barcode %>"/>
                         <input type="hidden" id="test_units_<%= code.strip.gsub(/\-/, "_") %>" name="test_units[<%= code %>]" style="width: 96%; padding: 10px;" value=""/>
                         <input type="hidden" id="test_range_<%= code.strip.gsub(/\-/, "_") %>" name="test_range[<%= code %>]" style="width: 96%; padding: 10px;" value=""/>
+                        <input type="hidden" id="testtime_<%= code.strip.gsub(/\-/, "_") %>" name="testtime" value='<%= Time.now().strftime("%Y-%b-%d %H:%M:%S")%>'/>
                       </td>
                     </tr>
                     <tr>
@@ -402,6 +405,7 @@
                                   onclick="captureFreetext(this)"><%= remark rescue nil %></textarea>
                       </td>
                     </tr>
+                    <!--
                     <tr>
                       <td>
                         &nbsp;
@@ -413,6 +417,7 @@
                         <input type="text" id="testtime_<%= code.strip.gsub(/\-/, "_") %>" name="testtime" style="width: 96%; padding: 10px;" onmousedown="enterDate(this)" value='<%= Time.now().strftime("%Y-%b-%d %H:%M")%>'/>
                       </td>
                     </tr>
+                    //-->
                 <% end %>
 
               </table>
