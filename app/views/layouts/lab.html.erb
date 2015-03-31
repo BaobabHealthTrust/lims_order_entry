@@ -959,6 +959,12 @@
 
             textArea.value = myString;
 
+            if(targetControl.type == "password"){
+
+                textArea.style.setProperty("-webkit-text-security", "circle");
+
+            }
+
             textArea.onkeydown = function (e) {
 
                 if (typeof(Android) == "undefined" && e.keyCode == 13) {
