@@ -872,7 +872,7 @@
 
     var currentUnits = "";
 
-    function captureFreetext(targetControl, addUnits, numeric) {
+    function captureFreetext(targetControl, addUnits, numeric, password) {
 
         if (__$("target")) {
 
@@ -959,6 +959,12 @@
 
             textArea.value = myString;
 
+            if(targetControl.type == "password"){
+
+                textArea.style.setProperty("-webkit-text-security", "circle");
+
+            }
+
             textArea.onkeydown = function (e) {
 
                 if (typeof(Android) == "undefined" && e.keyCode == 13) {
@@ -975,7 +981,15 @@
 
             inDiv.appendChild(textArea);
 
-            showKeyboard(textArea, "keysDiv", undefined, numeric);
+            if(typeof(password) == "undefined"){
+
+                password = false;
+
+            }
+
+            showKeyboard(textArea, "keysDiv", undefined, numeric, password);
+
+            // showKeyboard(textArea, "keysDiv", undefined, numeric);
 
             textArea.focus();
 
