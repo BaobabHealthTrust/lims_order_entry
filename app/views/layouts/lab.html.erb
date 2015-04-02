@@ -512,7 +512,7 @@
     var currentKeysNumeric = false;
     var currentKeysQWERTY = false;
 
-    var overwriteNumber = true;
+    var overwriteNumber = false;
 
     var globalControl;
 
@@ -956,6 +956,10 @@
             textArea.style.height = "80%";
             textArea.style.padding = "10px";
             textArea.style.fontSize = "24px";
+
+            textArea.style.setProperty("-webkit-user-select", "none");
+
+            textArea.style.setProperty("-moz-user-select", "none");
 
             textArea.value = myString;
 

@@ -1,15 +1,103 @@
 <%= form_tag("/check_sample_state", :method => :post) do -%>
 
-    <table style="margin: auto; margin-top: 15px;" cellpadding="0" width="80%">
+    <%
+
+       age = nil
+
+       dob = @patient[:date_of_birth].to_date rescue nil
+
+       if !dob.blank?
+
+         days = (Date.today - dob).to_i
+
+         if days < 30 # days
+
+           age = "#{days} days"
+
+         elsif days >= 30 and days <= 90 # weeks
+
+           age = "#{days / 7} weeks"
+
+         elsif days > 90 and days <= 720 # months
+
+           age = "#{days / 30} months"
+
+         else # years
+
+           age = "#{days / 365}"
+
+         end
+
+       end
+
+    %>
+
+    <table style="margin: auto; margin-top: -5px;" cellpadding="0" width="80%">
       <tr>
-        <th align="left" style="background-color: #23538a; color: #fff; padding: 10px; font-size: 18px;">
+        <td style="color: #23538a; font-size: 18px; font-weight: bold;" align="right">
+          N<span style="font-size: 14px;">AME</span>
+        </td>
+        <td style="color: #23538a;">
+          :
+        </td>
+        <td colspan="4">
+          <%= @patient[:full_name] rescue nil %>
+        </td>
+      </tr>
+      <tr>
+        <td style="color: #23538a; font-size: 18px; font-weight: bold;" align="right">
+          N<span style="font-size: 14px;">ATIONAL ID</span>
+        </td>
+        <td style="color: #23538a;">
+          :
+        </td>
+        <td colspan="4">
+          <%= @patient[:national_id] rescue nil %>
+        </td>
+      </tr>
+      <tr>
+        <td style="color: #23538a; font-size: 18px; font-weight: bold;" align="right">
+          G<span style="font-size: 14px;">ENDER</span>
+        </td>
+        <td style="color: #23538a;">
+          :
+        </td>
+        <td>
+          <%= @patient[:sex] rescue nil %>
+        </td>
+        <td style="color: #23538a; font-size: 18px; font-weight: bold;" align="right">
+          A<span style="font-size: 14px;">GE</span>
+        </td>
+        <td style="color: #23538a;">
+          :
+        </td>
+        <td>
+          <%= age %> <i>(<%= @patient[:date_of_birth] rescue nil %>)</i>
+        </td>
+      </tr>
+      <tr>
+        <td style="color: #23538a; font-size: 18px; font-weight: bold;" align="right">
+          A<span style="font-size: 14px;">DDRESS</span>
+        </td>
+        <td style="color: #23538a;">
+          :
+        </td>
+        <td colspan="4">
+          <%= @patient[:current_residence] rescue nil %><%= !@patient[:current_village].blank? ? ", " : "" %>
+          <%= @patient[:current_village] rescue nil %><%= !@patient[:current_ta].blank? ? ", " : "" %>
+          <%= @patient[:current_ta] rescue nil %><%= !@patient[:current_district].blank? ? ", " : "" %>
+          <%= @patient[:current_district] rescue nil %>
+        </td>
+      </tr>
+      <tr>
+        <th colspan="6" align="left" style="background-color: #23538a; color: #fff; padding: 10px; font-size: 18px;">
           Select test from the following to work with:
         </th>
       </tr>
       <tr>
-        <td style="padding: 5px; padding-left: 1px;">
+        <td colspan="6" style="padding: 5px; padding-left: 1px;">
 
-          <div style="height: 220px; border: 1px solid #23538a; width: 100%; padding: 1px; overflow: auto;">
+          <div style="height: 200px; border: 1px solid #23538a; width: 100%; padding: 1px; overflow: auto;">
 
             <ul style="list-style: none; padding-left: 0px; margin: 0px;">
 

@@ -10,8 +10,9 @@
 <%= form_tag("/remote_login", :method => :post) do -%>
 
     <div id="mainContent" style="border: 1px solid #23538a; width: 350px; border-top-right-radius: 150px;
-            border-bottom-right-radius: 150px; margin: auto; border-left: none;
-            background-image: linear-gradient(to right, #fff 1%, #23538a);
+            border-bottom-right-radius: 150px; margin: auto; border-left: none; -webkit-border-bottom-right-radius: 150px;
+            background-image: linear-gradient(to right, #fff 1%, #23538a); background-color: #23538a;
+            background-image: -webkit-linear-gradient(left, #fff, #23538a);
             padding: 20px; margin-top:20px; text-align: center; font-size: 18px; padding-bottom:40px;">
       <span style="color: #23538a;font-size: 22px;">User Login</span><br/><br/>
 
@@ -20,7 +21,7 @@
           <div style="display: table-cell;padding: 5px; color: #23538a;">Username</div>
           <div style="display: table-cell;padding: 1px;">:</div>
           <div style="display: table-cell;padding: 5px; padding-right: 20px;">
-            <input type="text" name="username" id="username" style="width: 100%; padding: 8px; border-top-right-radius: 40px;
+            <input type="text" name="username" id="username" style="width: 100%; padding: 8px; border-right-radius: 40px;
                     border: 1px solid #23538a; border-left: none;" onclick="captureFreetext(this, undefined, undefined, true)" />
           </div>
         </div>
@@ -29,7 +30,7 @@
           <div style="display: table-cell;padding: 5px; color: #23538a;">Password</div>
           <div style="display: table-cell;padding: 1px;">:</div>
           <div style="display: table-cell;padding: 5px; padding-right: 20px;">
-            <input type="password" name="password" id="password" style="width: 100%; padding: 8px; border-bottom-right-radius: 40px;
+            <input type="password" name="password" id="password" style="width: 100%; padding: 8px; border-right-radius: 40px;
                     border: 1px solid #23538a; border-left: none;" onclick="captureFreetext(this, undefined, undefined, true)" />
           </div>
         </div>
