@@ -1898,19 +1898,11 @@
 
             }
 
-            if (drawingSamples && preSelectedTest.
+            if (drawingSamples && preSelectedTest.trim().length == 0) {
 
-                    trim().
+                hideSpinner();
 
-                    length == 0) {
-
-                printBarcode(npid, result[
-
-                                "messageDatetime"], currentTests,
-                        result[
-
-                                "accessionNumber"])
-                ;
+                printBarcode(npid, result["messageDatetime"], currentTests, result["accessionNumber"]);
 
             }
 
