@@ -1,15 +1,15 @@
 <%#= render 'location_check' %>
 <script>
-  <!--
+    <!--
 
-  var selectedControls = {};
-  var selectedResult = {};
+    var selectedControls = {};
+    var selectedResult = {};
 
-  function __$(id) {
-      return document.getElementById(id);
-  }
+    function __$(id) {
+        return document.getElementById(id);
+    }
 
-  //-->
+    //-->
 </script>
 
 <%= form_tag("/save_result", :method => :post) do -%>
@@ -22,6 +22,105 @@
 
     <input type="hidden" id="state" name="state" style="width: 96%; padding: 10px;" value="<%= params[:state].titleize rescue "Tested" %>"/>
 
+    <table width="100%">
+    <tr>
+    <td style="vertical-align: top; border-right: 1px solid #333;">
+
+      <%
+
+         age = nil
+
+         dob = @patient[:date_of_birth].to_date rescue nil
+
+         if !dob.blank?
+
+           days = (Date.today - dob).to_i
+
+           if days < 30 # days
+
+             age = "#{days} days"
+
+           elsif days >= 30 and days <= 90 # weeks
+
+             age = "#{days / 7} weeks"
+
+           elsif days > 90 and days <= 720 # months
+
+             age = "#{days / 30} months"
+
+           else # years
+
+             age = "#{days / 365}"
+
+           end
+
+         end
+
+      %>
+
+      <table>
+        <tr>
+          <td style="color: #23538a; font-size: 18px; font-weight: bold;" align="right">
+            N<span style="font-size: 14px;">AME</span>
+          </td>
+          <td style="color: #23538a;">
+            :
+          </td>
+          <td colspan="4">
+            <%= @patient[:full_name] rescue nil %>
+          </td>
+        </tr>
+        <tr>
+          <td style="color: #23538a; font-size: 18px; font-weight: bold;" align="right">
+            N<span style="font-size: 14px;">ATIONAL ID</span>
+          </td>
+          <td style="color: #23538a;">
+            :
+          </td>
+          <td colspan="4">
+            <%= @patient[:national_id] rescue nil %>
+          </td>
+        </tr>
+        <tr>
+          <td style="color: #23538a; font-size: 18px; font-weight: bold;" align="right">
+            G<span style="font-size: 14px;">ENDER</span>
+          </td>
+          <td style="color: #23538a;">
+            :
+          </td>
+          <td>
+            <%= @patient[:sex] rescue nil %>
+          </td>
+          <td style="color: #23538a; font-size: 18px; font-weight: bold;" align="right">
+            A<span style="font-size: 14px;">GE</span>
+          </td>
+          <td style="color: #23538a;">
+            :
+          </td>
+          <td>
+            <%= age %> <i>(<%= @patient[:date_of_birth] rescue nil %>)</i>
+          </td>
+        </tr>
+        <tr>
+          <td style="color: #23538a; font-size: 18px; font-weight: bold;" align="right">
+            A<span style="font-size: 14px;">DDRESS</span>
+          </td>
+          <td style="color: #23538a;">
+            :
+          </td>
+          <td colspan="4">
+            <%= @patient[:current_residence] rescue nil %><%= !@patient[:current_village].blank? ? ", " : "" %>
+            <%= @patient[:current_village] rescue nil %><%= !@patient[:current_ta].blank? ? ", " : "" %>
+            <%= @patient[:current_ta] rescue nil %><%= !@patient[:current_district].blank? ? ", " : "" %>
+            <%= @patient[:current_district] rescue nil %>
+          </td>
+        </tr>
+      </table>
+
+    </td>
+    <td style="vertical-align: top;">
+
+    <div style="height: 340px; overflow: auto; width: 100%;">
     <table style="margin: auto; margin-top: 10px; width: 100%;" cellpadding="5">
     <tr>
       <th colspan="3" align="left" style="font-size: 18px; border-bottom: 2px solid #333;" colspan="3">
@@ -129,11 +228,11 @@
                                           tag="<%= name %>" target="test_result_<%= code.strip.gsub(/\-/, "_") %>"><%= measure %></li>
 
                                       <script>
-                                        <!--
+                                          <!--
 
-                                        selectedControls["<%= name %>"] = __$("<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>");
+                                          selectedControls["<%= name %>"] = __$("<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>");
 
-                                        //-->
+                                          //-->
                                       </script>
 
                                   <% else %>
@@ -192,7 +291,7 @@
                         <input type="hidden" name="test_barcode[<%= code %>]" style="width: 96%; padding: 10px;" value="<%= @barcode %>"/>
                         <input type="hidden" id="test_units_<%= code.strip.gsub(/\-/, "_") %>" name="test_units[<%= code %>]" style="width: 96%; padding: 10px;" value=""/>
                         <input type="hidden" id="test_range_<%= code.strip.gsub(/\-/, "_") %>" name="test_range[<%= code %>]" style="width: 96%; padding: 10px;" value=""/>
-                        <input type="hidden" id="testtime_<%= code.strip.gsub(/\-/, "_") %>" name="testtime" value='<%= Time.now().strftime("%Y-%b-%d %H:%M:%S")%>'/>
+                        <input type="hidden" id="testtime_<%= code.strip.gsub(/\-/, "_") %>" name="testtime" value='<%= Time.now().strftime("%Y-%b-%d %H:%M:%S") %>'/>
                       </td>
                     </tr>
                     <tr>
@@ -207,7 +306,7 @@
                                   onclick="captureFreetext(this)"><%= remark rescue nil %></textarea>
                       </td>
                     </tr>
-<!--
+                    <!--
                     <tr>
                       <td>
                         &nbsp;
@@ -232,7 +331,7 @@
         <tr>
           <th colspan="3" align="left" style="padding-left: 20px;">
             Results
-            <input type="hidden" name="ispanel" style="width: 96%; padding: 10px;" value=true />
+            <input type="hidden" name="ispanel" style="width: 96%; padding: 10px;" value=true/>
           </th>
         </tr>
 
@@ -390,7 +489,7 @@
                         <input type="hidden" name="test_barcode[<%= code %>]" style="width: 96%; padding: 10px;" value="<%= @barcode %>"/>
                         <input type="hidden" id="test_units_<%= code.strip.gsub(/\-/, "_") %>" name="test_units[<%= code %>]" style="width: 96%; padding: 10px;" value=""/>
                         <input type="hidden" id="test_range_<%= code.strip.gsub(/\-/, "_") %>" name="test_range[<%= code %>]" style="width: 96%; padding: 10px;" value=""/>
-                        <input type="hidden" id="testtime_<%= code.strip.gsub(/\-/, "_") %>" name="testtime" value='<%= Time.now().strftime("%Y-%b-%d %H:%M:%S")%>'/>
+                        <input type="hidden" id="testtime_<%= code.strip.gsub(/\-/, "_") %>" name="testtime" value='<%= Time.now().strftime("%Y-%b-%d %H:%M:%S") %>'/>
                       </td>
                     </tr>
                     <tr>
@@ -414,7 +513,7 @@
                         Date:
                       </td>
                       <td>
-                        <input type="text" id="testtime_<%= code.strip.gsub(/\-/, "_") %>" name="testtime" style="width: 96%; padding: 10px;" onmousedown="enterDate(this)" value='<%= Time.now().strftime("%Y-%b-%d %H:%M")%>'/>
+                        <input type="text" id="testtime_<%= code.strip.gsub(/\-/, "_") %>" name="testtime" style="width: 96%; padding: 10px;" onmousedown="enterDate(this)" value='<%= Time.now().strftime("%Y-%b-%d %H:%M") %>'/>
                       </td>
                     </tr>
                     //-->
@@ -423,11 +522,16 @@
               </table>
 
             </div>
+
           </td>
         </tr>
 
     <% end %>
 
+    </table>
+    </div>
+    </td>
+    </tr>
     </table>
 
 <% end %>
@@ -474,30 +578,30 @@
 
         <% if !params[:state].blank? and params[:state].strip.upcase == "VERIFIED" %>
 
-            if(__$("nav")){
+        if (__$("nav")) {
 
-                var btnCorrect = document.createElement("button");
-                btnCorrect.id = "btnCorrect";
-                btnCorrect.innerHTML = "Save Correction";
-                btnCorrect.className = "button_blue";
-                btnCorrect.style.cssFloat = "right";
-                btnCorrect.style.marginRight = "10px";
+            var btnCorrect = document.createElement("button");
+            btnCorrect.id = "btnCorrect";
+            btnCorrect.innerHTML = "Save Correction";
+            btnCorrect.className = "button_blue";
+            btnCorrect.style.cssFloat = "right";
+            btnCorrect.style.marginRight = "10px";
 
-                btnCorrect.onclick = function() {
+            btnCorrect.onclick = function () {
 
-                    if(__$("state")){
+                if (__$("state")) {
 
-                        __$("state").value = "Tested";
-
-                    }
-
-                    document.forms[0].submit();
+                    __$("state").value = "Tested";
 
                 }
 
-                __$("nav").appendChild(btnCorrect);
+                document.forms[0].submit();
 
             }
+
+            __$("nav").appendChild(btnCorrect);
+
+        }
 
         <% end %>
 

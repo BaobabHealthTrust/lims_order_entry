@@ -3,6 +3,8 @@ class LabProcessingController < RemoteSessionsController
   before_filter :check_device_location, :only => [:index, :search_for_samples, :check_sample_state, :enter_results,
                                                   :rejection_reason, :reject_sample]
 
+  before_filter :set_connection, :only => [:check_sample_state, :enter_results]
+
   after_filter :unlock_specimen, :only => [:enter_results]
 
   def index
@@ -139,7 +141,10 @@ class LabProcessingController < RemoteSessionsController
 
     @list = JSON.parse(tests)
 
-    # raise @list.inspect
+    patient = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+                                            "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["patient_by_acc_num_path"]}#{params[:id]}")).first rescue []
+
+    @patient = @request.get_patient_by_npid(patient["surrogateId"]).first rescue nil
 
     render :layout => "lab"
 
@@ -833,8 +838,6 @@ class LabProcessingController < RemoteSessionsController
 
     @status = RestClient.get(status_link).strip rescue nil
 
-    # raise @status.inspect
-
     if @status.strip.downcase == "drawn"
 
       flash[:error] = "Sample has not been seen yet at the Reception!"
@@ -896,6 +899,11 @@ class LabProcessingController < RemoteSessionsController
         @tests[item[0]] = "#{item[3]}|#{item[2]}|#{item[4]}"
 
       end
+
+      patient = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+                                 "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["patient_by_acc_num_path"]}#{params[:barcode]}")).first rescue []
+
+      @patient = @request.get_patient_by_npid(patient["surrogateId"]).first rescue nil
 
       render :layout => "lab" and return
 
@@ -1050,6 +1058,12 @@ class LabProcessingController < RemoteSessionsController
       end
 
     end
+
+  end
+
+  def set_connection
+
+    @request = SoapService.new
 
   end
 
