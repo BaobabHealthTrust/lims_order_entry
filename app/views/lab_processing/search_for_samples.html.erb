@@ -85,6 +85,8 @@
 
         var url = "/sample_status?barcode=" + barcode;
 
+        showSpinner();
+
         var httpRequest = new XMLHttpRequest();
         httpRequest.onreadystatechange = function () {
             handleTasks(httpRequest);
@@ -102,9 +104,12 @@
         if (aXMLHttpRequest.readyState == 4 && (aXMLHttpRequest.status == 200 ||
                 aXMLHttpRequest.status == 304)) {
 
+            hideSpinner();
+
             status = aXMLHttpRequest.responseText;
 
             __$("barcode").value = "";
+
 
             if(status.trim().toLowerCase() == "drawn") {
 
@@ -229,6 +234,8 @@
 
             }
 
+            showSpinner();
+
             window.location = url + barcode + "?location=<%= @location[:dept] rescue nil %>&sample_viablility=viable";
 
         });
@@ -246,6 +253,8 @@
                 document.body.removeChild(__$("shield"));
 
             }
+
+            showSpinner();
 
             window.location = url + barcode + "?location=<%= @location[:dept] rescue nil %>&sample_viablility=nonviable";
 

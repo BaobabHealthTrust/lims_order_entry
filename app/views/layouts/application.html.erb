@@ -355,6 +355,117 @@
         -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
     }
 
+    .spinner {
+        margin: 100px auto;
+        width: 20px;
+        height: 20px;
+        position: relative;
+    }
+
+    .container1 > div, .container2 > div, .container3 > div {
+        width: 6px;
+        height: 6px;
+        background-color: #333;
+
+        border-radius: 100%;
+        position: absolute;
+        -webkit-animation: bouncedelay 1.2s infinite ease-in-out;
+        animation: bouncedelay 1.2s infinite ease-in-out;
+        /* Prevent first frame from flickering when animation starts */
+        -webkit-animation-fill-mode: both;
+        animation-fill-mode: both;
+    }
+
+    .spinner .spinner-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    .container2 {
+        -webkit-transform: rotateZ(45deg);
+        transform: rotateZ(45deg);
+    }
+
+    .container3 {
+        -webkit-transform: rotateZ(90deg);
+        transform: rotateZ(90deg);
+    }
+
+    .circle1 { top: 0; left: 0; }
+    .circle2 { top: 0; right: 0; }
+    .circle3 { right: 0; bottom: 0; }
+    .circle4 { left: 0; bottom: 0; }
+
+    .container2 .circle1 {
+        -webkit-animation-delay: -1.1s;
+        animation-delay: -1.1s;
+    }
+
+    .container3 .circle1 {
+        -webkit-animation-delay: -1.0s;
+        animation-delay: -1.0s;
+    }
+
+    .container1 .circle2 {
+        -webkit-animation-delay: -0.9s;
+        animation-delay: -0.9s;
+    }
+
+    .container2 .circle2 {
+        -webkit-animation-delay: -0.8s;
+        animation-delay: -0.8s;
+    }
+
+    .container3 .circle2 {
+        -webkit-animation-delay: -0.7s;
+        animation-delay: -0.7s;
+    }
+
+    .container1 .circle3 {
+        -webkit-animation-delay: -0.6s;
+        animation-delay: -0.6s;
+    }
+
+    .container2 .circle3 {
+        -webkit-animation-delay: -0.5s;
+        animation-delay: -0.5s;
+    }
+
+    .container3 .circle3 {
+        -webkit-animation-delay: -0.4s;
+        animation-delay: -0.4s;
+    }
+
+    .container1 .circle4 {
+        -webkit-animation-delay: -0.3s;
+        animation-delay: -0.3s;
+    }
+
+    .container2 .circle4 {
+        -webkit-animation-delay: -0.2s;
+        animation-delay: -0.2s;
+    }
+
+    .container3 .circle4 {
+        -webkit-animation-delay: -0.1s;
+        animation-delay: -0.1s;
+    }
+
+    @-webkit-keyframes bouncedelay {
+        0%, 80%, 100% { -webkit-transform: scale(0.0) }
+        40% { -webkit-transform: scale(1.0) }
+    }
+
+    @keyframes bouncedelay {
+        0%, 80%, 100% {
+            transform: scale(0.0);
+            -webkit-transform: scale(0.0);
+        } 40% {
+              transform: scale(1.0);
+              -webkit-transform: scale(1.0);
+          }
+    }
 
 </style>
 
@@ -542,11 +653,17 @@
 
     }
 
-    function showShield() {
+    function showShield(clickCloses) {
+
+        if(clickCloses == undefined){
+
+            clickCloses = false;
+
+        }
 
         if (__$("shield")) {
 
-            document.removeChild(__$("shield"));
+            document.body.removeChild(__$("shield"));
 
         } else {
 
@@ -562,27 +679,31 @@
 
             document.body.appendChild(shield);
 
-            new FastButton(shield, function () {
+            if(clickCloses) {
 
-                if (typeof(selectedTest) != "undefined")
-                    selectedTest = null;
+                new FastButton(shield, function () {
 
-                if (typeof(selectedTestSpecimen) != "undefined")
-                    selectedTestSpecimen = null;
+                    if (typeof(selectedTest) != "undefined")
+                        selectedTest = null;
 
-                if (__$("popup")) {
+                    if (typeof(selectedTestSpecimen) != "undefined")
+                        selectedTestSpecimen = null;
 
-                    document.body.removeChild(__$("popup"));
+                    if (__$("popup")) {
 
-                }
+                        document.body.removeChild(__$("popup"));
 
-                if (__$("shield")) {
+                    }
 
-                    document.body.removeChild(__$("shield"));
+                    if (__$("shield")) {
 
-                }
+                        document.body.removeChild(__$("shield"));
 
-            });
+                    }
+
+                });
+
+            }
         }
 
     }
@@ -1038,6 +1159,94 @@
 
     }
 
+    var spinner;
+
+    function showSpinner(){
+
+        if(!document.getElementById('spin')) {
+            var div = document.createElement("div");
+            div.id = "spin";
+            div.style.position = "absolute";
+            div.style.top = ((window.innerHeight / 2) - 80) + "px";
+            div.style.left = ((window.innerWidth / 2)) + "px";
+
+            document.body.appendChild(div);
+            var opts = {
+                lines: 15, // The number of lines to draw
+                length: 15, // The length of each line
+                width: 8, // The line thickness
+                radius: 20, // The radius of the inner circle
+                corners: 1, // Corner roundness (0..1)
+                rotate: 0, // The rotation offset
+                color: '#000', // #rgb or #rrggbb
+                speed: 1, // Rounds per second
+                trail: 60, // Afterglow percentage
+                shadow: false, // Whether to render a shadow
+                hwaccel: false, // Whether to use hardware acceleration
+                className: 'spinner', // The CSS class to assign to the spinner
+                zIndex: 2e9, // The z-index (defaults to 2000000000)
+                top: 25, // Top position relative to parent in px
+                left: 25 // Left position relative to parent in px
+            };
+        }
+
+        var target = document.getElementById('spin');
+        spinner = new Spinner(opts).spin(target);
+
+        showShield();
+
+    }
+
+    function hideSpinner(){
+
+        spinner.stop();
+
+        showShield();
+
+    }
+
+    var smallSpinner;
+
+    function showSmallSpinner(){
+
+        if(!document.getElementById('spin')) {
+            var div = document.createElement("div");
+            div.id = "spin";
+            div.style.position = "absolute";
+            div.style.top = ((window.innerHeight / 2) - 80) + "px";
+            div.style.left = ((window.innerWidth / 2)) + "px";
+
+            document.body.appendChild(div);
+            var opts = {
+                lines: 15, // The number of lines to draw
+                length: 15, // The length of each line
+                width: 8, // The line thickness
+                radius: 20, // The radius of the inner circle
+                corners: 1, // Corner roundness (0..1)
+                rotate: 0, // The rotation offset
+                color: '#000', // #rgb or #rrggbb
+                speed: 1, // Rounds per second
+                trail: 60, // Afterglow percentage
+                shadow: false, // Whether to render a shadow
+                hwaccel: false, // Whether to use hardware acceleration
+                className: 'spinner', // The CSS class to assign to the spinner
+                zIndex: 2e9, // The z-index (defaults to 2000000000)
+                top: 25, // Top position relative to parent in px
+                left: 25 // Left position relative to parent in px
+            };
+        }
+
+        var target = document.getElementById('spin');
+        smallSpinner = new Spinner(opts).spin(target);
+
+    }
+
+    function hideSmallSpinner(){
+
+        smallSpinner.stop();
+
+    }
+
     navigator.sayswho= (function(){
         var ua= navigator.userAgent, tem,
                 M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
@@ -1109,11 +1318,11 @@
 </div>
 
 <div id="nav" style="position: absolute; bottom: 0px; left: 0px; width: 100%; height: 60px; background-color: #333; padding: 5px;">
-  <button id="btnLogout" class="button_red" style="float: left; cursor: pointer;" onclick="window.location = '/logout'">Logout</button>
+  <button id="btnLogout" class="button_red" style="float: left; cursor: pointer;" onclick="showSpinner(); window.location = '/logout'">Logout</button>
 
   <div id="battery" style="float: left; border: 1px solid #fff; height: 20px; width: 100px; color: #fff; display: none;"></div>
 
-  <button id="btnNext" class="button_green" style="float: right; margin-right: 15px; cursor: pointer;" onclick="window.location = '<%= !params[:id].blank? ? "/patient/#{params[:id]}" : "/" %>'">Finish</button>
+  <button id="btnNext" class="button_green" style="float: right; margin-right: 15px; cursor: pointer;" onclick="showSpinner(); window.location = '<%= !params[:id].blank? ? "/patient/#{params[:id]}" : "/" %>'">Finish</button>
 </div>
 
 

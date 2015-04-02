@@ -283,7 +283,7 @@ class LabProcessingController < RemoteSessionsController
 
   def list_rejection_reasons
 
-    reasons = ["Insufficient Quantity", "Bad Sample", "Expired Sample", "Wrong Container", "Wrong Sample", "Patient Died"]
+    reasons = ["Insufficient Quantity", "Bad Sample", "Expired Sample", "Wrong Container", "Wrong Sample", "Patient Died", "Missing Sample"]
 
     render :text => reasons.to_json
 

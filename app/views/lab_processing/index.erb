@@ -87,6 +87,8 @@
 
             if (__$("barcode").value.trim().match(/^[A-Z0-9]+\$$/)) {
 
+                showSpinner();
+
                 __$("barcode").value = __$("barcode").value.trim().replace(/\$/, "");
 
                 document.forms[0].submit();
@@ -104,12 +106,6 @@
         if (__$("btnNext")) {
 
             __$("btnNext").style.display = "none";
-
-        }
-
-        if (__$("btnLogout")) {
-
-            __$("btnLogout").innerHTML = "Cancel";
 
         }
 
@@ -139,7 +135,9 @@
 
             document.getElementById("btnLogout").onclick = function () {
 
-                window.location = "/lab_processing/index";
+                showSpinner();
+
+                window.location = "/remote_logout";
 
             }
 

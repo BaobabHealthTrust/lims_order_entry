@@ -117,6 +117,8 @@
 
                 if (selectedWard) {
 
+                    showSpinner();
+
                     __$('location_name').value = selectedWard.getAttribute('ward');
 
                     document.forms[0].submit();

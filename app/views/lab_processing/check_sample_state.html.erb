@@ -213,7 +213,13 @@
 
                         __$("btnReject").innerHTML = "Dispose Sample";
 
+                        __$("btnReject").className = "button_gray";
+
+                        __$("btnReject").onclick = function(){};
+
                     } else {
+
+                        __$("btnReject").innerHTML = "Reject Test";
 
                         __$("btnReject").className = "button_blue";
 
@@ -229,7 +235,7 @@
 
                             document.forms[0].action = "/rejection_reason";
 
-                            confirmAction("Do you really want to reject the selected test?", "document.forms[0].submit()");
+                            confirmAction("Do you really want to reject the selected test?", "showSpinner(); document.forms[0].submit()");
 
                         }
                     }
@@ -245,6 +251,8 @@
                         __$("btnProcess").innerHTML = "Start Test";
 
                         __$("btnProcess").onclick = function () {
+
+                            showSpinner();
 
                             __$('test_name').value = control.getAttribute('test_name');
 
@@ -265,6 +273,8 @@
                         __$("btnProcess").innerHTML = "Enter Result";
 
                         __$("btnProcess").onclick = function () {
+
+                            showSpinner();
 
                             __$('test_name').value = control.getAttribute('test_name');
 
@@ -289,6 +299,8 @@
                         __$("btnProcess").innerHTML = "Verify Result";
 
                         __$("btnProcess").onclick = function () {
+
+                            showSpinner();
 
                             __$('test_name').value = control.getAttribute('test_name');
 
@@ -367,6 +379,9 @@
                 __$('btnLogout').innerHTML = "Cancel";
 
                 __$('btnLogout').onclick = function () {
+
+                    showSpinner();
+
                     window.location = "/lab/"
                 }
 

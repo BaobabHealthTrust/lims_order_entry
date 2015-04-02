@@ -546,6 +546,8 @@
 
             document.getElementById("btnNext").onclick = function () {
 
+                showSpinner();
+
                 document.forms[0].submit();
 
             }
@@ -563,6 +565,8 @@
             document.getElementById("btnLogout").innerHTML = "Cancel";
 
             document.getElementById("btnLogout").onclick = function () {
+
+                showSpinner();
 
                 window.location = "/lab_processing/index";
 
@@ -588,6 +592,8 @@
             btnCorrect.style.marginRight = "10px";
 
             btnCorrect.onclick = function () {
+
+                showSpinner();
 
                 if (__$("state")) {
 

@@ -70,6 +70,8 @@
 
             document.getElementById("btnNext").onclick = function () {
 
+                showSpinner();
+
                 if(Object.keys(selectedReasons).length == 0){
 
                     /*if(typeof(Android) != "undefined"){
@@ -118,6 +120,8 @@
             document.getElementById("btnLogout").innerHTML = "Cancel";
 
             document.getElementById("btnLogout").onclick = function () {
+
+                showSpinner();
 
                 window.location = "/lab_processing/index";
 

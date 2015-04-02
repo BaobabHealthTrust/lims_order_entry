@@ -43,6 +43,8 @@
 
             if (__$("barcode").value.trim().match(/[A-Z0-9]+\$/)) {
 
+                showSpinner();
+
                 var barcode = __$("barcode").value.trim().replace(/\$/, "");
 
                 window.location = url + barcode;
@@ -67,7 +69,7 @@
 
             __$("btnLogout").innerHTML = "Logout";
             __$("btnLogout").setAttribute("OnMouseDown","window.location = '/logout'")
-            __$("btnLogout").setAttribute("Onclick","window.location = '/logout'")
+            __$("btnLogout").setAttribute("Onclick","showSpinner(); window.location = '/logout'")
 
         }
 
@@ -102,6 +104,7 @@
 
             people = result;
 
+            hideSpinner();
         }
     }
 

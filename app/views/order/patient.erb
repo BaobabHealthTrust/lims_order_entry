@@ -158,7 +158,7 @@
       </tr>
     </table>
 
-    <button id="btnOrder" class="button_blue" style="float: right; margin-right: 15px; cursor: pointer;" onclick="window.location = '/place_order/<%= @patient[:national_id] rescue nil %>'">Order
+    <button id="btnOrder" class="button_blue" style="float: right; margin-right: 15px; cursor: pointer;" onclick="showSpinner(); window.location = '/place_order/<%= @patient[:national_id] rescue nil %>'">Order
       Test
     </button>
 
@@ -189,14 +189,13 @@
             if (__$("btnLogout")) {
 
                 __$("btnLogout").innerHTML = "Cancel";
-                __$("btnLogout").setAttribute("onClick", "window.location='/?cancel=true'")
+                __$("btnLogout").setAttribute("onClick", "showSpinner(); window.location='/?cancel=true'")
 
             }
 
             if (__$("btnNext")) {
 
                 __$("btnNext").innerHTML = "Refresh";
-
 
             }
 
@@ -330,7 +329,8 @@
                         var td3 = document.createElement("td");
                         td3.innerHTML = (result[key]["results"][kid]["result"] != null &&
                                 (String(result[key]["results"][kid]["result"]).trim().length > 0 &&
-                                        result[key]["results"][kid]["status"].trim().toLowerCase() != "tested") ?
+                                        result[key]["results"][kid]["status"].trim().toLowerCase() != "tested") &&
+                                !result[key]["results"][kid]["status"].trim().toLowerCase().match(/rejected/) ?
                                 result[key]["results"][kid]["result"] : result[key]["results"][kid]["status"]);
                         td3.style.textAlign = "left";
                         td3.style.paddingLeft = "10px";
@@ -389,6 +389,8 @@
                 return;
 
             }
+
+            showSpinner();
 
             if (currentState.trim().toLocaleLowerCase() == "ordered") {
 
@@ -530,7 +532,7 @@
 
                 var currentTests = "";
 
-                if (currentState.trim().toLocaleLowerCase() == "reviewed" || currentState.trim().toLocaleLowerCase() == "verified" || currentState.trim().toLocaleLowerCase() == "tested") {
+                if (currentState.trim().toLocaleLowerCase() == "reviewed" || currentState.trim().toLocaleLowerCase() == "verified" /*|| currentState.trim().toLocaleLowerCase() == "tested"*/) {
 
                     var tests = results[0]["orders"][accession_number]["results"];
 
@@ -647,6 +649,8 @@
 
             var url = "/get_labs/<%= params[:id] %>";
 
+            showSmallSpinner();
+
             var httpRequest = new XMLHttpRequest();
             httpRequest.onreadystatechange = function () {
                 handleTasks(httpRequest);
@@ -667,6 +671,8 @@
                 results = JSON.parse(aXMLHttpRequest.responseText);
 
                 loadResults();
+
+                hideSmallSpinner();
 
             }
         }
@@ -805,6 +811,8 @@
 
         function deleteTest(id){
 
+            showSpinner();
+
             var url = "/update_state/" + id + "?state=Voided";
 
             var httpRequest = new XMLHttpRequest();
@@ -813,6 +821,8 @@
                         httpRequest.status == 304)) {
 
                     var results = httpRequest.responseText;
+
+                    hideSpinner();
 
                     window.location = window.location.href;
 
