@@ -22,6 +22,8 @@
 
     <input type="hidden" id="state" name="state" style="width: 96%; padding: 10px;" value="<%= params[:state].titleize rescue "Tested" %>"/>
 
+	<input type="hidden" name="location" style="width: 96%; padding: 10px;" value="<%= params[:location] %>"/>
+	
     <table width="100%">
     <tr>
     <td style="vertical-align: top; border-right: 1px solid #333;">
@@ -542,13 +544,24 @@
 
         if (document.getElementById("btnNext")) {
 
-            document.getElementById("btnNext").innerHTML = "<%= (!params[:state].blank? and params[:state].strip.upcase == "VERIFIED" ? "Confirm Result" : "Save Result") %>";
-
+            document.getElementById("btnNext").innerHTML = "<%= (!params[:state].blank? and params[:state].strip.upcase == "VERIFIED" ? "Verify Result" : "Save Result") %>";
+			
+			<% if @user_details['canverify'].to_s != 'true'%>
+		
+				if (document.getElementById("btnNext").innerHTML.match(/Verify/))
+					
+					document.getElementById("btnNext").className = "button_gray";		
+										
+			<% end %>
+			
             document.getElementById("btnNext").onclick = function () {
 
-                showSpinner();
-
-                document.forms[0].submit();
+                if (!this.className.match(/gray/)){
+                
+				        showSpinner();
+				
+				        document.forms[0].submit();
+                }
 
             }
 
