@@ -14,7 +14,7 @@ class OrderController < ApplicationController
       redirect_to "/patient/#{session[:patient_id]}" and return
 
     end
-
+    @settings = YAML.load_file(Rails.root.join('config', 'application.yml'))
   end
 
   def search

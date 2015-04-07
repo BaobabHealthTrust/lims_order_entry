@@ -13,6 +13,8 @@ class LabProcessingController < RemoteSessionsController
 
     redirect_to "/search_for_samples?target=receive_samples" and return if @location[:dept].downcase.match(/reception/)
 
+    @settings = YAML.load_file(Rails.root.join('config', 'application.yml'))
+
     render :layout => "lab"
 
   end
