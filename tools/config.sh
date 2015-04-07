@@ -68,7 +68,11 @@ adb start-server
 
 adb devices
 
+# adb usb
+
 sleep 1
+
+adb shell pm enable com.android.launcher
 
 adb shell pm disable com.google.android.apps.maps
 
@@ -210,6 +214,10 @@ sleep 1
 adb shell pm disable com.android.systemui
 
 adb shell pm disable com.google.android.apps.maps
+
+# adb tcpip 5555
+
+# adb shell pm disable com.android.launcher
 
 adb shell reboot
 
