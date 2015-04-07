@@ -1201,7 +1201,11 @@
 
         spinner.stop();
 
-        showShield();
+        if (__$("shield")) {
+
+            document.body.removeChild(__$("shield"));
+
+        }
 
     }
 
