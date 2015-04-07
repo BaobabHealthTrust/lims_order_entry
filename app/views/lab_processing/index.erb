@@ -76,6 +76,7 @@
 
     var url = "<%= @target rescue nil %>";
     var tmrHnd;
+    var timeout = <%= @settings['lab_timeout'] %> * 60 * 1000;
 
     function checkBarcode() {
 
@@ -98,9 +99,9 @@
             } else if (__$("barcode").value.trim().match(/\$/)) {
 
                 __$("barcode").value = "";
-
             }
-
+            timeout -= 100;
+            //console.log("time out :" + timeout)
         }
 
         if (__$("btnNext")) {
@@ -110,7 +111,11 @@
         }
 
         tmrHnd = setTimeout("checkBarcode()", 100);
-
+        if (timeout <= 0)
+        {
+            clearTimeout(tmrHnd);
+            window.location = "/remote_logout";
+        }
     }
 
     checkBarcode();
