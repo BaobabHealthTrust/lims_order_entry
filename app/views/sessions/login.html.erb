@@ -49,9 +49,17 @@
 
             document.getElementById("btnNext").onclick = function () {
 
-                showSpinner();
+                if(typeof(Android) != "undefined" && !Android.isNetworkAvailable()){
 
-                document.forms[0].submit();
+                    showMsg("Device currently offline!");
+
+                } else {
+
+                    showSpinner();
+
+                    document.forms[0].submit();
+
+                }
 
             }
 
