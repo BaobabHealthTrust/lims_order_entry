@@ -479,7 +479,14 @@ class LabProcessingController < RemoteSessionsController
     orc = HL7::Message::Segment::ORC.new
     
     username = session[:user].gsub(/\s+/, "_") rescue 1
-    usernames = session[:user_person_names]
+    if session[:user_person_names].class.to_s.downcase != "hash"
+    	usernames = session[:user_person_names]
+    else
+    	f_name = session[:user_person_names]['first_name'] rescue "Unknown"
+    	l_name = session[:user_person_names]['last_name'] rescue "Unknown"
+    	usernames = "#{f_name} #{l_name}"
+    end
+    
     r = usernames.split(/\s+/)
         
     orc.entered_by = "#{username}^#{(r.length > 2 ? r[r.length - 1] : r[1])}^#{r[0]}^#{(r.length > 2 ? r[1] : nil)}"
@@ -511,7 +518,7 @@ class LabProcessingController < RemoteSessionsController
       obr.universal_service_id = "#{code rescue nil}^#{params[:test_name][code] rescue nil}^LOINC"
       obr.observation_date = "#{params[:testtime].to_datetime.strftime("%Y%m%d%H%M%S") rescue Time.now.strftime("%Y%m%d%H%M%S")}"
       obr.relevant_clinical_info = "Rule out diagnosis"
-      obr.ordering_provider = "439234^#{session[:user_person_names]['last_name'] rescue "Unknown"}^#{session[:user_person_names]['first_name'] rescue "Unknown"}"
+      obr.ordering_provider = "#{username}^#{(r.length > 2 ? r[r.length - 1] : r[1])}^#{r[0]}^#{(r.length > 2 ? r[1] : nil)}"
       # obr.result_status = "Tested"
 
       msg << obr # add the OBR segment to the message
@@ -525,7 +532,7 @@ class LabProcessingController < RemoteSessionsController
       obx.references_range = "#{params[:test_range][code]}"
       obx.observation_result_status = "F"
       obx.observation_date = "#{params[:testtime].to_datetime.strftime("%Y%m%d%H%M%S") rescue Time.now.strftime("%Y%m%d%H%M%S")}"
-      obx.responsible_observer = "439234^#{session[:user_person_names][:last_name] rescue "Unknown"}^#{session[:user_person_names][:first_name] rescue "Unknown"}"
+      obx.responsible_observer = "#{username}^#{(r.length > 2 ? r[r.length - 1] : r[1])}^#{r[0]}^#{(r.length > 2 ? r[1] : nil)}"
       obx.analysis_date = "#{params[:testtime].to_datetime.strftime("%Y%m%d%H%M%S") rescue Time.now.strftime("%Y%m%d%H%M%S")}"
       obx.performing_organization_name = "KCH Laboratory"
       obx.performing_organization_address = "^^Lilongwe^^^Malawi"
