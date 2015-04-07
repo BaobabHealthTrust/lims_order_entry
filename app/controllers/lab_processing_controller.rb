@@ -1,4 +1,4 @@
-class LabProcessingController < RemoteSessionsController 
+class LabProcessingController < RemoteSessionsController
 
   before_filter :check_device_location, :only => [:index, :search_for_samples, :check_sample_state, :enter_results,
                                                   :rejection_reason, :reject_sample]
@@ -228,7 +228,7 @@ class LabProcessingController < RemoteSessionsController
     status_link = "#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@" +
         "#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["specimen_status_path"]}#{params[:barcode]}"
 
-    status = RestClient.get(status_link).strip # rescue nil
+    status = RestClient.get(status_link).strip rescue "TEMPORARY SERVER ERROR"
 
     render :text => status.strip
 
@@ -477,11 +477,11 @@ class LabProcessingController < RemoteSessionsController
     msg << pv1 # add the PV1 segment to the message
 
     orc = HL7::Message::Segment::ORC.new
-    
+
     username = session[:user].gsub(/\s+/, "_") rescue 1
     usernames = session[:user_person_names]
     r = usernames.split(/\s+/)
-        
+
     orc.entered_by = "#{username}^#{(r.length > 2 ? r[r.length - 1] : r[1])}^#{r[0]}^#{(r.length > 2 ? r[1] : nil)}"
     orc.enterers_location = "^^^^^^^^#{params[:location]}"
     orc.ordering_facility_name = "KCH"
@@ -653,11 +653,11 @@ class LabProcessingController < RemoteSessionsController
     msg << pv1 # add the PV1 segment to the message
 
     orc = HL7::Message::Segment::ORC.new
-    
+
     username = session[:user].gsub(/\s+/, "_") rescue 1
     usernames = session[:user_person_names]
     r = usernames.split(/\s+/)
-        
+
     orc.entered_by = "#{username}^#{(r.length > 2 ? r[r.length - 1] : r[1])}^#{r[0]}^#{(r.length > 2 ? r[1] : nil)}"
     orc.enterers_location = "^^^^^^^^#{params[:location]}"
     orc.ordering_facility_name = "KCH"
@@ -772,7 +772,7 @@ class LabProcessingController < RemoteSessionsController
     username = session[:user].gsub(/\s+/, "_") rescue 1
     usernames = session[:user_person_names]
     r = usernames.split(/\s+/)
-        
+
     orc.entered_by = "#{username}^#{(r.length > 2 ? r[r.length - 1] : r[1])}^#{r[0]}^#{(r.length > 2 ? r[1] : nil)}"
     orc.enterers_location = "^^^^^^^^#{params[:location]}"
     orc.ordering_facility_name = "KCH"
