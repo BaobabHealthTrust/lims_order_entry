@@ -87,6 +87,8 @@
 
             if (__$("barcode").value.trim().match(/^[A-Z0-9]+\$$/)) {
 
+                showSpinner();
+
                 __$("barcode").value = __$("barcode").value.trim().replace(/\$/, "");
 
                 document.forms[0].submit();
@@ -104,17 +106,6 @@
         if (__$("btnNext")) {
 
             __$("btnNext").style.display = "none";
-
-        }
-
-        if (__$("btnLogout")) {
-
-            __$("btnLogout").innerHTML = "Logout";
-            __$("btnLogout").onclick = function () {
-
-                window.location = "/remote_logout";
-
-            }
 
         }
 
@@ -143,6 +134,8 @@
             document.getElementById("btnLogout").innerHTML = "Logout";
 
             document.getElementById("btnLogout").onclick = function () {
+
+                showSpinner();
 
                 window.location = "/remote_logout";
 

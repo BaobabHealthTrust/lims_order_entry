@@ -201,7 +201,7 @@
         if (__$("btnLogout")) {
 
             __$("btnLogout").innerHTML = "Cancel";
-            __$("btnLogout").setAttribute("onClick", "window.location='/'")
+            __$("btnLogout").setAttribute("onClick", "showSpinner(); window.location='/'")
         } else {
 
             setTimeout("renameBtn()", 100);
@@ -211,6 +211,8 @@
     }
 
     function ajaxTasks() {
+
+        showSpinner();
 
         var url = "/catalog";
 
@@ -273,7 +275,7 @@
 
                 var key = keys[i];
 
-                if(preSelectedSpecimen.trim().length > 0 && preSelectedSpecimen.trim().toLowerCase() != key.trim().toLowerCase()){
+                if (preSelectedSpecimen.trim().length > 0 && preSelectedSpecimen.trim().toLowerCase() != key.trim().toLowerCase()) {
 
                     continue;
 
@@ -323,6 +325,8 @@
             }
 
         }
+
+        hideSpinner();
 
     }
 
@@ -450,7 +454,7 @@
 
                 var key = associations[specimen][i];
 
-                if(preSelectedTest.trim().length > 0 && preSelectedTest.trim().toLowerCase() != key.trim().toLowerCase()){
+                if (preSelectedTest.trim().length > 0 && preSelectedTest.trim().toLowerCase() != key.trim().toLowerCase()) {
 
                     continue;
 
@@ -1579,6 +1583,8 @@
 
     function doOrderTests() {
 
+        showSpinner();
+
         var keys = Object.keys(currentOrders);
 
         for (var i = 0; i < keys.length; i++) {
@@ -1638,7 +1644,7 @@
 
                 selectedSample = keys[i];
 
-                processOrder();
+                processOrder(j, k);
 
                 showSelections();
 
@@ -1687,7 +1693,9 @@
 
     }
 
-    function processOrder() {
+    var linedUp = {};
+
+    function processOrder(j, k) {
         <!--
         /*
         [{:national_id=>"P129500000229", :full_name=>"Mevis Kadammanja", :sex=>"Female", :age=>"51",
@@ -1696,6 +1704,8 @@
         :current_ta=>nil, :current_district=>nil, :current_residence=>"Nsungwi market"}]
         */
         -->
+
+        linedUp[[j, k]] = true;
 
         var test_code = "";     // codes[selectedTest];
 
@@ -1726,7 +1736,7 @@
 
         var status = (drawingSamples ? "Drawn" : "Ordered");
 
-        if(preSelectedTest.trim().length > 0){
+        if (preSelectedTest.trim().length > 0) {
 
             status = preSelectedState;
 
@@ -1748,112 +1758,13 @@
         var httpRequest = new XMLHttpRequest();
 
         httpRequest.onreadystatechange = function () {
-
-            if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
-                    httpRequest.status == 304)) {
-
-                var result = JSON.parse(httpRequest.responseText);
-
-                /*
-
-                 {
-                 "sendingFacility": "KCH",
-                 "receivingFacility": "KCH",
-                 "messageDatetime": "20150222215009",
-                 "messageType": "OML_O21",
-                 "messageControlID": "20150222215009",
-                 "processingID": "T",
-                 "hl7VersionID": "2.5",
-                 "tests": [
-                 {
-                 "obrSetID": "1",
-                 "testCode": "5909-7",
-                 "testName": "Blood films",
-                 "timestampForSpecimenCollection": "20150222215009",
-                 "reasonTestPerformed": "Rule out diagnosis",
-                 "whoOrderedTest": "Chris Moyo (1)"
-                 },
-                 {
-                 "obrSetID": "2",
-                 "testCode": "65758-5",
-                 "testName": "CD4",
-                 "timestampForSpecimenCollection": "20150222215009",
-                 "reasonTestPerformed": "Rule out diagnosis",
-                 "whoOrderedTest": "Chris Moyo (2)"
-                 },
-                 {
-                 "obrSetID": "3",
-                 "testCode": "4537-7",
-                 "testName": "Erythrocyte sedimentation rate",
-                 "timestampForSpecimenCollection": "20150222215009",
-                 "reasonTestPerformed": "Rule out diagnosis",
-                 "whoOrderedTest": "Chris Moyo (3)"
-                 },
-                 {
-                 "obrSetID": "4",
-                 "testCode": "57021-8",
-                 "testName": "Full blood count",
-                 "timestampForSpecimenCollection": "20150222215009",
-                 "reasonTestPerformed": "Rule out diagnosis",
-                 "whoOrderedTest": "Chris Moyo (4)"
-                 }
-                 ],
-                 "healthFacilitySiteCodeAndName": "KCH",
-                 "pidSetID": "1",
-                 "nationalID": "P170000000031",
-                 "patientName": "Test N\/A Patient ",
-                 "dateOfBirth": "19930701",
-                 "gender": "F",
-                 "spmSetID": "1",
-                 "accessionNumber": "KCH3",
-                 "typeOfSample": "Whole blood",
-                 "tq1SetID": "1",
-                 "priority": "S",
-                 "enteredBy": "User Super (1)",
-                 "enterersLocation": ""
-                 }
-
-                 */
-
-                var currentTests = "";
-
-                var tests = result["tests"];
-
-                for (var i = 0; i < tests.length; i++) {
-
-                    var short = shortnames[tests[i]["testName"]];
-
-                    if (short == undefined || short.trim().length == 0) {
-
-                        short = tests[i]["testName"];
-
-                    }
-
-                    currentTests += short + ";"
-
-                }
-
-                if (currentTests.trim().length > 12) {
-
-                    currentTests = currentTests.substr(0, 12) + "...";
-
-                }
-
-                if (drawingSamples && preSelectedTest.trim().length == 0) {
-
-                    printBarcode(npid, result["messageDatetime"], currentTests, result["accessionNumber"]);
-
-                }
-
-                selectedOrderTests = [];
-
-                selectedSample = null;
-
-            }
-
+            handleResponse(httpRequest, j, k);
         };
+
         try {
-            httpRequest.open('GET', url, true);
+            httpRequest.open('GET', url,
+
+                    true);
             httpRequest.send(null);
         } catch (e) {
         }
@@ -1881,6 +1792,132 @@
          }
          }*/
 
+    }
+
+
+    function handleResponse(aXMLHttpRequest, j, k) {
+        if (!aXMLHttpRequest) return;
+
+        if (aXMLHttpRequest.readyState == 4 && (aXMLHttpRequest.status == 200 ||
+                aXMLHttpRequest.status == 304)) {
+
+            var result = JSON.parse(aXMLHttpRequest.responseText);
+
+            /*
+
+             {
+             "sendingFacility": "KCH",
+             "receivingFacility": "KCH",
+             "messageDatetime": "20150222215009",
+             "messageType": "OML_O21",
+             "messageControlID": "20150222215009",
+             "processingID": "T",
+             "hl7VersionID": "2.5",
+             "tests": [
+             {
+             "obrSetID": "1",
+             "testCode": "5909-7",
+             "testName": "Blood films",
+             "timestampForSpecimenCollection": "20150222215009",
+             "reasonTestPerformed": "Rule out diagnosis",
+             "whoOrderedTest": "Chris Moyo (1)"
+             },
+             {
+             "obrSetID": "2",
+             "testCode": "65758-5",
+             "testName": "CD4",
+             "timestampForSpecimenCollection": "20150222215009",
+             "reasonTestPerformed": "Rule out diagnosis",
+             "whoOrderedTest": "Chris Moyo (2)"
+             },
+             {
+             "obrSetID": "3",
+             "testCode": "4537-7",
+             "testName": "Erythrocyte sedimentation rate",
+             "timestampForSpecimenCollection": "20150222215009",
+             "reasonTestPerformed": "Rule out diagnosis",
+             "whoOrderedTest": "Chris Moyo (3)"
+             },
+             {
+             "obrSetID": "4",
+             "testCode": "57021-8",
+             "testName": "Full blood count",
+             "timestampForSpecimenCollection": "20150222215009",
+             "reasonTestPerformed": "Rule out diagnosis",
+             "whoOrderedTest": "Chris Moyo (4)"
+             }
+             ],
+             "healthFacilitySiteCodeAndName": "KCH",
+             "pidSetID": "1",
+             "nationalID": "P170000000031",
+             "patientName": "Test N\/A Patient ",
+             "dateOfBirth": "19930701",
+             "gender": "F",
+             "spmSetID": "1",
+             "accessionNumber": "KCH3",
+             "typeOfSample": "Whole blood",
+             "tq1SetID": "1",
+             "priority": "S",
+             "enteredBy": "User Super (1)",
+             "enterersLocation": ""
+             }
+
+             */
+
+            var
+                    currentTests = "";
+
+            var tests = result[
+                    "tests"];
+
+            for (var i = 0; i < tests.length; i++) {
+
+                var short = shortnames[
+
+                        tests[i]["testName"]];
+
+                if (short ==
+
+                        undefined || short.trim().length == 0) {
+
+                    short =
+
+                            tests[i]["testName"];
+
+                }
+
+                currentTests += short + ";"
+
+            }
+
+            if (
+
+                    currentTests.trim().length > 12) {
+
+                currentTests = currentTests.substr(0, 12) + "...";
+
+            }
+
+            if (drawingSamples && preSelectedTest.trim().length == 0) {
+
+                hideSpinner();
+
+                printBarcode(npid, result["messageDatetime"], currentTests, result["accessionNumber"]);
+
+            }
+
+            selectedOrderTests = [];
+
+            selectedSample = null;
+
+            delete linedUp[[j, k]];
+
+            if (Object.keys(linedUp).length == 0) {
+                hideSpinner();
+
+            }
+
+        }
     }
 
     function printBarcode(npid, messageDatetime, testsTBD, accessionNumber, ward) {
