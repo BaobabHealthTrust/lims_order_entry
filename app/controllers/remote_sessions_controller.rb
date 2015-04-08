@@ -51,9 +51,9 @@ class RemoteSessionsController < ActionController::Base
       session[:user_token] = nil
       session[:user] = nil
       session[:user_person_name] = nil
-      flash[:notice] = "You have been logged out!"      
+      # flash[:notice] = "You have been logged out!"
     else
-      flash[:notice] = "Remote logout failed!"      
+      # flash[:notice] = "Remote logout failed!"
     end
     redirect_to "/remote_login" and return
   end

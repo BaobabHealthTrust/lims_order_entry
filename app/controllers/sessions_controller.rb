@@ -27,7 +27,7 @@ class SessionsController < ApplicationController
       session[:user_token] = nil
       session[:user] = nil
       session[:user_person_name] = nil
-      flash[:notice] = "You have been logged out!"
+      # flash[:notice] = "You have been logged out!"
       redirect_to "/login" and return
     else
     end
