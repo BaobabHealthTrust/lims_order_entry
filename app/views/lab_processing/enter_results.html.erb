@@ -22,8 +22,8 @@
 
     <input type="hidden" id="state" name="state" style="width: 96%; padding: 10px;" value="<%= params[:state].titleize rescue "Tested" %>"/>
 
-	<input type="hidden" name="location" style="width: 96%; padding: 10px;" value="<%= params[:location] %>"/>
-	
+    <input type="hidden" name="location" style="width: 96%; padding: 10px;" value="<%= params[:location] %>"/>
+
     <table width="100%">
     <tr>
     <td style="vertical-align: top; border-right: 1px solid #333;">
@@ -216,7 +216,7 @@
 
                         <% if (values[0]["type"] rescue "freetext").downcase.strip == "list" %>
 
-                            <ul style="list-style: none; padding-left: 0px; border: 1px solid #ccc; width: 100%; margin: 0px; height: 200px; overflow: auto;">
+                            <table style="list-style: none; padding-left: 0px; border: 1px solid #ccc; width: 100%; margin: 0px; height: 200px; overflow: auto;">
 
                               <% i = 0 %>
 
@@ -224,10 +224,12 @@
 
                                   <% if !result.blank? and measure.strip == (result.strip rescue "") %>
 
-                                      <li id="<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>"
-                                          style="border: 1px dotted #ccc; padding: 10px; cursor: pointer; margin: 2px; font-size: 18px;
-                                                  background-color: lightblue" cat="<%= i % 2 > 0 ? 'odd' : 'even' %>"
-                                          tag="<%= name %>" target="test_result_<%= code.strip.gsub(/\-/, "_") %>"><%= measure %></li>
+                                      <tr>
+                                        <td id="<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>"
+                                            style="border: 1px dotted #ccc; padding: 10px; cursor: pointer; margin: 2px; font-size: 18px;
+                                                    background-color: lightblue" cat="<%= i % 2 > 0 ? 'odd' : 'even' %>"
+                                            tag="<%= name %>" target="test_result_<%= code.strip.gsub(/\-/, "_") %>"><%= measure %></td>
+                                      </tr>
 
                                       <script>
                                           <!--
@@ -239,10 +241,12 @@
 
                                   <% else %>
 
-                                      <li id="<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>"
-                                          style="border: 1px dotted #ccc; padding: 10px; cursor: pointer; margin: 2px; font-size: 18px;
-                                                  background-color: <%= i % 2 > 0 ? '#eee' : '' %>" cat="<%= i % 2 > 0 ? 'odd' : 'even' %>"
-                                          tag="<%= name %>" target="test_result_<%= code.strip.gsub(/\-/, "_") %>"><%= measure %></li>
+                                      <tr>
+                                        <td id="<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>"
+                                            style="border: 1px dotted #ccc; padding: 10px; cursor: pointer; margin: 2px; font-size: 18px;
+                                                    background-color: <%= i % 2 > 0 ? '#eee' : '' %>" cat="<%= i % 2 > 0 ? 'odd' : 'even' %>"
+                                            tag="<%= name %>" target="test_result_<%= code.strip.gsub(/\-/, "_") %>"><%= measure %></td>
+                                      </tr>
 
                                   <% end %>
 
@@ -272,7 +276,7 @@
 
                               <% end %>
 
-                            </ul>
+                            </table>
 
                             <input type="hidden" id="test_result_<%= code.strip.gsub(/\-/, "_") %>"
                                    name="test_result[<%= code %>]" style="width: 96%; padding: 10px;"
@@ -422,7 +426,7 @@
 
                         <% if (values[0]["type"] rescue "freetext").downcase.strip == "list" %>
 
-                            <ul style="list-style: none; padding-left: 0px; border: 1px solid #ccc; width: 100%; margin: 0px; height: 200px; overflow: auto;">
+                            <table style="list-style: none; padding-left: 0px; border: 1px solid #ccc; width: 100%; margin: 0px; height: 200px; overflow: auto;">
 
                               <% i = 0 %>
 
@@ -430,17 +434,21 @@
 
                                   <% if !result.blank? and measure.strip == (result.strip rescue "") %>
 
-                                      <li id="<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>"
-                                          style="border: 1px dotted #ccc; padding: 10px; cursor: pointer; margin: 2px; font-size: 18px;
-                                                  background-color: lightblue" cat="<%= i % 2 > 0 ? 'odd' : 'even' %>"
-                                          tag="<%= name %>" target="test_result_<%= code.strip.gsub(/\-/, "_") %>"><%= measure %></li>
+                                      <tr>
+                                        <td id="<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>"
+                                            style="border: 1px dotted #ccc; padding: 10px; cursor: pointer; margin: 2px; font-size: 18px;
+                                                    background-color: lightblue" cat="<%= i % 2 > 0 ? 'odd' : 'even' %>"
+                                            tag="<%= name %>" target="test_result_<%= code.strip.gsub(/\-/, "_") %>"><%= measure %></td>
+                                      </tr>
 
                                   <% else %>
 
-                                      <li id="<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>"
-                                          style="border: 1px dotted #ccc; padding: 10px; cursor: pointer; margin: 2px; font-size: 18px;
-                                                  background-color: <%= i % 2 > 0 ? '#eee' : '' %>" cat="<%= i % 2 > 0 ? 'odd' : 'even' %>"
-                                          tag="<%= name %>" target="test_result_<%= code.strip.gsub(/\-/, "_") %>"><%= measure %></li>
+                                      <tr>
+                                        <td id="<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>"
+                                            style="border: 1px dotted #ccc; padding: 10px; cursor: pointer; margin: 2px; font-size: 18px;
+                                                    background-color: <%= i % 2 > 0 ? '#eee' : '' %>" cat="<%= i % 2 > 0 ? 'odd' : 'even' %>"
+                                            tag="<%= name %>" target="test_result_<%= code.strip.gsub(/\-/, "_") %>"><%= measure %></td>
+                                      </tr>
 
                                   <% end %>
 
@@ -470,7 +478,7 @@
 
                               <% end %>
 
-                            </ul>
+                            </table>
 
                             <input type="hidden" id="test_result_<%= code.strip.gsub(/\-/, "_") %>"
                                    name="test_result[<%= code %>]" style="width: 96%; padding: 10px;"
@@ -545,22 +553,22 @@
         if (document.getElementById("btnNext")) {
 
             document.getElementById("btnNext").innerHTML = "<%= (!params[:state].blank? and params[:state].strip.upcase == "VERIFIED" ? "Verify Result" : "Save Result") %>";
-			
-			<% if @user_details['canverify'].to_s != 'true'%>
-		
-				if (document.getElementById("btnNext").innerHTML.match(/Verify/))
-					
-					document.getElementById("btnNext").className = "button_gray";		
-										
-			<% end %>
-			
+
+            <% if @user_details['canverify'].to_s != 'true'%>
+
+            if (document.getElementById("btnNext").innerHTML.match(/Verify/))
+
+                document.getElementById("btnNext").className = "button_gray";
+
+            <% end %>
+
             document.getElementById("btnNext").onclick = function () {
 
-                if (!this.className.match(/gray/)){
-                
-				        showSpinner();
-				
-				        document.forms[0].submit();
+                if (!this.className.match(/gray/)) {
+
+                    showSpinner();
+
+                    document.forms[0].submit();
                 }
 
             }
