@@ -43,6 +43,7 @@ default: &default
     order_server_login_check: /blis/htdocs/api/remote_login_check.php
     order_server_logout: /blis/htdocs/api/remote_logout.php?
     order_server_user_details: /blis/htdocs/api/remote_calls.php?action=get_user_details&username=
+    order_server_user_validation: /blis/htdocs/api/update_credentials.php
 
 development:
   <<: *default
