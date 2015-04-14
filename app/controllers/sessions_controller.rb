@@ -71,9 +71,21 @@ class SessionsController < ApplicationController
 
       @username = session[:user]
 
-      @section = params[:section]
-
       status = ""
+
+      if @current_password.blank?
+        flash[:error] = "Current password is blank"
+        redirect_to "/change_password?section=#{@section}" and return
+      elsif @new_password.blank?
+        flash[:error] = "New password is blank!"
+        redirect_to "/change_password?section=#{@section}" and return
+      elsif @repeat_password.blank?
+        flash[:error] = "Repeat password is blank!"
+        redirect_to "/change_password?section=#{@section}" and return
+      elsif @new_password.strip != @repeat_password.strip
+        flash[:error] = "Repeat password mismatch!"
+        redirect_to "/change_password?section=#{@section}" and return
+      end
 
       paramz = {:username => @username, :new_password => @new_password, :repeated_password => @repeat_password}
 
