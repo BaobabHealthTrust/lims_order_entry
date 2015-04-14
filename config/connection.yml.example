@@ -40,7 +40,7 @@ default: &default
     user_management_authenticate: /remote_authentication/
     user_management_wards: /get_wards
     user_management_names: /get_user_names
-    user_management_names: /get_user_names
+    user_management_update_password: /update_credentials
     order_server_login: /blis/htdocs/api/remote_login.php
     order_server_login_check: /blis/htdocs/api/remote_login_check.php
     order_server_logout: /blis/htdocs/api/remote_logout.php?
