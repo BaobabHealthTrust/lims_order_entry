@@ -75,29 +75,32 @@ class SessionsController < ApplicationController
 
       status = ""
 
-      params = {:username => @username, :new_password => @new_password, :repeat_password => @repeat_password}
+      paramz = {:username => @username, :new_password => @new_password, :repeated_password => @repeat_password}
 
-      if !@section.blank?
+      if @section.blank?
         login_link = "#{CONFIG["user_management_protocol"]}://#{@username}:#{@current_password}@#{CONFIG["user_management_server"]}:#{CONFIG["user_management_port"]}#{CONFIG["user_management_user_update_path"]}"
       else
         login_link = "#{CONFIG["order_transport_protocol"]}://#{@username}:#{@current_password}@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["order_server_user_update_path"]}"
       end
 
-      status = JSON.parse(RestClient.post(login_link, params)) rescue "Error: Failed to connect to server!"
+      status = JSON.parse(RestClient.post(login_link, paramz)) rescue "Error: Failed to connect to server!"
 
       if (!status['ERROR'].blank? rescue false)
         status = status['ERROR']
+      elsif (!status['MSG'].blank? rescue false)
+        status = status['MSG']
       end
 
       if status.match(/error/i)
-        flash[:error] = status.gsub("Error: ", "")
+        flash[:error] = status.gsub(/msg\:|\error\:/i, "")
+        redirect_to "/"
       else
         flash[:notice] = "Update successful"
 
         if @section.blank?
           redirect_to "/login"
         else
-          redirec_to "/remote_login"
+          redirect_to "/remote_login"
         end
 
       end

@@ -1329,6 +1329,18 @@
 
 </div>
 
+<script>
 
+    <% if !flash[:error].blank? %>
+
+    showMsg("ERROR: <%= flash[:error] %>");
+
+    <% elsif !flash[:notice].blank? %>
+
+    showMsg("INFO: <%= flash[:notice] %>");
+
+    <% end %>
+
+</script>
 </body>
 </html>
