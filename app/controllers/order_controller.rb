@@ -452,7 +452,7 @@ class OrderController < ApplicationController
 
     msg << msh # add the MSH segment to the message
 
-    name = patient["name"].split(" ")
+    name = patient["name"].split(" ") rescue []
 
     fname = name[0] rescue nil
     mname = (name.length > 2 ? name[1] : "")

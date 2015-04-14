@@ -9,8 +9,9 @@ class ApplicationController < ActionController::Base
     if session[:user_token].blank?
       redirect_to "/login" and return
     else
-      auth_link = "#{CONFIG["user_management_protocol"]}://#{CONFIG["user_management_server"]}:#{CONFIG["user_management_port"]}#{CONFIG["user_management_authenticate"]}"
-      auth_status = RestClient.post(auth_link, {"token" => session[:user_token]}) rescue nil
+
+      auth_link = "#{CONFIG["user_management_protocol"]}://#{CONFIG["user_management_name"]}:#{CONFIG["user_management_password"]}@#{CONFIG["user_management_server"]}:#{CONFIG["user_management_port"]}#{CONFIG["user_management_authenticate"]}"
+      auth_status = RestClient.post(auth_link, {"token" => session[:user_token]})
 
       if auth_status == "true"
         return true

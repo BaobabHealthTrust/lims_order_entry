@@ -1864,8 +1864,9 @@
 
              */
 
-            var
-                    currentTests = "";
+            var npid = "<%= @patient[:national_id] rescue nil %>";
+
+            var currentTests = "";
 
             var tests = result[
                     "tests"];
@@ -1900,9 +1901,9 @@
 
             if (drawingSamples && preSelectedTest.trim().length == 0) {
 
-                hideSpinner();
-
                 printBarcode(npid, result["messageDatetime"], currentTests, result["accessionNumber"]);
+
+                hideSpinner();
 
             }
 
@@ -1913,6 +1914,7 @@
             delete linedUp[[j, k]];
 
             if (Object.keys(linedUp).length == 0) {
+
                 hideSpinner();
 
             }
