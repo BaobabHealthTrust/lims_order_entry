@@ -87,13 +87,15 @@ class SessionsController < ApplicationController
 
       if (!status['ERROR'].blank? rescue false)
         status = status['ERROR']
+        flash[:error] = status.gsub(/error\:/i, "")
       elsif (!status['MSG'].blank? rescue false)
         status = status['MSG']
+        flash[:notice] = status.gsub(/msg\:/i, "")
       end
 
       if status.match(/error/i)
         flash[:error] = status.gsub(/msg\:|\error\:/i, "")
-        redirect_to "/"
+        redirect_to @section.blank? ? "/" : "/lab"
       else
         flash[:notice] = "Update successful"
 
