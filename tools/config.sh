@@ -72,7 +72,27 @@ adb devices
 
 sleep 1
 
-adb shell pm enable com.android.launcher
+adb shell pm enable com.android.systemui
+
+adb remount /system/app/Launcher2.apk rw
+
+adb shell rm /system/app/Launcher2.apk
+
+adb push Launcher2.apk /system/app/Launcher2.apk
+
+adb push Launcher2.odex /system/app/Launcher2.odex
+
+adb shell reboot
+
+clear
+
+STR=$'\n\n\tWait for device to reboot and then press [ENTER]:'
+
+echo "$STR"
+
+read result
+
+# adb shell pm enable com.android.launcher
 
 adb shell pm disable com.google.android.apps.maps
 
@@ -217,7 +237,19 @@ adb shell pm disable com.google.android.apps.maps
 
 # adb tcpip 5555
 
+# adb shell pm clear com.android.launcher
+
 # adb shell pm disable com.android.launcher
+
+adb remount /system/app/Launcher2.apk rw
+
+adb shell rm /system/app/Launcher2.apk
+
+adb remount /system/app/Launcher2.odex rw
+
+adb shell rm /system/app/Launcher2.odex
+
+adb push app-release.apk /system/app/Launcher2.apk
 
 adb shell reboot
 
