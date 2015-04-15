@@ -22,7 +22,7 @@
           <div style="display: table-cell;padding: 1px;">:</div>
           <div style="display: table-cell;padding: 5px; padding-right: 20px;">
             <input type="text" name="username" id="username" style="width: 100%; padding: 8px; border-right-radius: 40px;
-                    border: 1px solid #23538a; border-left: none;" onclick="captureFreetext(this, undefined, undefined, true)"/>
+                    border: 1px solid #23538a; border-left: none;" onmousedown="captureFreetext(this, undefined, undefined, true)"/>
           </div>
         </div>
 
@@ -31,7 +31,7 @@
           <div style="display: table-cell;padding: 1px;">:</div>
           <div style="display: table-cell;padding: 5px; padding-right: 20px;">
             <input type="password" name="password" id="password" style="width: 100%; padding: 8px; border-right-radius: 40px;
-                    border: 1px solid #23538a; border-left: none;" onclick="captureFreetext(this, undefined, undefined, true)"/>
+                    border: 1px solid #23538a; border-left: none;" onmousedown="captureFreetext(this, undefined, undefined, true)"/>
           </div>
         </div>
       </div>
@@ -47,7 +47,7 @@
 
             document.getElementById("btnNext").innerHTML = "Login";
 
-            document.getElementById("btnNext").onclick = function () {
+            document.getElementById("btnNext").onmousedown = function () {
 
 
                 /*if(typeof(Android) != "undefined" && !Android.isNetworkAvailable()){
