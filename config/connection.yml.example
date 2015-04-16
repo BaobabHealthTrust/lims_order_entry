@@ -33,16 +33,19 @@ default: &default
     user_management_protocol: http
     user_management_server: localhost
     user_management_port: 3009
+    user_management_name: username
+    user_management_password: password
     user_management_login: /remote_login/
     user_management_logout: /remote_logout/
     user_management_authenticate: /remote_authentication/
     user_management_wards: /get_wards
     user_management_names: /get_user_names
-    user_management_names: /get_user_names
+    user_management_user_update_path: /update_credentials
     order_server_login: /blis/htdocs/api/remote_login.php
     order_server_login_check: /blis/htdocs/api/remote_login_check.php
     order_server_logout: /blis/htdocs/api/remote_logout.php?
     order_server_user_details: /blis/htdocs/api/remote_calls.php?action=get_user_details&username=
+    order_server_user_update_path: /blis/htdocs/api/update_credentials.php
 
 development:
   <<: *default

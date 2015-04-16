@@ -84,10 +84,26 @@
   <button id="btnLogout" class="button_red" style="float: left; cursor: pointer;" onclick="showSpinner(); window.location = '/logout'">Logout</button>
 
   <div id="battery" style="float: left; border: 1px solid #fff; height: 20px; width: 100px; color: #fff; display: none;"></div>
-
   <button id="btnNext" class="button_green" style="float: right; margin-right: 15px; cursor: pointer;" onclick="showSpinner(); window.location = '<%= !params[:id].blank? ? "/patient/#{params[:id]}" : "/" %>'">Finish</button>
+
+  <% if params[:action] == 'index' %>
+    <button id="btnPassChange" class="button_blue" style="float: right; margin-right: 15px; cursor: pointer;" onclick="showSpinner(); window.location = '/change_password'">Change Password</button>
+  <% end %>
+
 </div>
 
+<script>
 
+    <% if !flash[:error].blank? %>
+
+    showMsg("ERROR: <%= flash[:error] %>");
+
+    <% elsif !flash[:notice].blank? %>
+
+    showMsg("INFO: <%= flash[:notice] %>");
+
+    <% end %>
+
+</script>
 </body>
 </html>

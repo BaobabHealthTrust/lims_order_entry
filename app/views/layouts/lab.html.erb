@@ -84,7 +84,11 @@
 <div id="nav" style="position: absolute; bottom: 0px; left: 0px; width: 100%; height: 60px; background-color: #333; padding: 5px;">
   <button id="btnLogout" class="button_red" style="float: left;" onmousedown="window.location = '/remote_logout'">Logout</button>
 
-  <button id="btnNext" class="button_green" style="float: right; margin-right: 15px;" onmousedown="window.location = '/lab_processing/index'">Finish</button>
+  <button id="btnNext" class="button_green" style="float: right; margin-right: 15px;" onclick="window.location = '/lab_processing/index'">Finish</button>
+
+  <% if params[:action] == 'index' %>
+      <button id="btnPassChange" class="button_blue" style="float: right; margin-right: 15px; cursor: pointer;" onclick="showSpinner(); window.location = '/change_password'">Change Password</button>
+  <% end %>
 </div>
 
 <script>

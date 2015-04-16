@@ -2,14 +2,15 @@ class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
-  before_filter :authenticate, :except => ['login']
+  before_filter :authenticate, :except => ['login', 'change_password']
 
   def authenticate
 
     if session[:user_token].blank?
       redirect_to "/login" and return
     else
-      auth_link = "#{CONFIG["user_management_protocol"]}://#{CONFIG["user_management_server"]}:#{CONFIG["user_management_port"]}#{CONFIG["user_management_authenticate"]}"
+
+      auth_link = "#{CONFIG["user_management_protocol"]}://#{CONFIG["user_management_name"]}:#{CONFIG["user_management_password"]}@#{CONFIG["user_management_server"]}:#{CONFIG["user_management_port"]}#{CONFIG["user_management_authenticate"]}"
       auth_status = RestClient.post(auth_link, {"token" => session[:user_token]})
 
       if auth_status == "true"
