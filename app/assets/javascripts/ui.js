@@ -1,7 +1,51 @@
+var globalEditControls = {};
 
+var globalControlsOrder = [];
+
+var attachUnits = false;
+
+var currentUnits = "";
+
+var navFields = [];
 
 function __$(id) {
     return document.getElementById(id);
+}
+
+function init(){
+
+    loadLabels();
+
+    var fields = document.forms[0].elements;
+
+    var j = 0;
+    for(var i = 0; i < fields.length; i++){
+
+        if (fields[i].type.toLowerCase() != "hidden") {
+
+            navFields.push(fields[i]);
+
+            globalEditControls[fields[i].id] = j;
+
+            globalControlsOrder.push(fields[i].id);
+
+            j++;
+
+        }
+
+    }
+
+}
+
+function loadLabels() {
+    var labels = document.getElementsByTagName('LABEL');
+    for (var i = 0; i < labels.length; i++) {
+        if (labels[i].htmlFor != '') {
+            var elem = document.getElementById(labels[i].htmlFor);
+            if (elem)
+                elem.label = labels[i];
+        }
+    }
 }
 
 function showShield(clickCloses) {
@@ -274,14 +318,35 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
 
         var keys;
 
+        var navKey = "Done";
+
+        if(globalEditControls[globalControl.id] != undefined && parseInt(globalEditControls[globalControl.id]) < globalControlsOrder.length - 1){
+
+            navKey = "Next";
+
+        }
+
         if (currentKeysNumeric) {
 
-            keys = [
-                [1, 2, 3, ':'],
-                [4, 5, 6, '/'],
-                [7, 8, 9, '.'],
-                ['&larr;', 0, '', 'abc', "OK"]
-            ];
+            if (currentKeysQWERTY) {
+
+                keys = [
+                    [1, 2, 3],
+                    [4, 5, 6],
+                    [7, 8, 9],
+                    ['qwe', ':', '/', 0, '.', '&larr;', navKey]
+                ];
+
+            } else {
+
+                keys = [
+                    [1, 2, 3],
+                    [4, 5, 6],
+                    [7, 8, 9],
+                    ['abc', ':', '/', 0, '.', '&larr;', navKey]
+                ];
+
+            }
 
         } else {
 
@@ -289,18 +354,18 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
 
                 keys = [
                     ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
-                    ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
-                    ['', "Z", "X", "C", "V", "B", "N", "M", '', "CAP"],
-                    ['', '&nbsp;', '&larr;', ":", ".", "/", "num", "abc", "OK"]
+                    ["A", "S", "D", "F", "G", "H", "J", "K", "L", "CAP"],
+                    ["num", "Z", "X", "C", "V", "B", "N", "M", "abc", '&larr;'],
+                    [":", ".", '&nbsp;', "/", navKey]
                 ];
 
             } else {
 
                 keys = [
-                    ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
-                    ["J", "K", "L", "M", "N", "O", "P", "Q", "R"],
-                    ["S", "T", "U", "V", "W", "X", "Y", "Z", "CAP"],
-                    ['', '&nbsp;', '&larr;', ":", ".", "/", "num", "qwe", "OK"]
+                    ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
+                    ["K", "L", "M", "N", "O", "P", "Q", "R", "S", "CAP"],
+                    ["num", "T", "U", "V", "W", "X", "Y", "Z", "qwe", '&larr;'],
+                    [":", ".", '&nbsp;', "/", navKey]
                 ];
 
             }
@@ -323,31 +388,34 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
 
             table.appendChild(row);
 
-            for (var j = 0; j < keys[i].length; j++) {
-                var cell = document.createElement('div');
-                cell.style.display = 'table-cell';
+            var mainCell = document.createElement('div');
+            mainCell.style.display = 'table-cell';
+            mainCell.style.textAlign = "center";
+            mainCell.style.padding = "0px";
 
-                row.appendChild(cell);
+            row.appendChild(mainCell);
+
+            for (var j = 0; j < keys[i].length; j++) {
 
                 if (String(keys[i][j]).trim().length == 0) {
-                    cell.innerHTML = "&nbsp;";
+                    // cell.innerHTML = "&nbsp;";
 
                     continue;
                 }
 
                 var button = document.createElement('button');
                 button.setAttribute('class', (disabled[keys[i][j]] ? 'button_gray' : 'button_blue'));
-                button.style.width = '45px';
+                button.style.width = '40px';
                 button.style.height = '60px';
-                button.style.minWidth = '40px';
+                button.style.minWidth = '30px';
                 button.style.minHeight = '40px';
                 button.style.margin = '2px';
                 button.style.fontSize = "24px";
                 button.setAttribute("parent", container.id);
 
-                cell.appendChild(button);
+                mainCell.appendChild(button);
 
-                if (keys[i][j] != "num" && keys[i][j] != "qwe" && keys[i][j] != "abc") {
+                if (keys[i][j] != "num" && keys[i][j] != "qwe" && keys[i][j] != "abc" && keys[i][j] != "Done" && keys[i][j] != "Next") {
 
                     FastClick.attach(button);
 
@@ -368,17 +436,46 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
                     button.style.fontSize = "12px";
                     button.style.padding = "0px";
 
-                } else if (keys[i][j] == "OK" || keys[i][j] == "num" || keys[i][j] == "qwe" || keys[i][j] == "abc" || keys[i][j] == "cap" || keys[i][j] == "CAP") {
+                } else if (keys[i][j] == navKey || keys[i][j] == "num" || keys[i][j] == "qwe" || keys[i][j] == "abc" || keys[i][j] == "cap" || keys[i][j] == "CAP" || String(keys[i][j]).trim() == "&larr;") {
 
-                    button.style.fontSize = "14px";
-                    button.style.padding = "0px";
-                    // button.style.marginTop = "-10px";
+                    if (keys[i][j] == "num" || keys[i][j].toLowerCase().trim() == "cap") {
+
+                        button.style.paddingLeft = "5px";
+
+                    } else if (keys[i][j] == "abc" || keys[i][j].toLowerCase().trim() == "qwe" || String(keys[i][j]).trim() == "&larr;") {
+
+                        button.style.paddingLeft = "7px";
+
+                    } else if (keys[i][j] == navKey) {
+
+                        button.style.paddingLeft = "1px";
+
+                    }
+
+                    button.style.textAlign = "center";
+
+                    button.style.width = "40px";
+
+                } else if (String(keys[i][j]).trim() == "&nbsp;") {
+
+                    button.style.width = "260px";
 
                 }
 
-                if (letters[keys[i][j]]) {
+                if (String(keys[i][j]).trim().toLowerCase() == "cap") {
+
+                    button.innerHTML = "<span style='font-size: 14px;'>" + (String(keys[i][j]).trim().toLowerCase() ==
+                        "cap" ? (!currentCaseUpper ? String(keys[i][j]).toLowerCase() :
+                        String(keys[i][j]).toUpperCase()) : (!currentCaseUpper ?
+                        String(keys[i][j]).toUpperCase() : String(keys[i][j]).toLowerCase())) + "";
+
+                } else if (letters[keys[i][j]]) {
 
                     button.innerHTML = (String(keys[i][j]).trim().toLowerCase() == "cap" ? (!currentCaseUpper ? String(keys[i][j]).toLowerCase() : String(keys[i][j]).toUpperCase()) : (!currentCaseUpper ? String(keys[i][j]).toUpperCase() : String(keys[i][j]).toLowerCase()));
+
+                } else if (keys[i][j] == navKey || keys[i][j] == "num" || keys[i][j] == "qwe" || keys[i][j] == "abc" || keys[i][j] == "cap" || keys[i][j] == "CAP") {
+
+                    button.innerHTML = "<span style='font-size: 14px;'>" + keys[i][j] + "";
 
                 } else {
 
@@ -405,18 +502,30 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
 
                         cTime = Date.now();
 
-                        if (this.innerHTML.trim().charCodeAt(0) == 8592) {
+                        var label = "";
+
+                        if (this.innerHTML.trim().match(/<span.+>/i)) {
+
+                            label = this.children[0].innerHTML;
+
+                        } else {
+
+                            label = this.innerHTML;
+
+                        }
+
+                        if (label.trim().charCodeAt(0) == 8592) {
                             if (target) {
                                 target.value = target.value.trim().substring(0, (target.value.trim().length - 1));
                             }
 
-                        } else if (this.innerHTML.trim() == 'num') {
+                        } else if (label.trim() == 'num') {
 
                             currentKeysNumeric = true;
 
                             showKeyboard(__$(target.id), this.getAttribute("parent"), disabled, currentKeysNumeric, currentCaseUpper);
 
-                        } else if (this.innerHTML.trim() == 'abc') {
+                        } else if (label.trim() == 'abc') {
 
                             currentKeysQWERTY = false;
 
@@ -424,7 +533,7 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
 
                             showKeyboard(__$(target.id), this.getAttribute("parent"), disabled, currentKeysNumeric, currentCaseUpper);
 
-                        } else if (this.innerHTML.trim() == 'qwe') {
+                        } else if (label.trim() == 'qwe') {
 
                             currentKeysQWERTY = true;
 
@@ -432,11 +541,11 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
 
                             showKeyboard(__$(target.id), this.getAttribute("parent"), disabled, currentKeysNumeric, currentCaseUpper);
 
-                        } else if (this.innerHTML.trim() == '?') {
+                        } else if (label.trim() == '?') {
 
                             target.value = "?";
 
-                        } else if (this.innerHTML.trim().toLowerCase() == 'cap') {
+                        } else if (label.trim().toLowerCase() == 'cap') {
                             currentCaseUpper = !currentCaseUpper;
 
                             var keys = Object.keys(letters);
@@ -449,7 +558,7 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
                                     }
                                 }
 
-                                this.innerHTML = "cap";
+                                this.innerHTML = "<span style='font-size: 14px;'>" + "cap" + "</span>";
 
                             } else {
 
@@ -459,19 +568,55 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
                                     }
                                 }
 
-                                this.innerHTML = "CAP";
+                                this.innerHTML = "<span style='font-size: 14px;'>" + "CAP" + "</span>";
 
                             }
 
-                        } else if (this.innerHTML.trim() == '&nbsp;') {
+                        } else if (label.trim() == '&nbsp;') {
 
                             target.value += " ";
 
-                        } else if (this.innerHTML.trim() == 'OK') {
+                        } else if (label.trim() == navKey) {
 
                             globalControl.value = target.value.trim() + (attachUnits && target.value.trim().length > 0 ? " " + currentUnits : "");
 
-                            captureFreetext(target);
+                            if(globalEditControls[globalControl.id] != undefined && parseInt(globalEditControls[globalControl.id]) < globalControlsOrder.length - 1){
+
+                                var nextId = globalControlsOrder[parseInt(globalEditControls[globalControl.id]) + 1]
+
+                                if(typeof(__$(nextId)) != "undefined") {
+
+                                    // __$(nextId).click();
+
+                                    if (__$("target")) {
+
+                                        document.body.removeChild(__$("target"));
+
+                                    }
+
+                                    setTimeout("captureFreetext(__$('" + nextId + "'))", 25);
+
+                                    return;
+
+                                } else {
+
+                                    if (__$("target")) {
+
+                                        document.body.removeChild(__$("target"));
+
+                                    }
+
+                                }
+
+                            } else {
+
+                                if (__$("target")) {
+
+                                    document.body.removeChild(__$("target"));
+
+                                }
+
+                            }
 
                             return;
 
@@ -479,13 +624,13 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
 
                             if (target.value.trim() == "?" || target.value.trim() == "Unknown") {
 
-                                target.value = (currentCaseUpper ? this.innerHTML.trim().toLowerCase() : this.innerHTML.trim());
+                                target.value = (currentCaseUpper ? label.trim().toLowerCase() : label.trim());
 
                             } else {
 
                                 if (overwriteNumber) {
 
-                                    target.value = (currentCaseUpper ? this.innerHTML.trim().toLowerCase() : this.innerHTML.trim());
+                                    target.value = (currentCaseUpper ? label.trim().toLowerCase() : label.trim());
 
                                     overwriteNumber = false;
 
@@ -501,7 +646,7 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
 
                                 } else {
 
-                                    target.value += (currentCaseUpper ? this.innerHTML.trim().toLowerCase() : this.innerHTML.trim());
+                                    target.value += (currentCaseUpper ? label.trim().toLowerCase() : label.trim());
 
                                     if (target.value.trim().length > 0) {
 
@@ -573,135 +718,143 @@ function showMsg(msg) {
 
 }
 
-var attachUnits = false;
-
-var currentUnits = "";
-
 function captureFreetext(targetControl, addUnits, numeric, password) {
 
-    if (__$("target")) {
+    if (addUnits == undefined) {
 
-        document.body.removeChild(__$("target"));
+        addUnits = false;
 
-    } else {
+    }
 
-        if (addUnits == undefined) {
+    attachUnits = addUnits;
 
-            addUnits = false;
+    globalControl = targetControl;
 
-        }
+    currentUnits = globalControl.getAttribute("units");
 
-        attachUnits = addUnits;
+    if (currentUnits == null) {
 
-        globalControl = targetControl;
+        currentUnits = "";
 
-        currentUnits = globalControl.getAttribute("units");
+    }
 
-        if (currentUnits == null) {
+    var myString = (attachUnits ? targetControl.value.trim().replace(currentUnits, "").trim() : targetControl.value.trim());
 
-            currentUnits = "";
+    var divTarget = document.createElement("div");
+    divTarget.id = "target";
+    divTarget.style.position = "absolute";
+    divTarget.style.left = "0px";
+    divTarget.style.top = "0px";
+    divTarget.style.height = "100%";
+    divTarget.style.width = "100%";
+    divTarget.style.backgroundColor = "rgba(0,0,0,0.8)";
+    divTarget.style.padding = "10px";
 
-        }
+    document.body.appendChild(divTarget);
 
-        var myString = (attachUnits ? targetControl.value.trim().replace(currentUnits, "").trim() : targetControl.value.trim());
+    FastClick.attach(__$("target"));
 
-        var divTarget = document.createElement("div");
-        divTarget.id = "target";
-        divTarget.style.position = "absolute";
-        divTarget.style.left = "0px";
-        divTarget.style.top = "0px";
-        divTarget.style.height = "100%";
-        divTarget.style.width = "100%";
-        divTarget.style.backgroundColor = "rgba(0,0,0,0.8)";
-        divTarget.style.padding = "10px";
+    __$("target").onclick = function () {
 
-        document.body.appendChild(divTarget);
+        if (__$("target")) {
 
-        var table = document.createElement("table");
-        table.id = "myTable";
-        table.style.margin = "auto";
+            if (__$("textArea")) {
 
-        divTarget.appendChild(table);
+                globalControl.value = __$("textArea").value.trim() + (attachUnits && __$("textArea").value.trim().length > 0 ? " " + currentUnits : "");
 
-        var tbody = document.createElement("tbody");
+            }
 
-        table.appendChild(tbody);
-
-        var tr1 = document.createElement("tr");
-
-        tbody.appendChild(tr1);
-
-        var tr2 = document.createElement("tr");
-
-        tbody.appendChild(tr2);
-
-        var td1 = document.createElement("td");
-
-        tr1.appendChild(td1);
-
-        var td2 = document.createElement("td");
-
-        tr2.appendChild(td2);
-
-        var inDiv = document.createElement("div");
-        inDiv.style.height = "150px";
-        inDiv.style.width = "100%";
-
-        td1.appendChild(inDiv);
-
-        var keysDiv = document.createElement("div");
-        keysDiv.id = "keysDiv";
-        keysDiv.style.width = "100%";
-
-        td2.appendChild(keysDiv);
-
-        var textArea = document.createElement("textarea");
-        textArea.id = "textArea";
-        textArea.style.width = "95%";
-        textArea.style.height = "80%";
-        textArea.style.padding = "10px";
-        textArea.style.fontSize = "24px";
-
-        textArea.style.setProperty("-webkit-user-select", "none");
-
-        textArea.style.setProperty("-moz-user-select", "none");
-
-        textArea.value = myString;
-
-        if (targetControl.type == "password") {
-
-            textArea.style.setProperty("-webkit-text-security", "circle");
+            document.body.removeChild(__$("target"));
 
         }
 
-        textArea.onkeydown = function (e) {
+    }
 
-            if (typeof(Android) == "undefined" && e.keyCode == 13) {
+    var table = document.createElement("table");
+    table.id = "myTable";
+    table.style.margin = "auto";
 
-                if (__$("OK")) {
+    divTarget.appendChild(table);
 
-                    __$("OK").click();
+    var tbody = document.createElement("tbody");
 
-                }
+    table.appendChild(tbody);
+
+    var tr1 = document.createElement("tr");
+
+    tbody.appendChild(tr1);
+
+    var tr2 = document.createElement("tr");
+
+    tbody.appendChild(tr2);
+
+    var td1 = document.createElement("td");
+
+    tr1.appendChild(td1);
+
+    var td2 = document.createElement("td");
+
+    tr2.appendChild(td2);
+
+    var inDiv = document.createElement("div");
+    inDiv.style.height = "150px";
+    inDiv.style.width = "100%";
+
+    td1.appendChild(inDiv);
+
+    var keysDiv = document.createElement("div");
+    keysDiv.id = "keysDiv";
+    keysDiv.style.width = "100%";
+
+    td2.appendChild(keysDiv);
+
+    var textArea = document.createElement("textarea");
+    textArea.id = "textArea";
+    textArea.style.width = "95%";
+    textArea.style.height = "80%";
+    textArea.style.padding = "10px";
+    textArea.style.fontSize = "24px";
+
+    textArea.style.setProperty("-webkit-user-select", "none");
+
+    textArea.style.setProperty("-moz-user-select", "none");
+
+    textArea.value = myString;
+
+    if (targetControl.type == "password") {
+
+        textArea.style.setProperty("-webkit-text-security", "circle");
+
+    }
+
+    textArea.onkeydown = function (e) {
+
+        if (typeof(Android) == "undefined" && e.keyCode == 13) {
+
+            if (__$(navKey)) {
+
+                __$(navKey).click();
 
             }
 
         }
 
-        inDiv.appendChild(textArea);
+    }
 
-        if (typeof(password) == "undefined") {
+    inDiv.appendChild(textArea);
 
-            password = false;
+    if (typeof(password) == "undefined") {
 
-        }
-
-        showKeyboard(textArea, "keysDiv", undefined, numeric, password);
-
-        // showKeyboard(textArea, "keysDiv", undefined, numeric);
-
-        textArea.focus();
+        password = false;
 
     }
 
+    showKeyboard(textArea, "keysDiv", undefined, numeric, password);
+
+    // showKeyboard(textArea, "keysDiv", undefined, numeric);
+
+    textArea.focus();
+
 }
+
+$(document).ready(function(){ init() })
