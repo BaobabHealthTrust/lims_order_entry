@@ -1,4 +1,4 @@
-$(document).ready(function() {
+/*$(document).ready(function() {
 
     $('#datepicker-example1').Zebra_DatePicker();
 
@@ -74,4 +74,4 @@ $(document).ready(function() {
 
     $('#datepicker-example14').Zebra_DatePicker();
 
-});
+});*/

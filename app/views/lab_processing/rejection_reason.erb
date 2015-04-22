@@ -109,7 +109,7 @@
 
         } else {
 
-            setTimeout("changeLabels()", 100);
+            setTimeout(function(){changeLabels()}, 100);
 
             return;
 
@@ -129,7 +129,7 @@
 
         } else {
 
-            setTimeout("changeLabels()", 100);
+            setTimeout(function(){changeLabels()}, 100);
 
             return;
 
@@ -207,7 +207,7 @@
 
                 ul.appendChild(li);
 
-                new FastButton(li, function () {
+                li.onclick = function () {
 
                     if (this.getAttribute("selected") != null) {
 
@@ -243,13 +243,13 @@
 
                     }
 
-                });
+                }
 
             }
 
         }
     }
 
-    setTimeout("changeLabels()", 200);
+    setTimeout(function(){changeLabels()}, 200);
 
 </script>

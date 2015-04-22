@@ -14,22 +14,25 @@ function __$(id) {
 
 function init(){
 
-    loadLabels();
+    if(document.forms.length > 0) {
+        loadLabels();
 
-    var fields = document.forms[0].elements;
+        var fields = document.forms[0].elements;
 
-    var j = 0;
-    for(var i = 0; i < fields.length; i++){
+        var j = 0;
+        for (var i = 0; i < fields.length; i++) {
 
-        if (fields[i].type.toLowerCase() != "hidden") {
+            if (fields[i].type.toLowerCase() != "hidden") {
 
-            navFields.push(fields[i]);
+                navFields.push(fields[i]);
 
-            globalEditControls[fields[i].id] = j;
+                globalEditControls[fields[i].id] = j;
 
-            globalControlsOrder.push(fields[i].id);
+                globalControlsOrder.push(fields[i].id);
 
-            j++;
+                j++;
+
+            }
 
         }
 
@@ -59,6 +62,10 @@ function showShield(clickCloses) {
     if (__$("shield")) {
 
         document.body.removeChild(__$("shield"));
+
+        hideSpinner();
+
+        hideSmallSpinner();
 
     } else {
 
@@ -411,6 +418,7 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
                 button.style.minHeight = '40px';
                 button.style.margin = '2px';
                 button.style.fontSize = "24px";
+                button.style.borderRadius = "8px";
                 button.setAttribute("parent", container.id);
 
                 mainCell.appendChild(button);
@@ -448,7 +456,7 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
 
                     } else if (keys[i][j] == navKey) {
 
-                        button.style.paddingLeft = "1px";
+                        button.style.paddingLeft = "3px";
 
                     }
 
@@ -594,7 +602,9 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
 
                                     }
 
-                                    setTimeout("captureFreetext(__$('" + nextId + "'))", 25);
+                                    setTimeout(function(){
+                                        captureFreetext(__$(nextId));
+                                    }, 25);
 
                                     return;
 
@@ -857,4 +867,8 @@ function captureFreetext(targetControl, addUnits, numeric, password) {
 
 }
 
-$(document).ready(function(){ init() })
+setTimeout(function() {
+    init()
+}, 500);
+
+// $(document).ready(function(){ init() })

@@ -25,13 +25,13 @@
 
             } else {
 
-                setTimeout("renameBtn()", 100);
+                setTimeout(function(){renameBtn()}, 100);
 
             }
 
         }
 
-        setTimeout("renameBtn()", 100);
+        setTimeout(function(){renameBtn()}, 100);
 
     </script>
 
@@ -182,7 +182,7 @@
 
             } else {
 
-                setTimeout("attachBtn()", 100);
+                setTimeout(function(){attachBtn()}, 100);
 
             }
 
@@ -318,11 +318,11 @@
 
                             td2.appendChild(edit);
 
-                            new FastButton(td2, function () {
+                            td2.onclick = function () {
 
                                 editTest(this.getAttribute("accession_number"), this.getAttribute("state"), this.getAttribute("test_code"), this.getAttribute("test_name"));
 
-                            });
+                            }
 
                         }
 
@@ -360,11 +360,11 @@
 
                             td4.appendChild(print);
 
-                            new FastButton(print, function () {
+                            print.onclick = function () {
 
                                 printLabel(this.getAttribute("accession_number"), this.getAttribute("state"), "Drawn", this.getAttribute("test_code"), this.getAttribute("test_name"));
 
-                            });
+                            }
 
                         } else {
 
@@ -770,26 +770,7 @@
 
             td2_2.appendChild(btnEdit);
 
-            /*new FastButton(btnEdit, function () {
-
-                if (__$("popup")) {
-
-                    document.body.removeChild(__$("popup"));
-
-                }
-
-                if (__$("shield")) {
-
-                    document.body.removeChild(__$("shield"));
-
-                }
-
-                window.location = "/place_order/<%= @patient[:national_id] %>?accession_number=" + accession_number +
-                        "&state=" + currentState + "&test_code=" + code + "&test_name=" + name;
-
-            });*/
-
-            new FastButton(btnDelete, function () {
+            btnDelete.onclick = function () {
 
                 if (__$("popup")) {
 
@@ -805,7 +786,7 @@
 
                 confirmAction("Are you sure about deleting this test?", "deleteTest('" + accession_number + "')");
 
-            });
+            }
 
         }
 
@@ -835,7 +816,7 @@
             }
         }
 
-        setTimeout("attachBtn()", 100);
+        setTimeout(function(){attachBtn()}, 100);
 
         ajaxTasks();
 

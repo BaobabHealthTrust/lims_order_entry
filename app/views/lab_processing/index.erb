@@ -110,7 +110,7 @@
 
         }
 
-        tmrHnd = setTimeout("checkBarcode()", 100);
+        tmrHnd = setTimeout(function(){checkBarcode()}, 100);
         if (timeout <= 0)
         {
             clearTimeout(tmrHnd);
@@ -128,7 +128,7 @@
 
         } else {
 
-            setTimeout("changeLabels()", 10);
+            setTimeout(function(){changeLabels()}, 10);
 
             return;
 
@@ -148,7 +148,7 @@
 
         } else {
 
-            setTimeout("changeLabels()", 10);
+            setTimeout(function(){changeLabels()}, 10);
 
             return;
 
@@ -156,6 +156,6 @@
 
     }
 
-    setTimeout("changeLabels()", 10);
+    setTimeout(function(){changeLabels()}, 10);
 
 </script>

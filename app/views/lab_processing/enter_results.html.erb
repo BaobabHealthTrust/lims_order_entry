@@ -254,7 +254,7 @@
 
                                   <script>
 
-                                      new FastButton(document.getElementById("<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>"), function () {
+                                      document.getElementById("<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>").onclick = function () {
                                           if (selectedControls[this.getAttribute('tag')]) {
                                               selectedControls[this.getAttribute('tag')].style.backgroundColor = (selectedControls[this.getAttribute('tag')].getAttribute('cat') == 'odd' ? '#eee' : '');
                                           }
@@ -270,7 +270,7 @@
 
                                           }
 
-                                      });
+                                      }
 
                                   </script>
 
@@ -456,7 +456,7 @@
 
                                   <script>
 
-                                      new FastButton(document.getElementById("<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>"), function () {
+                                      document.getElementById("<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>").onclick = function () {
                                           if (selectedControls[this.getAttribute('tag')]) {
                                               selectedControls[this.getAttribute('tag')].style.backgroundColor = (selectedControls[this.getAttribute('tag')].getAttribute('cat') == 'odd' ? '#eee' : '');
                                           }
@@ -472,7 +472,7 @@
 
                                           }
 
-                                      });
+                                      }
 
                                   </script>
 
@@ -575,7 +575,7 @@
 
         } else {
 
-            setTimeout("changeLabels()", 100);
+            setTimeout(function(){changeLabels();}, 100);
 
             return;
 
@@ -595,7 +595,7 @@
 
         } else {
 
-            setTimeout("changeLabels()", 100);
+            setTimeout(function(){changeLabels()}, 100);
 
             return;
 
@@ -634,6 +634,6 @@
 
     }
 
-    setTimeout("changeLabels()", 100);
+    setTimeout(function(){changeLabels()}, 100);
 
 </script>

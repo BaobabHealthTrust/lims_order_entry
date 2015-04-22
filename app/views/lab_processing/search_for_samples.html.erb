@@ -75,7 +75,7 @@
 
         }
 
-        tmrHnd = setTimeout("checkBarcode()", 100);
+        tmrHnd = setTimeout(function(){checkBarcode()}, 100);
 
     }
 
@@ -121,7 +121,7 @@
 
             }
 
-            tmrHnd = setTimeout("checkBarcode()", 100);
+            tmrHnd = setTimeout(function(){checkBarcode()}, 100);
 
         }
     }
@@ -220,7 +220,7 @@
 
         td2_2.appendChild(btnViable);
 
-        new FastButton(btnViable, function () {
+        btnViable.onclick = function () {
 
             if (__$("popup")) {
 
@@ -238,9 +238,9 @@
 
             window.location = url + barcode + "?location=<%= @location[:dept] rescue nil %>&sample_viablility=viable";
 
-        });
+        }
 
-        new FastButton(btnNonViable, function () {
+        btnNonViable.onclick = function () {
 
             if (__$("popup")) {
 
@@ -258,7 +258,7 @@
 
             window.location = url + barcode + "?location=<%= @location[:dept] rescue nil %>&sample_viablility=nonviable";
 
-        });
+        }
 
     }
 

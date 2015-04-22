@@ -204,7 +204,7 @@
             __$("btnLogout").setAttribute("onClick", "showSpinner(); window.location='/'")
         } else {
 
-            setTimeout("renameBtn()", 100);
+            setTimeout(function(){renameBtn()}, 100);
 
         }
 
@@ -304,7 +304,7 @@
 
                 ul.appendChild(li);
 
-                new FastButton(li, function () {
+                li.onclick = function () {
 
                     if (liSpecSelect) {
 
@@ -320,7 +320,7 @@
 
                     loadTests(this.getAttribute("specimen"));
 
-                });
+                }
 
             }
 
@@ -372,7 +372,7 @@
             btnClose.style.top = "15%";
             btnClose.style.cursor = "pointer";
 
-            new FastButton(btnClose, function () {
+            btnClose.onclick = function () {
 
                 if (__$("tests")) {
 
@@ -397,7 +397,7 @@
                     }
                 }
 
-            });
+            }
 
             document.body.appendChild(btnClose);
 
@@ -413,13 +413,13 @@
 
             // document.body.appendChild(btnOrder);
 
-            new FastButton(btnOrder, function () {
+            btnOrder.onclick = function () {
 
                 if (selectedTest != null && selectedTestSpecimen != null) {
                     addTest(selectedTest, selectedTestSpecimen);
                 }
 
-            });
+            }
 
             var ul = document.createElement("ul");
             ul.id = "ulTests";
@@ -485,7 +485,7 @@
 
                 ul.appendChild(li);
 
-                new FastButton(li, function () {
+                li.onclick = function () {
 
                     if (liTestSelect) {
 
@@ -528,7 +528,7 @@
 
                     setPriority();
 
-                });
+                }
 
                 j++;
 
@@ -631,7 +631,7 @@
 
         td2_2.appendChild(btnNo);
 
-        new FastButton(btnNo, function () {
+        btnNo.onclick = function () {
 
             if (__$("popup")) {
 
@@ -648,9 +648,9 @@
             selectedTestPriority = "R";
 
             addTest(selectedTest, selectedTestSpecimen, selectedTestPriority);
-        });
+        }
 
-        new FastButton(btnYes, function () {
+        btnYes.onclick = function () {
 
             if (__$("popup")) {
 
@@ -667,7 +667,7 @@
             selectedTestPriority = "S";
 
             addTest(selectedTest, selectedTestSpecimen, selectedTestPriority);
-        });
+        }
 
     }
 
@@ -917,7 +917,7 @@
 
         td2_1.appendChild(btnNo);
 
-        new FastButton(btnNo, function () {
+        btnNo.onclick = function () {
 
             if (__$("popup")) {
 
@@ -934,9 +934,9 @@
             drawingSamples = false;
 
             showSelections();
-        });
+        }
 
-        new FastButton(btnYes, function () {
+        btnYes.onclick = function () {
 
             if (__$("popup")) {
 
@@ -953,7 +953,7 @@
             drawingSamples = true;
 
             showSelections();
-        });
+        }
 
     }
 
@@ -1013,7 +1013,7 @@
         btnClose.style.top = "15%";
         btnClose.style.cursor = "pointer";
 
-        new FastButton(btnClose, function () {
+        btnClose.onclick = function () {
 
             currentOrders = {};
 
@@ -1042,7 +1042,7 @@
                 }
             }
 
-        });
+        }
 
         document.body.appendChild(btnClose);
 
@@ -1070,16 +1070,6 @@
         }
 
         document.body.appendChild(btnOrder);
-
-        /* new FastButton(btnOrder, function () {
-
-         selectedOrder = null;
-
-         if (Object.keys(currentOrders).length > 0) {
-         doOrderTests();
-         }
-
-         });*/
 
         var samples = Object.keys(selectedTests);
 
@@ -1294,7 +1284,7 @@
 
                 td1.appendChild(check);
 
-                new FastButton(check, function () {
+                check.onclick = function () {
 
                     // check.onclick = function () {
 
@@ -1437,7 +1427,7 @@
 
                     // }
 
-                });
+                }
 
                 var ul = document.createElement("ul");
                 ul.id = "ulTests" + samples[i] + "_" + containerList[r];
@@ -1515,7 +1505,7 @@
 
                     liTd2.appendChild(imgDel);
 
-                    new FastButton(li, function () {
+                    li.onclick = function () {
 
                         if (liTestSelect) {
 
@@ -1552,7 +1542,7 @@
 
                         }
 
-                    });
+                    }
 
                 }
             }
@@ -1945,7 +1935,7 @@
 
     }
 
-    setTimeout("renameBtn()", 100);
+    setTimeout(function(){renameBtn()}, 100);
 
     ajaxTasks();
 
