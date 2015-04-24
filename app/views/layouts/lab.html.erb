@@ -29,7 +29,7 @@
 </head>
 <body onload="resizePage();" onresize="resizePage()">
 
-<div style="width: 100%; position: absolute; top: 0px; left: 0px; height: 55px;
+<div style="width: 800px; position: absolute; top: 0px; left: 0px; height: 55px;
         border-bottom: 1px solid #23538a; text-align: right; font-size: 28px; color: #23538a;">
 
   <table style="float: left; margin: 0px; vertical-align: bottom;">
@@ -75,13 +75,13 @@
 
 </div>
 
-<div id="main" style="width: 100%; position: absolute; top: 60px; left: 0px; overflow: auto; height: 80%;">
+<div id="main" style="width: 800px; position: absolute; top: 60px; left: 0px; overflow: auto; height: 80%;">
 
   <%= yield %>
 
 </div>
 
-<div id="nav" style="position: absolute; bottom: 0px; left: 0px; width: 100%; height: 60px; background-color: #333; padding: 5px;">
+<div id="nav" style="position: absolute; bottom: 0px; left: 0px; width: 790px; height: 60px; background-color: #333; padding: 5px;">
   <button id="btnLogout" class="button_red" style="float: left;" onmousedown="window.location = '/remote_logout'">Logout</button>
 
   <button id="btnNext" class="button_green" style="float: right; margin-right: 15px;" onclick="window.location = '/lab_processing/index'">Finish</button>
