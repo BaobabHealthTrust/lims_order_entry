@@ -41,7 +41,7 @@
 </head>
 <body onload="resizePage();" onresize="resizePage()">
 
-<div style="width: 800px; position: absolute; top: 0px; left: 0px; height: 55px;
+<div style="width: 480px; position: absolute; top: 0px; left: 0px; height: 55px;
         border-bottom: 1px solid #23538a; text-align: right; font-size: 28px; color: #23538a;">
 
   <table style="float: left; margin: 0px; vertical-align: bottom;">
@@ -86,13 +86,13 @@
 
 </div>
 
-<div id="main" style="width: 800px; position: absolute; top: 60px; left: 0px; overflow: auto; height: 80%;">
+<div id="main" style="width: 470px; position: absolute; top: 60px; left: 0px; overflow: auto; height: 80%;">
 
   <%= yield %>
 
 </div>
 
-<div id="nav" style="position: absolute; bottom: 0px; left: 0px; width: 790px; height: 60px; background-color: #333; padding: 5px;">
+<div id="nav" style="position: absolute; bottom: 0px; left: 0px; width: 470px; height: 60px; background-color: #333; padding: 5px;">
   <button id="btnLogout" class="button_red" style="float: left; cursor: pointer;" onclick="showSpinner(); window.location = '/logout'">Logout</button>
 
   <div id="battery" style="float: left; border: 1px solid #fff; height: 20px; width: 100px; color: #fff; display: none;"></div>
