@@ -4,6 +4,8 @@ Rails.application.routes.draw do
 
   get "/lab_logout" => "lab_processing#index"
 
+  get "/get_specimen_status" => "lab_processing#get_specimen_status"
+
   get '/change_password' => 'sessions#change_password'
 
   post '/change_password' => 'sessions#change_password'
