@@ -120,6 +120,12 @@ class SessionsController < ApplicationController
       end
     end
 
+    if !@section.blank? and @section.match(/lab/)
+
+      render :layout => "lab"
+
+    end
+
   end
 
 end

@@ -1,7 +1,7 @@
 class LabProcessingController < RemoteSessionsController
 
   before_filter :check_device_location, :only => [:index, :search_for_samples, :check_sample_state, :enter_results,
-                                                  :rejection_reason, :reject_sample]
+                                                  :rejection_reason, :reject_sample, :get_specimen_status]
 
   before_filter :set_connection, :only => [:check_sample_state, :enter_results]
 
@@ -976,6 +976,17 @@ class LabProcessingController < RemoteSessionsController
 
     status_link = "#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@" +
         "#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["specimen_status_path"]}#{params[:barcode]}&test_name=#{params[:test_name].gsub(/\s/, "+")}"
+
+    status = RestClient.get(status_link).strip # rescue nil
+
+    render :text => status.strip
+
+  end
+
+  def get_specimen_status
+
+    status_link = "#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@" +
+        "#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["specimen_details_link"]}dashboard_type=labdepartment&department=%22#{@location[:dept].gsub(/\s/, "+") rescue nil}%22"
 
     status = RestClient.get(status_link).strip # rescue nil
 

@@ -50,6 +50,14 @@ read result
 
 clear
 
+STR=$'\n\n\tAdd device to network which can provide access to the target server instance and then press [ENTER]:'
+
+echo "$STR"
+
+read result
+
+clear
+
 STR=$'\n\n\tConfiguring device, Please Wait...\n\n\n'
 
 echo "$STR"
@@ -190,6 +198,24 @@ read result
 clear
 
 STR=$'\n\n\tClick the OK button on the device and then press [ENTER]:'
+
+echo "$STR"
+
+read result
+
+clear
+
+clear
+
+STR=$'\n\n\tWhen running the application, point it to the specific target application\n\t\tserver path whether Order entry for wards:\n\n\t\te.g. "{PROTOCOL}://{IP ADDRESS}:{PORT}/"\n\n\t\tor Lab for laboratories\n\n\t\te.g. "{PROTOCOL}://{IP ADDRESS}:{PORT}/lab"\n\n\t\twhere:\n\n\t\tPROTOCOL: 	is http / https\n\t\tIP ADDRESS: is server IP address e.g. 127.0.0.1\n\t\tPORT:				is server port e.g. 3000\n\n\t and then press [ENTER]:'
+
+echo "$STR"
+
+read result
+
+clear 
+
+STR=$'\n\n\tReconnect the PC-device USB cable and then press [ENTER]:'
 
 echo "$STR"
 
