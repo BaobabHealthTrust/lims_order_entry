@@ -12,9 +12,9 @@ function __$(id) {
     return document.getElementById(id);
 }
 
-function init(){
+function init() {
 
-    if(document.forms.length > 0) {
+    if (document.forms.length > 0) {
         loadLabels();
 
         var fields = document.forms[0].elements;
@@ -104,29 +104,6 @@ function showShield(clickCloses) {
                 }
 
             }
-            /*
-             new FastButton(shield, function () {
-
-             if (typeof(selectedTest) != "undefined")
-             selectedTest = null;
-
-             if (typeof(selectedTestSpecimen) != "undefined")
-             selectedTestSpecimen = null;
-
-             if (__$("popup")) {
-
-             document.body.removeChild(__$("popup"));
-
-             }
-
-             if (__$("shield")) {
-
-             document.body.removeChild(__$("shield"));
-
-             }
-
-             });
-             */
 
         }
     }
@@ -327,7 +304,7 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
 
         var navKey = "Done";
 
-        if(globalEditControls[globalControl.id] != undefined && parseInt(globalEditControls[globalControl.id]) < globalControlsOrder.length - 1){
+        if (globalEditControls[globalControl.id] != undefined && parseInt(globalEditControls[globalControl.id]) < globalControlsOrder.length - 1) {
 
             navKey = "Next";
 
@@ -588,11 +565,11 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
 
                             globalControl.value = target.value.trim() + (attachUnits && target.value.trim().length > 0 ? " " + currentUnits : "");
 
-                            if(globalEditControls[globalControl.id] != undefined && parseInt(globalEditControls[globalControl.id]) < globalControlsOrder.length - 1){
+                            if (globalEditControls[globalControl.id] != undefined && parseInt(globalEditControls[globalControl.id]) < globalControlsOrder.length - 1) {
 
                                 var nextId = globalControlsOrder[parseInt(globalEditControls[globalControl.id]) + 1]
 
-                                if(typeof(__$(nextId)) != "undefined") {
+                                if (typeof(__$(nextId)) != "undefined") {
 
                                     // __$(nextId).click();
 
@@ -602,7 +579,7 @@ function showKeyboard(ctrl, container_id, disabled, numbers, caps) {
 
                                     }
 
-                                    setTimeout(function(){
+                                    setTimeout(function () {
                                         captureFreetext(__$(nextId));
                                     }, 25);
 
@@ -867,7 +844,144 @@ function captureFreetext(targetControl, addUnits, numeric, password) {
 
 }
 
-setTimeout(function() {
+function showMsgForAction(doc, title) {
+
+    showShield(true);
+
+    if (!__$("shield")) {
+
+        showShield(true);
+
+    }
+
+    var popup = document.createElement("div");
+    popup.id = "popup";
+    popup.style.position = "absolute";
+    popup.style.minHeight = "200px";
+    popup.style.backgroundColor = "#fff";
+    popup.style.zIndex = 120;
+    popup.style.border = "2px outset #eee";
+    popup.style.borderRadius = "8px";
+
+    document.body.appendChild(popup);
+
+    var table = document.createElement("table");
+    table.width = "100%";
+    table.style.fontSize = "24px";
+
+    popup.appendChild(table);
+
+    var tbody = document.createElement("tbody");
+
+    table.appendChild(tbody);
+
+    var tr1 = document.createElement("tr");
+
+    tbody.appendChild(tr1);
+
+    var th = document.createElement("th");
+    th.innerHTML = (title == undefined ? "Info" : title);
+    th.style.backgroundColor = "#345d8c";
+    th.style.color = "#fff";
+    th.style.borderTopLeftRadius = "8px";
+    th.style.borderTopRightRadius = "8px";
+    th.style.border = "2px outset #23538a";
+    th.colSpan = "2";
+    th.style.padding = "5px";
+
+    tr1.appendChild(th);
+
+    var tr2 = document.createElement("tr");
+
+    tbody.appendChild(tr2);
+
+    var td1_1 = document.createElement("td");
+    td1_1.colSpan = "2";
+    td1_1.style.padding = "5px";
+    td1_1.style.paddingTop = "15px";
+    td1_1.style.paddingBottom = "15px";
+    td1_1.align = "center";
+    td1_1.style.lineHeight = "120%";
+    td1_1.style.fontSize = "20px";
+
+    tr2.appendChild(td1_1);
+
+    td1_1.innerHTML = doc;
+
+    var tr3 = document.createElement("tr");
+
+    tbody.appendChild(tr3);
+
+    var td2_2 = document.createElement("td");
+    td2_2.align = "center";
+    td2_2.style.padding = "10px";
+    td2_2.setAttribute("colspan", 2);
+
+    tr3.appendChild(td2_2);
+
+    var btnYes = document.createElement("button");
+    btnYes.className = "button_blue";
+    btnYes.innerHTML = "OK";
+    btnYes.style.width = "120px";
+    btnYes.style.cursor = "pointer";
+    btnYes.style.fontSize = "24px";
+    btnYes.style.minHeight = "60px";
+
+    td2_2.appendChild(btnYes);
+
+    btnYes.onmousedown = function () {
+
+        if (__$("popup")) {
+
+            document.body.removeChild(__$("popup"));
+
+        }
+
+        if (__$("shield")) {
+
+            document.body.removeChild(__$("shield"));
+
+        }
+
+    }
+
+    if (__$("popup")) {
+
+        var c = checkCtrl(__$("popup"));
+
+        __$("popup").style.top = ((window.innerHeight / 2) - (c[1] / 2)) + "px";
+
+        __$("popup").style.left = ((window.innerWidth / 2) - (c[0] / 2)) + "px";
+
+    }
+
+}
+
+function formatTimestamp(timestamp){
+
+    var time = timestamp.match(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
+
+    if(time != null){
+
+        var months = ["Jan","Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        var month = months[eval(time[2]) - 1];
+
+        var date = eval(time[3]);
+
+        var result = date + "/" + month + "/" + time[1] + " " + time[4] + ":" + time[5] + ":" + time[6];
+
+        return result;
+
+    } else {
+
+        return timestamp;
+
+    }
+
+}
+
+setTimeout(function () {
     init()
 }, 500);
 
