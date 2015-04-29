@@ -14,3 +14,170 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require_tree .
+
+function displayTestState(accession_number, state, code, name, national_id,patient_name)
+{
+    var msg = ""
+
+    if (state.trim().toLocaleLowerCase() == 'ordered')
+    {
+        confirmAction("Test for " + name +" was ordered but specimen hasn't been drawn. See patient details?", "window.location='/patient/"+national_id +"'")
+    }
+    else if (state.trim().toLocaleLowerCase() == 'drawn')
+    {
+        showMsg("Specimen for " + name +" test was drawn but has not arrived at the lab.")
+    }
+    else if (state.trim().toLocaleLowerCase() == 'sample rejected')
+    {
+        confirmAction("Sample for test was rejected. Do you want to re-draw the sample?", "");
+    }
+    else if (state.trim().toLocaleLowerCase() == 'test rejected')
+    {
+        confirmAction(name+" test could not be run on available specimen. Do you want to re-order the test?", "");
+    }
+    else if (state.trim().toLocaleLowerCase() == 'result rejected')
+    {
+        confirmAction("Results for "+name+" were inconclusive. Do you want to re-order the test?", "");
+    }
+
+}
+
+function printResult(accession_number, currentState, state, code, name,national_id,patient_name)
+{
+
+    var url = "/update_state/" + accession_number + "?state=Reviewed&test_code=" + code + "&test_name=" + name;
+
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.onreadystatechange = function () {
+
+        if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
+            httpRequest.status == 304)) {
+
+            var datetime = (new Date()).getDate() + "/" + months[(new Date()).getMonth()] + "/" + (new Date()).getFullYear() +
+                " " + (new Date()).getHours() + ":" + (new Date()).getMinutes();
+
+            var currentTests = "";
+
+            if (currentState.trim().toLocaleLowerCase() == "reviewed" || currentState.trim().toLocaleLowerCase() == "verified" || currentState.trim().toLocaleLowerCase() == "tested") {
+
+                var tests = results[0]["orders"][accession_number]["results"];
+
+                var keys = Object.keys(tests);
+
+                for (var i = 0; i < keys.length; i++) {
+
+                    var test = tests[keys[i]]["test_name"];
+
+                    var result = tests[keys[i]]["result"];
+
+                    if (result.trim().length == 0) {
+                        continue;
+                    }
+
+                    var datetime = tests[keys[i]]["result_date_time"];
+
+                    var yr = datetime.substr(0, 4);
+
+                    var month = months[parseInt(datetime.substr(4, 2)) - 1];
+
+                    var date = parseInt(datetime.substr(6, 2));
+
+                    var hr = datetime.substr(8, 2);
+
+                    var min = datetime.substr(10, 2);
+
+                    var dateFormatted = date + "/" + month + "/" + yr + " " + hr + ":" + min;
+
+                    currentTests += dateFormatted + "|" + test + "|" + result + ";"
+
+                }
+
+            } else {
+
+                var tests = Object.keys(testNames[accession_number]);
+
+                for (var i = 0; i < tests.length; i++) {
+
+                    var short = shortnames[tests[i]["testName"]];
+
+                    if (short == undefined || short.trim().length == 0) {
+
+                        short = tests[i];
+
+                    }
+
+                    currentTests += short + ";"
+
+                }
+
+                if (currentTests.trim().length > 10) {
+
+                    currentTests = currentTests.substr(0, 10) + "...";
+
+                }
+            }
+
+            printBarcodeMain(datetime, currentTests, accession_number, undefined, "reviewed", national_id,patient_name);
+
+        }
+
+    };
+    try {
+        httpRequest.open('GET', url, true);
+        httpRequest.send(null);
+    } catch (e) {
+    }
+
+}
+
+function printBarcodeMain(messageDatetime, testsTBD, accessionNumber, ward, state, national_id, patient_name) {
+
+    if (ward == undefined) {
+
+        ward = "";
+
+    }
+
+    if (state == undefined) {
+
+        state = "";
+
+    }
+
+    var npid = national_id;
+    var full_name = patient_name;
+
+    if (state == "reviewed") {
+
+        if (typeof(Android) != "undefined") {
+
+            // public void printResultBarcode(String testsTBD, String identifier, String name)
+            Android.printResultBarcode(testsTBD, npid, full_name);
+
+        } else {
+
+            alert(testsTBD);
+
+        }
+
+    } else {
+        // printBarcode(String name, String npid, String datetime, String ward, String test, String barcode)
+        if (typeof(Android) != "undefined") {
+
+            Android.printBarcode(full_name, npid, messageDatetime, ward, testsTBD, accessionNumber);
+
+        } else {
+
+            alert("Accession Number: " + accessionNumber + "; testsTBD: " + testsTBD);
+
+        }
+    }
+
+    window.location = window.location.href;
+
+}
+
+function updateState(state)
+{
+
+}
