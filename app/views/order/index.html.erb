@@ -25,7 +25,32 @@
       </td>
     </tr>
   </table>
+    <div>
+      <div id="workList" style="width: 95%; border-top: 1px solid #23538a; margin: auto; border: 1px solid #ccc;">
 
+        <table width="100%">
+          <caption style="background-color: #ccc">Work List</caption>
+          <tr style="background-color: #ccc; color: #333; font-size: 18px;">
+            <th style="width: 40%; padding: 5px;">
+              Name
+            </th>
+            <th style="width: 28%; padding: 5px;">
+              National ID
+            </th>
+            <th style=" padding: 5px;">
+              Status / Action
+            </th>
+          </tr>
+          <tr>
+            <td colspan="4">
+              <div id="workListDetails" style="height: 430px; overflow: auto; border: 1px solid #ccc; text-align: center; width: 100%;">
+              </div>
+            </td>
+          </tr>
+        </table>
+
+      </div>
+    </div>
 </div>
 
 <script>
@@ -119,7 +144,122 @@
         }
     }
 
+    function pullWorkList()
+    {
+
+        var link = "/ward_work_list"
+        if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp=new XMLHttpRequest();
+        }else{// code for IE6, IE5
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+                var results = xmlhttp.responseText;
+                if(results == 'undefined' || results == '' || results == 'null' || results == '"not validate"') {
+                    return ;
+                }else if(results.length > 0){
+                    displayWorkList(JSON.parse(results))
+                }else{
+                    return ;
+                }
+            }
+        }
+        xmlhttp.open("GET",link ,true);
+        xmlhttp.send();
+    }
+
+    function displayWorkList(list)
+    {
+        __$("workListDetails").innerHTML = "";
+
+        var table = document.createElement("table");
+        table.width = "100%";
+        table.style.fontSize = "14px";
+        table.setAttribute("id", "workRecords")
+
+        __$("workListDetails").appendChild(table);
+
+        for (i = 0; i < list.length; i++)
+        {
+            var row = document.createElement("tr");
+
+            table.appendChild(row)
+
+            nameCell = document.createElement("td")
+            nameCell.innerHTML = list[i]["patient_name"]
+            nameCell.style.width = "45%";
+            nameCell.style.textAlign = "left"
+            nameCell.style.border = "1px dotted #ccc"
+            row.appendChild(nameCell)
+
+            idCell = document.createElement("td")
+            idCell.innerHTML= list[i]["national_id"]
+            idCell.style.width = "28%";
+            idCell.style.border = "1px dotted #ccc"
+            idCell.style.textAlign = "left"
+            row.appendChild(idCell)
+
+            statusCell = document.createElement("td")
+
+            if (list[i]["status"].toUpperCase().trim() == "VERIFIED")
+            {
+                var print = document.createElement("img");
+                print.src =  printer_red;
+
+                print.height = 50;
+                print.setAttribute("state", list[i]["status"]);
+                print.setAttribute("accession_number", list[i]["accession_number"]);
+                print.setAttribute("test_code", list[i]["test_code"]);
+                print.setAttribute("test_name", list[i]["test_type_name"]);
+                print.setAttribute("patient_name", list[i]["patient_name"]);
+                print.setAttribute("national_id", list[i]["national_id"]);
+                print.setAttribute('id', i)
+                print.style.cursor = "pointer";
+                statusCell.style.textAlign = "center"
+
+                statusCell.appendChild(print)
+
+                print.onclick = function () {
+
+                    printResult(this.getAttribute("accession_number"), this.getAttribute("state"), "Drawn", this.getAttribute("test_code"), this.getAttribute("test_name"), this.getAttribute('national_id'),this.getAttribute('patient_name'));
+                    removeRow(this)
+                }
+            }
+            else
+            {
+                var view = document.createElement("img");
+                view.src =  eye;
+
+                view.height = 50;
+                view.setAttribute("state", list[i]["status"]);
+                view.setAttribute("accession_number", list[i]["accession_number"]);
+                view.setAttribute("test_code", list[i]["test_code"]);
+                view.setAttribute("test_name", list[i]["test_type_name"]);
+                view.setAttribute("patient_name", list[i]["patient_name"]);
+                view.setAttribute("national_id", list[i]["national_id"]);
+                view.style.cursor = "pointer";
+                statusCell.style.textAlign = "center"
+
+                view.onclick = function() {
+                    displayTestState(this.getAttribute('accession_number'), this.getAttribute('state'),this.getAttribute('test_code'), this.getAttribute('test_name'), this.getAttribute('national_id'),this.getAttribute('patient_name'));
+                }
+                statusCell.appendChild(view)
+            }
+
+            statusCell.style.border = "1px dotted #ccc"
+            row.appendChild(statusCell)
+        }
+    }
+
+    function removeRow(element) {
+        var table = document.getElementById('workRecords');
+
+        table.removeChild(element.parentNode.parentNode)
+    }
+    pullWorkList()
     checkBarcode();
+
 
 
 </script>

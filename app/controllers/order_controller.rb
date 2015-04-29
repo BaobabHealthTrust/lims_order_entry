@@ -568,6 +568,13 @@ class OrderController < ApplicationController
 
   end
 
+  def ward_work_list
+    result = RestClient.post("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@#{CONFIG["order_server"]}:" +
+                                 "#{CONFIG["order_port"]}#{CONFIG["specimen_details_link"]}", {:type => 'ward'}  )
+
+    render :text => result
+  end
+
   protected
 
   def set_connection
