@@ -46,7 +46,8 @@ default: &default
     order_server_user_update_path: /blis/htdocs/api/update_credentials.php
     user_management_name: username
     user_management_password: password
-    specimen_details_link: /blis/htdocs/api/get_specimen_details.php?
+    specimen_details_link: /blis/htdocs/api/get_worklist.php?
+
 
 development:
   <<: *default
