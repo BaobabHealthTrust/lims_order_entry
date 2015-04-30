@@ -188,14 +188,14 @@
 
             nameCell = document.createElement("td")
             nameCell.innerHTML = list[i]["patient_name"]
-            nameCell.style.width = "45%";
+            nameCell.style.width = "40%";
             nameCell.style.textAlign = "left"
             nameCell.style.border = "1px dotted #ccc"
             row.appendChild(nameCell)
 
             idCell = document.createElement("td")
             idCell.innerHTML= list[i]["national_id"]
-            idCell.style.width = "28%";
+            idCell.style.width = "30%";
             idCell.style.border = "1px dotted #ccc"
             idCell.style.textAlign = "left"
             row.appendChild(idCell)
@@ -222,7 +222,7 @@
 
                 print.onclick = function () {
 
-                    printResult(this.getAttribute("accession_number"), this.getAttribute("state"), "Drawn", this.getAttribute("test_code"), this.getAttribute("test_name"), this.getAttribute('national_id'),this.getAttribute('patient_name'));
+                    printResult(this.getAttribute("accession_number"), this.getAttribute("state"), "Reviewed", this.getAttribute("test_code"), this.getAttribute("test_name"), this.getAttribute('national_id'),this.getAttribute('patient_name'));
                     removeRow(this)
                 }
             }
@@ -243,6 +243,7 @@
 
                 view.onclick = function() {
                     displayTestState(this.getAttribute('accession_number'), this.getAttribute('state'),this.getAttribute('test_code'), this.getAttribute('test_name'), this.getAttribute('national_id'),this.getAttribute('patient_name'));
+                    removeRow(this)
                 }
                 statusCell.appendChild(view)
             }

@@ -29,23 +29,26 @@ function displayTestState(accession_number, state, code, name, national_id,patie
     }
     else if (state.trim().toLocaleLowerCase() == 'sample rejected')
     {
-        confirmAction("Sample for test was rejected. Do you want to re-draw the sample?", "");
+        confirmAction("Sample for " + name +" test was rejected. Do you want to re-order the test?","window.location='/patient/"+national_id +"'");
+        printResult(accession_number, state,'Seen', code, name,national_id,patient_name)
     }
     else if (state.trim().toLocaleLowerCase() == 'test rejected')
     {
-        confirmAction(name+" test could not be run on available specimen. Do you want to re-order the test?", "");
+        confirmAction(name+" test could not be run on available specimen. Do you want to re-order the test?", "window.location='/patient/"+national_id +"'");
+        printResult(accession_number, state,'Seen', code, name,national_id,patient_name)
     }
     else if (state.trim().toLocaleLowerCase() == 'result rejected')
     {
-        confirmAction("Results for "+name+" were inconclusive. Do you want to re-order the test?", "");
+        confirmAction("Results for "+name+" were inconclusive. Do you want to re-order the test?", "window.location='/patient/"+national_id +"'");
+        printResult(accession_number, state,'Seen', code, name,national_id,patient_name)
     }
 
 }
 
-function printResult(accession_number, currentState, state, code, name,national_id,patient_name)
+function printResult(accession_number, currentState, newState, code, name,national_id,patient_name)
 {
 
-    var url = "/update_state/" + accession_number + "?state=Reviewed&test_code=" + code + "&test_name=" + name;
+    var url = "/update_state/" + accession_number + "?state="+newState+"&test_code=" + code + "&test_name=" + name;
 
     var httpRequest = new XMLHttpRequest();
     httpRequest.onreadystatechange = function () {
@@ -58,7 +61,7 @@ function printResult(accession_number, currentState, state, code, name,national_
 
             var currentTests = "";
 
-            if (currentState.trim().toLocaleLowerCase() == "reviewed" || currentState.trim().toLocaleLowerCase() == "verified" || currentState.trim().toLocaleLowerCase() == "tested") {
+            if (newState.trim().toLocaleLowerCase() == "reviewed" || currentState.trim().toLocaleLowerCase() == "verified" || currentState.trim().toLocaleLowerCase() == "tested") {
 
                 var tests = results[0]["orders"][accession_number]["results"];
 
@@ -91,33 +94,9 @@ function printResult(accession_number, currentState, state, code, name,national_
                     currentTests += dateFormatted + "|" + test + "|" + result + ";"
 
                 }
-
-            } else {
-
-                var tests = Object.keys(testNames[accession_number]);
-
-                for (var i = 0; i < tests.length; i++) {
-
-                    var short = shortnames[tests[i]["testName"]];
-
-                    if (short == undefined || short.trim().length == 0) {
-
-                        short = tests[i];
-
-                    }
-
-                    currentTests += short + ";"
-
-                }
-
-                if (currentTests.trim().length > 10) {
-
-                    currentTests = currentTests.substr(0, 10) + "...";
-
-                }
+                printBarcodeMain(datetime, currentTests, accession_number, undefined, "reviewed", national_id,patient_name);
             }
 
-            printBarcodeMain(datetime, currentTests, accession_number, undefined, "reviewed", national_id,patient_name);
 
         }
 
