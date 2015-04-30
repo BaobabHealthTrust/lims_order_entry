@@ -222,7 +222,7 @@
 
                 print.onclick = function () {
 
-                    printResult(this.getAttribute("accession_number"), this.getAttribute("state"), "Reviewed", this.getAttribute("test_code"), this.getAttribute("test_name"), this.getAttribute('national_id'),this.getAttribute('patient_name'));
+                    getResults(this.getAttribute("accession_number"), this.getAttribute("state"), "Reviewed", this.getAttribute("test_code"), this.getAttribute("test_name"), this.getAttribute('national_id'),this.getAttribute('patient_name'));
                     removeRow(this)
                 }
             }
@@ -258,6 +258,35 @@
 
         table.removeChild(element.parentNode.parentNode)
     }
+
+    function getResults(accession_number, currentState, newState, code, name,national_id,patient_name)
+    {
+        var url = "/get_labs/"+ national_id;
+        showSpinner();
+        if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp=new XMLHttpRequest();
+        }else{// code for IE6, IE5
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+                var results = xmlhttp.responseText;
+                if(results == 'undefined' || results == '' || results == 'null' || results == '"not validate"') {
+                    return ;
+                }else if(results.length > 0){
+                    printResult(accession_number, currentState, newState, code, name,national_id,patient_name,JSON.parse(results))
+                    hideSpinner();
+                }else{
+                    return ;
+                }
+            }
+            hideSpinner();
+        }
+        xmlhttp.open("GET",url ,true);
+        xmlhttp.send();
+
+    }
+
     pullWorkList()
     checkBarcode();
 

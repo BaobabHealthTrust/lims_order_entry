@@ -30,23 +30,25 @@ function displayTestState(accession_number, state, code, name, national_id,patie
     else if (state.trim().toLocaleLowerCase() == 'sample rejected')
     {
         confirmAction("Sample for " + name +" test was rejected. Do you want to re-order the test?","window.location='/patient/"+national_id +"'");
-        printResult(accession_number, state,'Seen', code, name,national_id,patient_name)
+        printResult(accession_number, state,'Seen', code, name,national_id,patient_name,[])
     }
     else if (state.trim().toLocaleLowerCase() == 'test rejected')
     {
         confirmAction(name+" test could not be run on available specimen. Do you want to re-order the test?", "window.location='/patient/"+national_id +"'");
-        printResult(accession_number, state,'Seen', code, name,national_id,patient_name)
+        printResult(accession_number, state,'Seen', code, name,national_id,patient_name, [])
     }
     else if (state.trim().toLocaleLowerCase() == 'result rejected')
     {
         confirmAction("Results for "+name+" were inconclusive. Do you want to re-order the test?", "window.location='/patient/"+national_id +"'");
-        printResult(accession_number, state,'Seen', code, name,national_id,patient_name)
+        printResult(accession_number, state,'Seen', code, name,national_id,patient_name, [])
     }
 
 }
 
-function printResult(accession_number, currentState, newState, code, name,national_id,patient_name)
+function printResult(accession_number, currentState, newState, code, name,national_id,patient_name,results)
 {
+
+    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     var url = "/update_state/" + accession_number + "?state="+newState+"&test_code=" + code + "&test_name=" + name;
 
