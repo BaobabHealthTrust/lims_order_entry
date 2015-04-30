@@ -15,7 +15,7 @@
 //= require turbolinks
 //= require_tree .
 
-function displayTestState(accession_number, state, code, name, national_id,patient_name)
+function displayTestState(accession_number, state, code, name, national_id,patient_name, element)
 {
     var msg = ""
 
@@ -31,16 +31,19 @@ function displayTestState(accession_number, state, code, name, national_id,patie
     {
         confirmAction("Sample for " + name +" test was rejected. Do you want to re-order the test?","window.location='/patient/"+national_id +"'");
         printResult(accession_number, state,'Seen', code, name,national_id,patient_name,[])
+        removeRow(element)
     }
     else if (state.trim().toLocaleLowerCase() == 'test rejected')
     {
         confirmAction(name+" test could not be run on available specimen. Do you want to re-order the test?", "window.location='/patient/"+national_id +"'");
         printResult(accession_number, state,'Seen', code, name,national_id,patient_name, [])
+        removeRow(element)
     }
     else if (state.trim().toLocaleLowerCase() == 'result rejected')
     {
         confirmAction("Results for "+name+" were inconclusive. Do you want to re-order the test?", "window.location='/patient/"+national_id +"'");
         printResult(accession_number, state,'Seen', code, name,national_id,patient_name, [])
+        removeRow(element)
     }
 
 }

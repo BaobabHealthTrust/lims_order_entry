@@ -242,8 +242,7 @@
                 statusCell.style.textAlign = "center"
 
                 view.onclick = function() {
-                    displayTestState(this.getAttribute('accession_number'), this.getAttribute('state'),this.getAttribute('test_code'), this.getAttribute('test_name'), this.getAttribute('national_id'),this.getAttribute('patient_name'));
-                    removeRow(this)
+                    displayTestState(this.getAttribute('accession_number'), this.getAttribute('state'),this.getAttribute('test_code'), this.getAttribute('test_name'), this.getAttribute('national_id'),this.getAttribute('patient_name'), this);
                 }
                 statusCell.appendChild(view)
             }
