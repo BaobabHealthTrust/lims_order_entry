@@ -986,7 +986,7 @@ class LabProcessingController < RemoteSessionsController
   def get_specimen_status
 
     status_link = "#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@" +
-        "#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["specimen_details_link"]}dashboard_type=labdepartment&department=%22#{@location[:dept].gsub(/\s/, "+") rescue nil}%22"
+        "#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["specimen_details_link"]}type=lab&department=%22#{@location[:dept].gsub(/\s/, "+") rescue nil}%22"
 
     status = RestClient.get(status_link).strip # rescue nil
 

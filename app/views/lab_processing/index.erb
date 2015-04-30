@@ -76,7 +76,7 @@
     </tr>
     <tr>
       <td colspan="3">
-        <div id="worklist" style="width: 793px; height: 297px; border: 1px solid #ccc; overflow: auto;">
+        <div id="worklist" style="width: 793px; height: 295px; border: 1px solid #ccc; overflow: auto;">
 
         </div>
       </td>
@@ -227,7 +227,7 @@
                 tableMain.width = "100%";
                 tableMain.setAttribute("cellspacing", "1");
 
-                fragment.appendChild(tableMain);
+                // fragment.appendChild(tableMain);
 
                 var tbodyMain = document.createElement("tbody");
 
@@ -298,15 +298,15 @@
                 for(var i = 0; i < result.length; i++){
 
                     var tr = document.createElement("tr");
-                    tr.onmouseover = function(){
+                    tr.setAttribute("accession_number", result[i]["accession_number"]);
 
-                        this.style.backgroundColor = "lightblue";
+                    tr.onclick = function(){
 
-                    }
+                        if(__$("barcode")){
 
-                    tr.onmouseout = function(){
+                            __$("barcode").value = this.getAttribute("accession_number") + "$";
 
-                        this.style.backgroundColor = (this.getAttribute("tag") == "odd" ? "#eee" : "");
+                        }
 
                     }
 
@@ -337,9 +337,8 @@
                     tr.appendChild(td2);
 
                     var td3 = document.createElement("td");
-                    td3.innerHTML = "<ol><li>" + String(result[i]["test_type_name"]).trim().replace(/,/g, "</li><li>") + "</li></ol>";
+                    td3.innerHTML = String(result[i]["test_type_name"]).trim();
                     td3.style.textAlign = "left";
-                    td3.style.padding = "0px";
                     td3.style.border = "1px solid #eee";
                     td3.style.width = "228px";
                     td3.style.verticalAlign = "top";
@@ -347,9 +346,8 @@
                     tr.appendChild(td3);
 
                     var td4 = document.createElement("td");
-                    td4.innerHTML = "<ol><li>" + String(result[i]["status"]).trim().replace(/,/g, "</li><li>") + "</li></ol>";
+                    td4.innerHTML = String(result[i]["status"]).trim();
                     td4.style.textAlign = "left";
-                    td4.style.padding = "0px";
                     td4.style.border = "1px solid #eee";
                     // td4.style.width = "155px";
                     td4.style.verticalAlign = "top";
@@ -358,7 +356,7 @@
 
                 }
 
-                __$("worklist").appendChild(fragment.cloneNode(true));
+                __$("worklist").appendChild(tableMain);     // fragment.cloneNode(true));
 
             }
 
