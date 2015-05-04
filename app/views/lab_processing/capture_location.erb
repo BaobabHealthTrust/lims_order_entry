@@ -68,6 +68,8 @@
 
             document.getElementById("btnNext").onclick = function () {
 
+                showSpinner();
+
                 if(__$("dept")){
 
                     __$("dept").value = selectedDept;
@@ -89,6 +91,7 @@
                     document.forms[0].submit();
                 }
 
+                hideSpinner();
 
             }
 
