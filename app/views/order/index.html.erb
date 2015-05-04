@@ -228,10 +228,12 @@
             }
             else
             {
+                statusCell.innerHTML =  list[i]["status"];
+
                 var view = document.createElement("img");
                 view.src =  eye;
 
-                view.height = 50;
+                view.height = 40;
                 view.setAttribute("state", list[i]["status"]);
                 view.setAttribute("accession_number", list[i]["accession_number"]);
                 view.setAttribute("test_code", list[i]["test_code"]);
@@ -239,7 +241,8 @@
                 view.setAttribute("patient_name", list[i]["patient_name"]);
                 view.setAttribute("national_id", list[i]["national_id"]);
                 view.style.cursor = "pointer";
-                statusCell.style.textAlign = "center"
+                view.style.float = "right"
+                statusCell.style.textAlign = "left"
 
                 view.onclick = function() {
                     displayTestState(this.getAttribute('accession_number'), this.getAttribute('state'),this.getAttribute('test_code'), this.getAttribute('test_name'), this.getAttribute('national_id'),this.getAttribute('patient_name'), this);
