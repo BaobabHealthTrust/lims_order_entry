@@ -2,6 +2,8 @@ Rails.application.routes.draw do
 
   root 'order#index'
 
+  get "/get_labs_from_lab/:id" => "lab_processing#get_labs"
+
   get "/lab_logout" => "lab_processing#index"
 
   get "/get_specimen_status" => "lab_processing#get_specimen_status"

@@ -165,6 +165,8 @@
 
     var selected;
 
+    var codes = <%= @codes.to_json.html_safe %>;
+
     function __$(id) {
         return document.getElementById(id);
     }
@@ -215,7 +217,8 @@
 
                         __$("btnReject").className = "button_gray";
 
-                        __$("btnReject").onclick = function(){};
+                        __$("btnReject").onclick = function () {
+                        };
 
                     } else {
 
@@ -296,7 +299,15 @@
 
                     } else if (result.trim().toLowerCase() == "tested") {
 
+                        <% if @user_details['canverify'].to_s == 'true'%>
+
                         __$("btnProcess").innerHTML = "Confirm Result";
+
+                        <% else %>
+
+                        __$("btnProcess").innerHTML = "Edit Result";
+
+                        <% end %>
 
                         __$("btnProcess").onclick = function () {
 
@@ -324,7 +335,33 @@
 
                         __$("btnProcess").innerHTML = "Verified";
 
-                        __$("btnProcess").className = "button_gray";
+                        __$("btnProcess").className = "button_blue";
+
+                        var npid = "<%= @patient[:national_id] rescue nil %>";
+
+                        var acc_num = "<%= @barcode rescue nil %>";
+
+                        __$("btnProcess").setAttribute("state", "");
+                        __$("btnProcess").setAttribute("accession_number", "");
+                        __$("btnProcess").setAttribute("test_code", "");
+                        __$("btnProcess").setAttribute("test_name", "");
+                        __$("btnProcess").setAttribute("result", "");
+                        __$("btnProcess").setAttribute("specimen", "");
+                        __$("btnProcess").setAttribute("entered_by", "");
+                        __$("btnProcess").setAttribute("result_date_time", "");
+                        __$("btnProcess").setAttribute("who_ordered_test", "");
+                        __$("btnProcess").setAttribute("date_time", "");
+                        __$("btnProcess").setAttribute("location_entered", "");
+                        __$("btnProcess").setAttribute("remark", "");
+                        __$("btnProcess").setAttribute("patient", "");
+
+                        ajaxTasks(npid, acc_num);
+
+                        __$("btnProcess").onclick = function () {
+
+                            selectTestToShow("<%= @barcode rescue nil %>");
+
+                        }
 
                     } else {
 
@@ -348,18 +385,6 @@
     function checkButton() {
         if (__$("btnNext") && __$("nav")) {
 
-            /*__$("btnNext").className = "button_gray";
-
-             __$("btnNext").onclick = function () {
-
-             if (__$("test_name").value.trim().length > 0 && __$("test_code").value.trim().length > 0) {
-
-             document.forms[0].submit();
-
-             }
-
-             }*/
-
             __$("btnNext").style.display = "none";
 
             if (__$("btnProcess")) {
@@ -378,7 +403,7 @@
 
                 __$('btnLogout').innerHTML = "Cancel";
 
-                __$('btnLogout').onclick = function () {
+                __$('btnLogout').onmousedown = function () {
 
                     showSpinner();
 
@@ -389,11 +414,263 @@
 
         } else {
 
-            setTimeout(function(){checkButton()}, 100);
+            setTimeout(function () {
+                checkButton()
+            }, 100);
 
         }
     }
 
-    setTimeout(function(){checkButton()}, 100);
+    function ajaxTasks(npid) {
+
+        var url = "/get_labs_from_lab/" + npid;
+
+        showSmallSpinner();
+
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function () {
+            handleTasks(httpRequest);
+        };
+        try {
+            httpRequest.open('GET', url, true);
+            httpRequest.send(null);
+        } catch (e) {
+        }
+    }
+
+    function handleTasks(aXMLHttpRequest) {
+        if (!aXMLHttpRequest) return;
+
+        if (aXMLHttpRequest.readyState == 4 && (aXMLHttpRequest.status == 200 ||
+                aXMLHttpRequest.status == 304)) {
+
+            results = JSON.parse(aXMLHttpRequest.responseText);
+
+            hideSmallSpinner();
+
+        }
+    }
+
+    function showTestStatus(accum_num, test_code) {
+
+        if (results.length > 0) {
+
+            var key = accum_num;
+
+            var kid = test_code;
+
+            var result = results[0]["orders"];
+
+            var attributes = {};
+
+            attributes.state = result[key]["results" ][kid]["status"];
+            attributes.accession_number = key;
+            attributes.test_name = result[key]["results"][kid]["test_name"];
+            attributes.result = result[key]["results"][kid]["result"];
+            attributes.specimen = result[key]["sample_type"];
+            attributes.entered_by = result[key]["results"][kid]["entered_by"];
+            attributes.result_date_time = formatTimestamp(result[key]["results"][kid]["result_date_time"]);
+            attributes.who_ordered_test = result[key]["who_ordered_test"];
+            attributes.date_time = formatTimestamp(result[key]["date_time"]);
+            attributes.location_entered = result[key]["results"][kid]["location_entered"];
+            attributes.remark = result[key]["results"][kid]["remark"];
+            attributes.patient = results[0]["patient"]["patient_name"];
+
+
+            var fields = ["specimen", "test_name", "state", "result", "remark", "who_ordered_test",
+                "date_time", "entered_by", "result_date_time"];
+
+            var fieldLabels = {
+                "specimen": "Sample Type",
+                "test_name": "Test Name",
+                "state": "Test Status",
+                "who_ordered_test": "Ordered By",
+                "date_time": "Order Time",
+                "result": "Test Result",
+                "remark": "Remark",
+                "entered_by": "Tested By",
+                "result_date_time": "Result Time"
+            };
+
+            var tbl = document.createElement("table");
+            tbl.cellPadding = "5";
+            tbl.cellSpacing = "1";
+
+            var tbdy = document.createElement("tbody");
+
+            tbl.appendChild(tbdy);
+
+            for (var f = 0; f < fields.length; f++) {
+
+                var trf = document.createElement("tr");
+
+                tbdy.appendChild(trf);
+
+                var tdf1 = document.createElement("td");
+                tdf1.style.fontWeight = "bold";
+                tdf1.style.textAlign = "right";
+                tdf1.style.verticalAlign = "top";
+                tdf1.style.fontSize = "12px";
+                tdf1.style.width = "80px";
+                tdf1.style.borderRight = "1px dotted #ccc";
+
+                if (f < fields.length - 1) {
+
+                    tdf1.style.borderBottom = "1px dotted #ccc";
+
+                }
+
+                tdf1.innerHTML = fieldLabels[fields[f]] + ":";
+
+                trf.appendChild(tdf1);
+
+                var tdf2 = document.createElement("td");
+                tdf2.style.backgroundColor = "#fff";
+                tdf2.style.fontSize = "14px";
+                tdf2.style.verticalAlign = "top";
+
+                tdf2.innerHTML = (fields[f] != undefined && attributes[fields[f]] != undefined &&
+                        typeof(attributes[fields[f]]).trim().toLowerCase() != "undefined" &&
+                        attributes[fields[f]].trim().toLowerCase() != "null" ?
+                        attributes[fields[f]] : "&nbsp;");
+
+                if (f < fields.length - 1) {
+
+                    tdf2.style.borderBottom = "1px dotted #ccc";
+
+                }
+
+                trf.appendChild(tdf2);
+
+            }
+
+            showMsgForAction(tbl.outerHTML, attributes["accession_number"].trim() + " : " + attributes["patient"].trim());
+
+        }
+
+    }
+
+    function selectTestToShow(key){
+
+        showShield(true);
+
+        var popup = document.createElement("div");
+        popup.id = "popup";
+        popup.style.position = "absolute";
+        popup.style.minHeight = "150px";
+        popup.style.backgroundColor = "#fff";
+        popup.style.zIndex = 120;
+        popup.style.border = "2px outset #eee";
+        popup.style.borderRadius = "8px";
+
+        document.body.appendChild(popup);
+
+        var table = document.createElement("table");
+        table.width = "100%";
+        table.style.fontSize = "24px";
+
+        popup.appendChild(table);
+
+        var tbody = document.createElement("tbody");
+
+        table.appendChild(tbody);
+
+        var tr1 = document.createElement("tr");
+
+        tbody.appendChild(tr1);
+
+        var th = document.createElement("th");
+        th.innerHTML = "Select Test To View";
+        th.style.backgroundColor = "#345d8c";
+        th.style.color = "#fff";
+        th.style.borderTopLeftRadius = "8px";
+        th.style.borderTopRightRadius = "8px";
+        th.style.border = "2px outset #23538a";
+        th.colSpan = "2";
+        th.style.padding = "5px";
+
+        tr1.appendChild(th);
+
+        var tr2 = document.createElement("tr");
+
+        tbody.appendChild(tr2);
+
+        var td1_1 = document.createElement("td");
+        td1_1.colSpan = "2";
+        td1_1.style.padding = "5px";
+        td1_1.align = "center";
+        td1_1.style.lineHeight = "120%";
+        td1_1.style.fontSize = "20px";
+        td1_1.style.textAlign = "left";
+
+        tr2.appendChild(td1_1);
+
+        td1_1.innerHTML = "";
+
+        var tr3 = document.createElement("tr");
+
+        // tbody.appendChild(tr3);
+
+        var td2_2 = document.createElement("td");
+        td2_2.align = "center";
+        td2_2.style.padding = "10px";
+        td2_2.setAttribute("colspan", 2);
+
+        // tr3.appendChild(td2_2);
+
+        if(results.length > 0){
+
+            var ul = document.createElement("ul");
+            ul.style.listStyle = "none";
+            ul.style.padding = "0px";
+            ul.style.margin = "0px";
+
+            td1_1.appendChild(ul);
+
+            var keys = Object.keys(results[0]["orders"][key]["results"]);
+
+            for(var u = 0; u < keys.length; u++){
+
+                var li = document.createElement("li");
+                li.style.padding = "10px";
+                li.style.backgroundColor = (u % 2 > 0 ? "#eee" : "#fff");
+                li.style.cursor = "pointer";
+                li.innerHTML = "<b>" + keys[u] + "</b>" + ": " + results[0]["orders"][key]["results"][keys[u]]["test_name"];
+                li.setAttribute("test_code", keys[u]);
+                li.setAttribute("accum_num", key);
+
+                li.onmousedown = function(){
+
+                    this.style.backgroundColor = "lightblue";
+
+                    var accum_num = this.getAttribute("accum_num");
+
+                    var test_code = this.getAttribute("test_code");
+
+                    showTestStatus(accum_num, test_code);
+
+                }
+
+                ul.appendChild(li);
+
+            }
+
+        }
+
+        if (__$("popup")) {
+
+            var c = checkCtrl(__$("popup"));
+
+            __$("popup").style.top = ((window.innerHeight / 2) - (c[1] / 2)) + "px";
+
+            __$("popup").style.left = ((window.innerWidth / 2) - (c[0] / 2)) + "px";
+
+        }
+
+    }
+
+    setTimeout(function () {
+        checkButton()
+    }, 100);
 
 </script>
