@@ -254,7 +254,7 @@
 
                                   <script>
 
-                                      document.getElementById("<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>").onclick = function () {
+                                      document.getElementById("<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>").onmousedown = function () {
                                           if (selectedControls[this.getAttribute('tag')]) {
                                               selectedControls[this.getAttribute('tag')].style.backgroundColor = (selectedControls[this.getAttribute('tag')].getAttribute('cat') == 'odd' ? '#eee' : '');
                                           }
@@ -288,7 +288,7 @@
                                    id="test_result_<%= code.strip.gsub(/\-/, "_") %>"
                                    field_type="<%= values[0]["type"] rescue "freetext" %>" value="<%= result rescue nil %>"
                                    units="<%= values[0]["unit"] rescue nil %>"
-                                   onclick="captureFreetext(this, true, <%= ((values[0]["type"] rescue "freetext") == "numeric" ? true : false) %>)"/>
+                                   onmousedown="captureFreetext(this, true, <%= ((values[0]["type"] rescue "freetext") == "numeric" ? true : false) %>)"/>
 
                         <% end %>
 
@@ -309,7 +309,7 @@
                       </td>
                       <td>
                         <textarea style="width: 96%; height: 100px; padding: 10px;" id="remark_<%= code.strip.gsub(/\-/, "_") %>" name="test_remark[<%= code %>]"
-                                  onclick="captureFreetext(this)"><%= remark rescue nil %></textarea>
+                                  onmousedown="captureFreetext(this)"><%= remark rescue nil %></textarea>
                       </td>
                     </tr>
                     <!--
@@ -343,7 +343,7 @@
 
         <tr>
           <td colspan="3" style="padding-left: 20px;">
-            <div style="border-top: 1px dotted #eee; border-bottom: 1px dotted #eee; height: 255px; overflow-x: hidden; overflow-y: auto; padding-left: 20px; border: 1px solid;">
+            <div style="border-top: 1px dotted #eee; border-bottom: 1px dotted #eee; height: 245px; overflow-x: hidden; overflow-y: auto; padding-left: 20px; border: 1px solid;">
 
               <table width="100%" cellpadding="10px">
 
@@ -456,7 +456,7 @@
 
                                   <script>
 
-                                      document.getElementById("<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>").onclick = function () {
+                                      document.getElementById("<%= "#{name.strip.gsub(/\s/, "_").downcase}_#{measure.strip.gsub(/\s/, "_").downcase}" %>").onmousedown = function () {
                                           if (selectedControls[this.getAttribute('tag')]) {
                                               selectedControls[this.getAttribute('tag')].style.backgroundColor = (selectedControls[this.getAttribute('tag')].getAttribute('cat') == 'odd' ? '#eee' : '');
                                           }
@@ -490,7 +490,7 @@
                                    id="test_result_<%= code.strip.gsub(/\-/, "_") %>"
                                    field_type="<%= values[0]["type"] rescue "freetext" %>" value="<%= result rescue nil %>"
                                    units="<%= values[0]["unit"] rescue nil %>"
-                                   onclick="captureFreetext(this, true, <%= ((values[0]["type"] rescue "freetext") == "numeric" ? true : false) %>)"/>
+                                   onmousedown="captureFreetext(this, true, <%= ((values[0]["type"] rescue "freetext") == "numeric" ? true : false) %>)"/>
 
                         <% end %>
 
@@ -510,8 +510,8 @@
                         Remarks:
                       </td>
                       <td>
-                        <textarea style="width: 96%; height: 100px; padding: 10px;" id="remark_<%= code.strip.gsub(/\-/, "_") %>" name="test_remark[<%= code %>]"
-                                  onclick="captureFreetext(this)"><%= remark rescue nil %></textarea>
+                        <textarea style="width: 91%; height: 100px; padding: 10px;" id="remark_<%= code.strip.gsub(/\-/, "_") %>" name="test_remark[<%= code %>]"
+                                  onmousedown="captureFreetext(this)"><%= remark rescue nil %></textarea>
                       </td>
                     </tr>
                     <!--
@@ -558,24 +558,30 @@
 
             if (document.getElementById("btnNext").innerHTML.match(/Verify/))
 
-                document.getElementById("btnNext").className = "button_gray";
+                document.getElementById("btnNext").style.display = "none";
+
+            <% else %>
+
+                document.getElementById("btnNext").style.display = "block";
+
+                document.getElementById("btnNext").onmousedown = function () {
+
+                    if (!this.className.match(/gray/)) {
+
+                        showSpinner();
+
+                        document.forms[0].submit();
+                    }
+
+                }
 
             <% end %>
 
-            document.getElementById("btnNext").onclick = function () {
-
-                if (!this.className.match(/gray/)) {
-
-                    showSpinner();
-
-                    document.forms[0].submit();
-                }
-
-            }
-
         } else {
 
-            setTimeout(function(){changeLabels();}, 100);
+            setTimeout(function () {
+                changeLabels();
+            }, 100);
 
             return;
 
@@ -585,7 +591,7 @@
 
             document.getElementById("btnLogout").innerHTML = "Cancel";
 
-            document.getElementById("btnLogout").onclick = function () {
+            document.getElementById("btnLogout").onmousedown = function () {
 
                 showSpinner();
 
@@ -595,7 +601,9 @@
 
         } else {
 
-            setTimeout(function(){changeLabels()}, 100);
+            setTimeout(function () {
+                changeLabels()
+            }, 100);
 
             return;
 
@@ -612,7 +620,7 @@
             btnCorrect.style.cssFloat = "right";
             btnCorrect.style.marginRight = "10px";
 
-            btnCorrect.onclick = function () {
+            btnCorrect.onmousedown = function () {
 
                 showSpinner();
 
@@ -634,6 +642,8 @@
 
     }
 
-    setTimeout(function(){changeLabels()}, 100);
+    setTimeout(function () {
+        changeLabels()
+    }, 100);
 
 </script>

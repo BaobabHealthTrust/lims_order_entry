@@ -63,9 +63,17 @@ function showShield(clickCloses) {
 
         document.body.removeChild(__$("shield"));
 
-        hideSpinner();
+        if(spinner != null) {
 
-        hideSmallSpinner();
+            hideSpinner();
+
+        }
+
+        if(smallSpinner != null) {
+
+            hideSmallSpinner();
+
+        }
 
     } else {
 
@@ -854,7 +862,13 @@ function showMsgForAction(doc, title) {
 
     }
 
-    var popup = document.createElement("div");
+    if (__$("popup")) {
+
+        document.body.removeChild(__$("popup"));
+
+    }
+
+        var popup = document.createElement("div");
     popup.id = "popup";
     popup.style.position = "absolute";
     popup.style.minHeight = "200px";
@@ -898,8 +912,8 @@ function showMsgForAction(doc, title) {
     var td1_1 = document.createElement("td");
     td1_1.colSpan = "2";
     td1_1.style.padding = "5px";
-    td1_1.style.paddingTop = "15px";
-    td1_1.style.paddingBottom = "15px";
+    td1_1.style.paddingTop = "5px";
+    td1_1.style.paddingBottom = "5px";
     td1_1.align = "center";
     td1_1.style.lineHeight = "120%";
     td1_1.style.fontSize = "20px";
@@ -914,7 +928,7 @@ function showMsgForAction(doc, title) {
 
     var td2_2 = document.createElement("td");
     td2_2.align = "center";
-    td2_2.style.padding = "10px";
+    td2_2.style.padding = "5px";
     td2_2.setAttribute("colspan", 2);
 
     tr3.appendChild(td2_2);

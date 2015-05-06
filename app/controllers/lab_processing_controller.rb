@@ -143,7 +143,7 @@ class LabProcessingController < RemoteSessionsController
 
     @list = JSON.parse(tests)
 
-	@user_details = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+	  @user_details = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
                                             "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["order_server_user_details"]}#{session[:user]}")) rescue []
 
     # raise @user_details.inspect
@@ -852,6 +852,9 @@ class LabProcessingController < RemoteSessionsController
 
     @status = RestClient.get(status_link).strip rescue nil
 
+    @user_details = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+                                                  "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["order_server_user_details"]}#{session[:user]}")) rescue []
+
     if @status.strip.downcase == "drawn"
 
       flash[:error] = "Sample has not been seen yet at the Reception!"
@@ -991,6 +994,17 @@ class LabProcessingController < RemoteSessionsController
     status = RestClient.get(status_link).strip # rescue nil
 
     render :text => status.strip
+
+  end
+
+  def get_labs
+
+    # raise "#{CONFIG["lab_repo_protocol"]}://#{CONFIG["lab_repo_server"]}:#{CONFIG["lab_repo_port"]}#{CONFIG["lab_get_labs_path"]}#{params[:id]}".inspect
+
+    result = RestClient.get("#{CONFIG["lab_repo_protocol"]}://#{CONFIG["lab_repo_server"]}:#{CONFIG["lab_repo_port"]}#{CONFIG["lab_get_labs_path"]}#{params[:id]}")
+
+
+    render :text => result
 
   end
 
