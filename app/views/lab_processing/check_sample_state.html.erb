@@ -104,13 +104,13 @@
               <% i = 0 %>
               <% @tests.each do |key, value| %>
 
-                  <% code, specimen, status = value.strip.split("|") %>
+                  <% code, specimen, status, isPanel = value.strip.split("|") %>
 
                   <% if !status.blank? and status.strip.downcase.match(/rejected/) %>
 
                       <li style="padding: 15px; border: 1px dotted #ccc; color: red; font-weight: normal; font-style: italic;
                               background-color: <%= i % 2 > 0 ? "#eee" : "#fff" %>"
-                          tag="<%= i % 2 > 0 ? "odd" : "even" %>" test_name="<%= key %>" test_code="<%= code %>" specimen="<%= specimen %>">
+                          tag="<%= i % 2 > 0 ? "odd" : "even" %>" test_name="<%= key %>" test_code="<%= code %>" specimen="<%= specimen %>" ispanel="<%= isPanel %>" >
                         <%= key %>
                       </li>
 
@@ -119,7 +119,7 @@
                       <li style="padding: 15px; border: 1px dotted #ccc; cursor: pointer; background-color: <%= i % 2 > 0 ? "#eee" : "#fff" %>"
                           tag="<%= i % 2 > 0 ? "odd" : "even" %>" onmouseover="if(this.getAttribute('selected') == null){ this.style.backgroundColor = '#f89e62';}"
                           onmouseout="if(this.getAttribute('selected') == null){ <%= i % 2 > 0 ? "this.style.backgroundColor = '#eee';" : "this.style.backgroundColor = '#fff';" %>}"
-                          test_name="<%= key %>" test_code="<%= code %>" specimen="<%= specimen %>" onclick="process(this);">
+                          test_name="<%= key %>" test_code="<%= code %>" specimen="<%= specimen %>" ispanel="<%= isPanel %>" onclick="process(this);">
                         <%= key %>
                       </li>
 
@@ -145,6 +145,8 @@
     <input type="hidden" id="specimen" name="specimen" value=""/>
 
     <input type="hidden" id="state" name="state" value=""/>
+
+    <input type="hidden" id="is_panel" name="is_panel" value=""/>
 
     <input type="hidden" id="barcode" name="barcode" value="<%= @barcode rescue nil %>"/>
 
@@ -235,6 +237,8 @@
                             __$('specimen').value = control.getAttribute('specimen');
 
                             __$('state').value = "TEST REJECTED";
+
+                            __$("is_panel").value = control.getAttribute('ispanel');
 
                             document.forms[0].action = "/rejection_reason";
 

@@ -308,6 +308,8 @@ class LabProcessingController < RemoteSessionsController
 
     @state = params[:state]
 
+    @is_panel = params[:is_panel]
+
     @dept = @location[:dept]
 
     render :layout => "lab"
@@ -348,18 +350,54 @@ class LabProcessingController < RemoteSessionsController
 
       dept = params[:location] rescue "undefined"
 
-      parameters = {
-          :id => params[:barcode].strip,
-          :test_name => params[:test_name],
-          :test_code => params[:test_code],
-          :state => params[:state].titleize,
-          :specimen => params[:specimen],
-          :location => dept.strip
-      }
+      if !params[:is_panel].blank? and params[:is_panel].to_i == 1
 
-      save_state(parameters)
+        tests = RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
+                                   "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["search_by_acc_num_path"]}#{params[:barcode]}")
 
-      flash[:notice] = "Test #{params[:test_name]} with ID #{params[:id]} recorded as rejected in #{dept}!"
+        list = JSON.parse(tests).keys.first.split("|") rescue nil
+
+        if list.nil?
+
+          flash[:error] = "ERROR: Test or specimen details extracting failed!"
+
+          redirect_to "/lab/" and return
+
+        end
+
+        parameters = {
+            :id => params[:barcode].strip,
+            :test => list[0],
+            :test_name => params[:test_name],
+            :test_code => params[:test_code],
+            :state => params[:state].titleize,
+            :specimen => list[2],
+            :location => "#{dept.strip.upcase.gsub(/\_/, " ").titleize}"
+        }
+
+        # TODO: Need to find a way of calling one method only here
+        save_state(parameters)
+
+        save_group_state(parameters)
+
+        flash[:notice] = "Panel Test with ID #{params[:barcode]} recorded as rejected in #{dept}!"
+
+      else
+
+          parameters = {
+              :id => params[:barcode].strip,
+              :test_name => params[:test_name],
+              :test_code => params[:test_code],
+              :state => params[:state].titleize,
+              :specimen => params[:specimen],
+              :location => dept.strip
+          }
+
+          save_state(parameters)
+
+          flash[:notice] = "Test #{params[:test_name]} with ID #{params[:id]} recorded as rejected in #{dept}!"
+
+        end
 
     else
 
@@ -913,7 +951,7 @@ class LabProcessingController < RemoteSessionsController
 
         next if item.empty?
 
-        @tests[item[0]] = "#{item[3]}|#{item[2]}|#{item[4]}"
+        @tests[item[0]] = "#{item[3]}|#{item[2]}|#{item[4]}|#{item[5]}"
 
       end
 
