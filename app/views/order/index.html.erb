@@ -180,21 +180,23 @@
 
         __$("workListDetails").appendChild(table);
 
-        for (i = 0; i < list.length; i++)
+        var keys = Object.keys(list);
+
+        for (i = 0; i < keys.length; i++)
         {
             var row = document.createElement("tr");
 
             table.appendChild(row)
 
             nameCell = document.createElement("td")
-            nameCell.innerHTML = list[i]["patient_name"]
+            nameCell.innerHTML = list[keys[i]]["name"]
             nameCell.style.width = "40%";
             nameCell.style.textAlign = "left"
             nameCell.style.border = "1px dotted #ccc"
             row.appendChild(nameCell)
 
             idCell = document.createElement("td")
-            idCell.innerHTML= list[i]["national_id"]
+            idCell.innerHTML= keys[i]
             idCell.style.width = "30%";
             idCell.style.border = "1px dotted #ccc"
             idCell.style.textAlign = "left"
@@ -202,6 +204,27 @@
 
             statusCell = document.createElement("td")
 
+            var notices = document.createElement('div')
+            notices.setAttribute('class', 'circular-div')
+            notices.innerHTML = list[keys[i]]['test'].length
+
+            statusCell.appendChild(notices)
+
+            var view = document.createElement("img");
+            view.src =  eye;
+
+            view.height = 45;
+            view.setAttribute("national_id",keys[i]);
+            view.style.cursor = "pointer";
+            view.style.float = "right"
+            statusCell.style.textAlign = "left"
+
+            view.onclick = function() {
+                window.location='/patient/' + this.getAttribute('national_id')
+            }
+            statusCell.appendChild(view)
+/*
+this block of code was useful before but will now become irrelevant
             if (list[i]["status"].toUpperCase().trim() == "VERIFIED")
             {
                 var print = document.createElement("img");
@@ -230,26 +253,9 @@
             {
                 statusCell.innerHTML =  list[i]["status"];
 
-                var view = document.createElement("img");
-                view.src =  eye;
 
-                view.height = 40;
-                view.setAttribute("state", list[i]["status"]);
-                view.setAttribute("accession_number", list[i]["accession_number"]);
-                view.setAttribute("test_code", list[i]["test_code"]);
-                view.setAttribute("test_name", list[i]["test_type_name"]);
-                view.setAttribute("patient_name", list[i]["patient_name"]);
-                view.setAttribute("national_id", list[i]["national_id"]);
-                view.style.cursor = "pointer";
-                view.style.float = "right"
-                statusCell.style.textAlign = "left"
-
-                view.onclick = function() {
-                    displayTestState(this.getAttribute('accession_number'), this.getAttribute('state'),this.getAttribute('test_code'), this.getAttribute('test_name'), this.getAttribute('national_id'),this.getAttribute('patient_name'), this);
-                }
-                statusCell.appendChild(view)
             }
-
+*/
             statusCell.style.border = "1px dotted #ccc"
             row.appendChild(statusCell)
         }

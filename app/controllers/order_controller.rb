@@ -572,7 +572,14 @@ class OrderController < ApplicationController
     result = RestClient.post("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@#{CONFIG["order_server"]}:" +
                                  "#{CONFIG["order_port"]}#{CONFIG["specimen_details_link"]}", {:type => 'ward', :department => session[:location]}  )
 
-    render :text => result
+    data = {}
+    pre_processed = JSON.parse(result)
+
+    (pre_processed || []).each do |patient|
+      data[patient['national_id']] = {'name' => patient['patient_name'], 'test' => []} if data[patient['national_id']].blank?
+      data[patient['national_id']]['test'] << [patient['accession_number'], patient['status']] if !data[patient['national_id']]['test'].include? [patient['accession_number'], patient['status']]
+    end
+    render :text => data.to_json
   end
 
   protected
