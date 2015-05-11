@@ -523,8 +523,6 @@ class LabProcessingController < RemoteSessionsController
 
   def save_result
 
-    raise params.inspect
-
     patient = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
                                             "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["patient_by_acc_num_path"]}#{params[:barcode]}")).first
 
