@@ -556,9 +556,28 @@
 
             <% if @user_details['canverify'].to_s != 'true'%>
 
-            if (document.getElementById("btnNext").innerHTML.match(/Verify/))
+                if (document.getElementById("btnNext").innerHTML.match(/Verify/)) {
 
-                document.getElementById("btnNext").style.display = "none";
+                    document.getElementById("btnNext").style.display = "none";
+
+                    document.getElementById("btnNext").onmousedown = function () {};
+
+                } else {
+
+                    document.getElementById("btnNext").style.display = "block";
+
+                    document.getElementById("btnNext").onmousedown = function () {
+
+                        if (!this.className.match(/gray/)) {
+
+                            showSpinner();
+
+                            document.forms[0].submit();
+                        }
+
+                    }
+
+                }
 
             <% else %>
 
