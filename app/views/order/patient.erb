@@ -371,7 +371,7 @@
                         td3.setAttribute("who_ordered_test", result[key]["who_ordered_test"]);
                         td3.setAttribute("date_time", formatTimestamp(result[key]["date_time"]));
                         td3.setAttribute("location_entered", result[key]["results"][kid]["location_entered"]);
-                        td3.setAttribute("remark", result[key]["results"][kid]["remark"]);
+                        td3.setAttribute("remark", (result[key]["results"][kid]["remark"] != null ? result[key]["results"][kid]["remark"] : result[key]["results"][kid]["rejection_reason"]) );
                         td3.setAttribute("patient", results[0]["patient"]["patient_name"]);
 
                         td3.onclick = function(){
@@ -387,7 +387,7 @@
                                 "date_time": "Order Time",
                                 "result": "Test Result",
                                 "remark": "Remark",
-                                "entered_by": "Tested By",
+                                "entered_by": "Last Activity By",
                                 "result_date_time": "Last Activity Time"
                             };
 
@@ -414,7 +414,7 @@
                                 tdf1.style.textAlign = "right";
                                 tdf1.style.verticalAlign = "top";
                                 tdf1.style.fontSize = "12px";
-                                tdf1.style.width = "80px";
+                                tdf1.style.width = "120px";
                                 tdf1.style.borderRight = "1px dotted #ccc";
 
                                 if(f < fields.length - 1) {

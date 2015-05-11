@@ -290,7 +290,21 @@ class LabProcessingController < RemoteSessionsController
 
   def list_rejection_reasons
 
-    reasons = ["Insufficient Quantity", "Bad Sample", "Expired Sample", "Wrong Container", "Wrong Sample", "Patient Died", "Missing Sample"]
+    # reasons = ["Insufficient Quantity", "Bad Sample", "Expired Sample", "Wrong Container", "Wrong Sample", "Patient Died", "Missing Sample"]
+
+    reasons = {
+        "EX" => "Expired",
+        "QS" => "Quantity not sufficient",
+        "R" => "Missing patient ID number",
+        "RB" => "Broken container",
+        "RD" => "Missing collection date",
+        "RE" => "Missing patient name",
+        "RI" => "Identification problem",
+        "RL" => "Improper labeling",
+        "RM" => "Labeling",
+        "RR" => "Improper storage",
+        "RS" => "Name misspelling"
+    }
 
     render :text => reasons.to_json
 
@@ -317,6 +331,30 @@ class LabProcessingController < RemoteSessionsController
   end
 
   def reject_sample
+
+    reasons = {
+        "EX" => "Expired",
+        "QS" => "Quantity not sufficient",
+        "R" => "Missing patient ID number",
+        "RB" => "Broken container",
+        "RD" => "Missing collection date",
+        "RE" => "Missing patient name",
+        "RI" => "Identification problem",
+        "RL" => "Improper labeling",
+        "RM" => "Labeling",
+        "RR" => "Improper storage",
+        "RS" => "Name misspelling"
+    }
+
+    reason_list = params[:reason].strip.split(";") rescue []
+
+    if reason_list.length < 1
+
+      flash[:error] = "ERROR: Insufficient parameters!"
+
+      redirect_to "/lab/" and return
+
+    end
 
     if !params[:test_name].blank? and !params[:barcode].blank?
 
@@ -372,7 +410,9 @@ class LabProcessingController < RemoteSessionsController
             :test_code => params[:test_code],
             :state => params[:state].titleize,
             :specimen => list[2],
-            :location => "#{dept.strip.upcase.gsub(/\_/, " ").titleize}"
+            :location => "#{dept.strip.upcase.gsub(/\_/, " ").titleize}",
+            :rejection_reason => reasons[reason_list[0]],
+            :rejection_reason_code => reason_list[0]
         }
 
         # TODO: Need to find a way of calling one method only here
@@ -390,7 +430,9 @@ class LabProcessingController < RemoteSessionsController
               :test_code => params[:test_code],
               :state => params[:state].titleize,
               :specimen => params[:specimen],
-              :location => dept.strip
+              :location => dept.strip,
+              :rejection_reason => reasons[reason_list[0]],
+              :rejection_reason_code => reason_list[0]
           }
 
           save_state(parameters)
@@ -421,7 +463,9 @@ class LabProcessingController < RemoteSessionsController
           :test => list[0],
           :state => params[:state].titleize,
           :specimen => list[2],
-          :location => "#{dept.strip.upcase.gsub(/\_/, " ").titleize}"
+          :location => "#{dept.strip.upcase.gsub(/\_/, " ").titleize}",
+          :rejection_reason => reasons[reason_list[0]],
+          :rejection_reason_code => reason_list[0]
       }
 
       save_group_state(parameters)
@@ -479,7 +523,7 @@ class LabProcessingController < RemoteSessionsController
 
   def save_result
 
-     #raise params.inspect
+    raise params.inspect
 
     patient = JSON.parse(RestClient.get("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}" +
                                             "@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}/#{CONFIG["patient_by_acc_num_path"]}#{params[:barcode]}")).first
@@ -772,6 +816,12 @@ class LabProcessingController < RemoteSessionsController
     spm.specimen_id = "#{params[:id]}"
     spm.specimen_type = "#{params[:specimen] rescue nil}^#{params[:specimen] rescue nil}"
 
+    if !params[:rejection_reason].blank? and !params[:rejection_reason_code].blank?
+
+      spm.specimen_reject_reason = "#{params[:rejection_reason_code]}^#{params[:rejection_reason]}^HL70490^^^^2.5.1"
+
+    end
+
     msg << spm # add the SPM segment to the message
 
     result = RestClient.post("#{CONFIG["lab_state_update_protocol"]}://#{CONFIG["lab_state_update_server"]}:" +
@@ -867,6 +917,12 @@ class LabProcessingController < RemoteSessionsController
     spm.set_id = "1"
     spm.specimen_id = "#{params[:id]}"
     spm.specimen_type = "#{params[:specimen] rescue nil}^#{params[:specimen] rescue nil}"
+
+    if !params[:rejection_reason].blank? and !params[:rejection_reason_code].blank?
+
+      spm.specimen_reject_reason = "#{params[:rejection_reason_code]}^#{params[:rejection_reason]}^HL70490^^^^2.5.1"
+
+    end
 
     msg << spm # add the SPM segment to the message
 
