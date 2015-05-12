@@ -364,20 +364,32 @@
                         td3.setAttribute("accession_number", key);
                         td3.setAttribute("test_code", codes[result[key]["results"][kid]["test_name"]]);
                         td3.setAttribute("test_name", result[key]["results"][kid]["test_name"]);
-                        td3.setAttribute("result", result[key]["results"][kid]["result"]);
+
+                        if(result[key]["results"][kid]["status"] != "Tested") {
+
+                            td3.setAttribute("result", result[key]["results"][kid]["result"]);
+                            td3.setAttribute("entered_by", result[key]["results"][kid]["entered_by"]);
+                            td3.setAttribute("remark", (result[key]["results"][kid]["remark"] != null ? result[key]["results"][kid]["remark"] : result[key]["results"][kid]["rejection_reason"]) );
+
+                        } else {
+
+                            td3.setAttribute("result", null);
+                            td3.setAttribute("entered_by", null);
+                            td3.setAttribute("remark", null);
+
+                        }
+
                         td3.setAttribute("specimen", result[key]["sample_type"]);
-                        td3.setAttribute("entered_by", result[key]["results"][kid]["entered_by"]);
-                        td3.setAttribute("result_date_time", formatTimestamp(result[key]["results"][kid]["result_date_time"]));
                         td3.setAttribute("who_ordered_test", result[key]["who_ordered_test"]);
                         td3.setAttribute("date_time", formatTimestamp(result[key]["date_time"]));
                         td3.setAttribute("location_entered", result[key]["results"][kid]["location_entered"]);
-                        td3.setAttribute("remark", (result[key]["results"][kid]["remark"] != null ? result[key]["results"][kid]["remark"] : result[key]["results"][kid]["rejection_reason"]) );
+                        td3.setAttribute("result_date_time", formatTimestamp(result[key]["results"][kid]["result_date_time"]));
                         td3.setAttribute("patient", results[0]["patient"]["patient_name"]);
 
                         td3.onclick = function(){
 
-                            var fields = ["specimen", "test_name", "state", "result", "remark", "who_ordered_test",
-                                "date_time", "entered_by", "result_date_time"];
+                            var fields = ["specimen", "test_name", "state", "result", "remark", "entered_by", "who_ordered_test",
+                                "date_time", "result_date_time"];
 
                             var fieldLabels = {
                                 "specimen": "Sample Type",
@@ -387,7 +399,7 @@
                                 "date_time": "Order Time",
                                 "result": "Test Result",
                                 "remark": "Remark",
-                                "entered_by": "Last Activity By",
+                                "entered_by": "Tested By",
                                 "result_date_time": "Last Activity Time"
                             };
 
