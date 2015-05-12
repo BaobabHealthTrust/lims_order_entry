@@ -150,6 +150,44 @@
                   </div>
                 </td>
               </tr>
+              <tr>
+                <td colspan="4" style="border: 1px solid #eee; padding: 5px;" align="center">
+                  <table>
+                    <tr>
+                      <td>
+                        <button class="button_blue" id="btnFirst" style="font-size: 18px; font-weight: normal; width: 50px;"
+                                onmousedown="navFirstPage();">
+                          |<
+                        </button>
+                      </td>
+                      <td>
+                        <button class="button_blue" id="btnFirst" style="font-size: 18px; font-weight: normal; width: 50px;"
+                                onmousedown="navPrevPage();">
+                          <
+                        </button>
+                      </td>
+                      <td>
+                        <div id="pageCount" style="border: 1px solid #000; height: 30px; width: 100px;
+                                text-align: center; font-size: 16px; vertical-align: middle; padding-top: 10px;">
+                            0 of 0
+                        </div>
+                      </td>
+                      <td>
+                        <button class="button_blue" id="btnFirst" style="font-size: 18px; font-weight: normal; width: 50px;"
+                                onmousedown="navNextPage();">
+                          >
+                        </button>
+                      </td>
+                      <td>
+                        <button class="button_blue" id="btnFirst" style="font-size: 18px; font-weight: normal; width: 50px;"
+                                onmousedown="navLastPage();">
+                          >|
+                        </button>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
             </table>
 
           </div>
@@ -174,6 +212,12 @@
         var codes = <%= @codes.to_json.html_safe %>;
 
         var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        var thisPage = 1;
+
+        var pageSize = 5;
+
+        var totalCount = 0;
 
         function attachBtn() {
 
@@ -231,6 +275,24 @@
                 }
 
                 var result = results[0]["orders"];
+
+                try {
+
+                    totalCount = results[results.length - 1]["count"];
+
+                } catch(e){
+
+                    totalCount = pageSize;
+
+                }
+
+                if(__$("pageCount")){
+
+                    var totalPages = ((totalCount - (totalCount % pageSize)) / pageSize) + 1;
+
+                    __$("pageCount").innerHTML = thisPage + " of " + totalPages;
+
+                }
 
                 var keys = Object.keys(result);
 
@@ -773,9 +835,9 @@
 
         }
 
-        function ajaxTasks() {
+        function ajaxTasks(page, page_size) {
 
-            var url = "/get_labs/<%= params[:id] %>";
+            var url = "/get_labs/<%= params[:id] %>?page=" + page + "&page_size=" + page_size;
 
             showSmallSpinner();
 
@@ -944,9 +1006,47 @@
             }
         }
 
+        function navFirstPage(){
+
+            thisPage = 1;
+
+            ajaxTasks(thisPage, pageSize);
+
+        }
+
+        function navLastPage(){
+
+            var totalPages = ((totalCount - (totalCount % pageSize)) / pageSize) + 1;
+
+            thisPage = totalPages;
+
+            ajaxTasks(thisPage, pageSize);
+
+        }
+
+        function navNextPage(){
+
+            var totalPages = ((totalCount - (totalCount % pageSize)) / pageSize) + 1;
+
+            thisPage = (thisPage + 1 <= totalPages ? thisPage + 1 : thisPage);
+
+            ajaxTasks(thisPage, pageSize);
+
+        }
+
+        function navPrevPage(){
+
+            var totalPages = ((totalCount - (totalCount % pageSize)) / pageSize) + 1;
+
+            thisPage = (thisPage - 1 > 0 ? thisPage - 1 : thisPage);
+
+            ajaxTasks(thisPage, pageSize);
+
+        }
+
         setTimeout(function(){attachBtn()}, 100);
 
-        ajaxTasks();
+        ajaxTasks(1, 5);
 
     </script>
 

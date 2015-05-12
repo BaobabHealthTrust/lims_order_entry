@@ -422,7 +422,8 @@ class OrderController < ApplicationController
 
     # raise "#{CONFIG["lab_repo_protocol"]}://#{CONFIG["lab_repo_server"]}:#{CONFIG["lab_repo_port"]}#{CONFIG["lab_get_labs_path"]}#{params[:id]}".inspect
 
-    result = RestClient.get("#{CONFIG["lab_repo_protocol"]}://#{CONFIG["lab_repo_server"]}:#{CONFIG["lab_repo_port"]}#{CONFIG["lab_get_labs_path"]}#{params[:id]}")
+    result = RestClient.get("#{CONFIG["lab_repo_protocol"]}://#{CONFIG["lab_repo_server"]}:#{CONFIG["lab_repo_port"]}" +
+                "#{CONFIG["lab_get_labs_path"]}#{params[:id]}?page=#{params[:page]}&page_size=#{params[:page_size]}")
 
 
     render :text => result
