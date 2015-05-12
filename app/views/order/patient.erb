@@ -274,7 +274,11 @@
 
                 }
 
-                var result = results[0]["orders"];
+                if (results[0]["orders"])
+                {
+                    var result = results[0]["orders"];
+                }
+
 
                 try {
 
