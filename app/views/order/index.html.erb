@@ -182,7 +182,7 @@
 
         var keys = Object.keys(list);
 
-        for (i = 0; i < keys.length; i++)
+        for (var i = 0; i < keys.length; i++)
         {
             var row = document.createElement("tr");
 
@@ -219,9 +219,24 @@
             view.style.float = "right"
             statusCell.style.textAlign = "left"
 
-            view.onclick = function() {
-                window.location='/patient/' + this.getAttribute('national_id')
+            if (list[keys[i]]['terminal']){
+                var tests = list[keys[i]]['terminal']
+                view.onclick = function() {
+                    for(var k =0; k < tests.length; k++)
+                    {
+                        console.log(tests[k]["accession_number"])
+                        updateState(tests[k]['accession_number'], 'Seen', tests[k]['test_code'],tests[k]['test_name'])
+                    }
+                    window.location='/patient/'+ this.getAttribute('national_id')
+                }
             }
+            else
+            {
+                view.onclick = function() {
+                    window.location='/patient/' + this.getAttribute('national_id')
+                }
+            }
+
             statusCell.appendChild(view)
 /*
 this block of code was useful before but will now become irrelevant
@@ -261,10 +276,9 @@ this block of code was useful before but will now become irrelevant
         }
     }
 
-    function removeRow(element) {
-        var table = document.getElementById('workRecords');
+    function goToPatient(patient_id, tests)
+    {
 
-        table.removeChild(element.parentNode.parentNode)
     }
 
     function getResults(accession_number, currentState, newState, code, name,national_id,patient_name)
