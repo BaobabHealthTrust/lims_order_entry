@@ -43,6 +43,11 @@
 
   </Script>
 
+  <style>
+    button {
+        font-size: 23px !important;
+    }
+  </style>
 </head>
 <body onload="resizePage();" onresize="resizePage()">
 
@@ -105,7 +110,9 @@
   <button id="btnNext" class="button_green" style="float: right; margin-right: 15px; cursor: pointer;" onclick="showSpinner(); window.location = '<%= !params[:id].blank? ? "/patient/#{params[:id]}" : "/" %>'">Finish</button>
 
   <% if params[:action] == 'index' %>
-      <button id="btnPassChange" class="button_blue" style="float: right; margin-right: 15px; cursor: pointer;" onclick="showSpinner(); window.location = '/change_password'">Change
+      <button id="btnRefresh" class="button_blue" style=" font-size: 25px; margin-left: 10px; cursor: pointer;" onclick="showSpinner(); location.reload();">Refresh</button>
+
+      <button id="btnPassChange" class="button_blue" style="font-size: 25px; float: right; margin-right: 8px; cursor: pointer;" onclick="showSpinner(); window.location = '/change_password'">Change
         Password
       </button>
   <% end %>
