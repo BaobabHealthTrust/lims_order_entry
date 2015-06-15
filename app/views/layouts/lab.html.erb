@@ -65,7 +65,7 @@
 
   <table style="float: right; margin: 0px;" cellspacing="0" cellpadding="0">
     <tr>
-      <td style="vertical-align: bottom; font-size: 30px;" onmousedown="var mac = Android.getMac(); Android.showMsg(mac);">
+      <td style="vertical-align: bottom; font-size: 30px;" onmousedown="if(typeof(Android) != 'undefined'){var mac = '<%= request.ip%>'; Android.showMsg(mac);}">
         LIMS
       </td>
       <td rowspan="2" style="vertical-align: middle; padding-left: 5px; padding-top: 2px; padding-right: 5px;">
