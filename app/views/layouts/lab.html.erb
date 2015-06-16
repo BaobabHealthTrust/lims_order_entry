@@ -8,8 +8,15 @@
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <head>
 <title>LimsResultsEntry</title>
-<%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
-<%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+<%= stylesheet_link_tag 'application', media: 'all'%>
+
+  <script src="/assets/fastclick-2fd95edfa590810f4d23c0d18774ec56.js?body=1"></script>
+  <script src="/assets/images-579f0404329042a5607813a4cfecb133.js?body=1"></script>
+
+  <script src="/assets/spin-c0eb268301f9181c08a8a37ce891c090.js?body=1"></script>
+  <script src="/assets/ui-0c110404707e16a6eb34aa93e0a27b6a.js?body=1"></script>
+ 
+  <script src="/assets/application-87deeacfae5c3df55327f3981a4c50ab.js?body=1"></script>
 <%= csrf_meta_tags %>
 
 <script>
@@ -121,187 +128,6 @@
 
     function hideModal() {
         document.body.removeChild(__$("target"));
-    }
-
-    function enterDate(targetInput) {
-        DateTargetInput = targetInput;
-        showModal();
-
-        divTarget = __$("target");
-
-        var divTable = document.createElement("table")
-        divTable.style.margin = "auto";
-        divTable.setAttribute("cellspacing", "20")
-        divTable.style.background = "#ffffff"
-
-        divTable.style.border = "2px solid black"
-        divTable.style.borderRadius = "15px";
-        divTable.style.borderStyle = "outset";
-
-
-        divTarget.appendChild(divTable);
-
-        var titleRow = document.createElement("tr")
-        divTable.appendChild(titleRow)
-
-        var titleCell1 = document.createElement("td")
-        titleCell1.style.textAlign = "center";
-        titleCell1.style.fontSize = "20px";
-        titleCell1.style.fontWeight = "bold"
-        titleCell1.innerHTML = "Date"
-
-        titleRow.appendChild(titleCell1)
-
-        var titleCell2 = document.createElement("td")
-        titleCell2.style.textAlign = "center";
-        titleCell2.style.fontSize = "20px";
-        titleCell2.style.fontWeight = "bold"
-        titleCell2.innerHTML = "Hour"
-
-        titleRow.appendChild(titleCell2)
-
-        var titleCell3 = document.createElement("td")
-        titleCell3.style.textAlign = "center";
-        titleCell3.style.fontSize = "20px";
-        titleCell3.style.fontWeight = "bold"
-        titleCell3.innerHTML = "Mins"
-
-        titleRow.appendChild(titleCell3)
-
-        var row1 = document.createElement("tr");
-        divTable.appendChild(row1);
-
-        var date = new Date()
-
-        var cell1 = document.createElement("td")
-        row1.appendChild(cell1);
-
-        var myDate = document.createElement("input");
-        myDate.id = "myDateInput";
-        myDate.style.width = "400px";
-        myDate.style.padding = "10px";
-        myDate.style.fontSize = "20px";
-        myDate.setAttribute("type", "text");
-        myDate.value = DateTargetInput.value.split(" ")[0]
-        cell1.appendChild(myDate);
-
-        var cell2 = document.createElement("td")
-        row1.appendChild(cell2)
-
-        var hourInpt = document.createElement("input");
-        hourInpt.id = "myHrInput";
-        hourInpt.value = (date.getHours() < 10 ? "0" + date.getHours() : date.getHours());
-        hourInpt.style.width = "50px";
-        hourInpt.style.padding = "10px";
-        hourInpt.style.fontSize = "20px";
-        hourInpt.setAttribute("type", "text");
-        hourInpt.setAttribute('readonly', 'readonly')
-
-        cell2.appendChild(hourInpt);
-
-        var cell3 = document.createElement("td")
-        row1.appendChild(cell3)
-
-        var minInpt = document.createElement("input");
-        minInpt.id = "myMinInput";
-        minInpt.value = (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes() );
-        minInpt.style.width = "50px";
-        minInpt.style.padding = "10px";
-        minInpt.style.fontSize = "20px";
-        minInpt.setAttribute("type", "text");
-        minInpt.setAttribute('readonly', 'readonly')
-
-        cell3.appendChild(minInpt);
-
-
-        var row2 = document.createElement("tr");
-        divTable.appendChild(row2);
-
-        var row2cell1 = document.createElement("td")
-        row2cell1.style.height = "400px";
-        row2.appendChild(row2cell1);
-
-        var dateContainer = document.createElement("div");
-        dateContainer.id = "myDatePicker";
-        dateContainer.style.width = "300px";
-        dateContainer.style.marginTop = "-30%";
-        dateContainer.style.marginLeft = "0%";
-        dateContainer.style.height = "250px";
-        row2cell1.appendChild(dateContainer);
-
-        $('#myDateInput').Zebra_DatePicker({
-            always_visible: $('#myDatePicker'),
-            format: 'Y-M-d',
-            direction: false
-        });
-
-        var row2cell2 = document.createElement("td")
-        row2cell2.style.height = "400px";
-        row2.appendChild(row2cell2);
-
-        var hoursSelect = document.createElement("SELECT")
-        hoursSelect.setAttribute("size", "5")
-        hoursSelect.style.fontSize = "25px";
-        hoursSelect.style.height = "370px";
-        hoursSelect.style.width = "100%";
-        hoursSelect.setAttribute("onChange", "__$('myHrInput').value = this.value")
-        for (i = 0; i < 24; i++) {
-            var option = document.createElement("option");
-            if (i < 10) {
-                option.text = "0" + i.toString();
-            }
-            else {
-                option.text = i;
-            }
-            hoursSelect.add(option);
-        }
-        row2cell2.appendChild(hoursSelect);
-
-
-        var row2cell3 = document.createElement("td")
-        row2cell3.style.height = "400px";
-        row2.appendChild(row2cell3);
-
-        var minSelect = document.createElement("SELECT")
-        minSelect.setAttribute("size", "5")
-        minSelect.style.fontSize = "25px";
-        minSelect.style.height = "370px";
-        minSelect.style.width = "100%";
-        minSelect.setAttribute("onChange", "__$('myMinInput').value = this.value")
-        for (i = 0; i < 60; i++) {
-            var option = document.createElement("option");
-            if (i < 10) {
-                option.text = "0" + i.toString();
-            }
-            else {
-                option.text = i;
-            }
-            minSelect.add(option);
-        }
-        row2cell3.appendChild(minSelect);
-
-        var row4 = document.createElement("tr");
-        divTable.appendChild(row4);
-
-        var row4cell1 = document.createElement("td")
-        row4cell1.setAttribute("colspan", "3")
-        row4cell1.style.textAlign = "center"
-        row4.appendChild(row4cell1);
-
-        var btn = document.createElement("button")
-        btn.innerHTML = "Done"
-        btn.style.width = "40%"
-        btn.setAttribute("class", "button_green")
-        btn.setAttribute("onmousedown", "saveDate()")
-        row4cell1.appendChild(btn)
-
-    }
-
-    function saveDate() {
-        if (__$("myDateInput").value != "") {
-            DateTargetInput.value = __$("myDateInput").value + " " + __$("myHrInput").value + ":" + __$("myMinInput").value;
-        }
-        hideModal();
     }
 
     <% if !flash[:error].blank? %>

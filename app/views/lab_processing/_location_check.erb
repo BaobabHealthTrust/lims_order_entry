@@ -1,5 +1,7 @@
 <script>
 
+  'use strict';
+
     var currentLocation;
 
     function checkLocation() {
@@ -48,6 +50,6 @@
 
     }
 
-    checkLocation();
+    setTimeout(function(){checkLocation()}, 5);
 
 </script>
