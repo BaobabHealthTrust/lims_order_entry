@@ -518,6 +518,10 @@
                                         this.getAttribute(fields[f]).trim().toLowerCase() != "null" ?
                                         this.getAttribute(fields[f]) : "&nbsp;");
 
+                                if (fields[f] == 'entered_by' || fields[f] == 'who_ordered_test'){
+                                    tdf2.innerHTML = tdf2.innerHTML.replace(/\(\d*\)/, '');
+                                }
+
                                 if(f < fields.length - 1) {
 
                                     tdf2.style.borderBottom = "1px dotted #ccc";
