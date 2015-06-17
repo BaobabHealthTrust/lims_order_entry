@@ -10,9 +10,9 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require jquery
-//= require jquery_ujs
-//= require turbolinks
+// require jquery
+// require jquery_ujs
+// require turbolinks
 //= require_tree .
 
 function displayTestState(accession_number, state, code, name, national_id,patient_name, element)
@@ -161,7 +161,24 @@ function printBarcodeMain(messageDatetime, testsTBD, accessionNumber, ward, stat
 
 }
 
-function updateState(state)
+function updateState(accession_number, newState, code, name)
 {
+    var url = "/update_state/" + accession_number + "?state="+newState+"&test_code=" + code + "&test_name=" + name;
+
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.onreadystatechange = function () {
+
+        if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
+            httpRequest.status == 304)) {
+
+
+        }
+
+    };
+    try {
+        httpRequest.open('GET', url, true);
+        httpRequest.send(null);
+    } catch (e) {
+    }
 
 }

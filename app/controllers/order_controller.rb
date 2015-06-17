@@ -573,14 +573,25 @@ class OrderController < ApplicationController
     result = RestClient.post("#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@#{CONFIG["order_server"]}:" +
                                  "#{CONFIG["order_port"]}#{CONFIG["specimen_details_link"]}", {:type => 'ward', :department => session[:location]}  )
 
+    terminal_states = ['SAMPLE REJECTED','TEST REJECTED','RESULT REJECTED']
     data = {}
     pre_processed = JSON.parse(result)
 
     (pre_processed || []).each do |patient|
-      data[patient['national_id']] = {'name' => patient['patient_name'], 'test' => []} if data[patient['national_id']].blank?
+      data[patient['national_id']] = {'name' => patient['patient_name'], 'test' => [], 'terminal' => []} if data[patient['national_id']].blank?
       data[patient['national_id']]['test'] << [patient['accession_number'], patient['status']] if !data[patient['national_id']]['test'].include? [patient['accession_number'], patient['status']]
+      data[patient['national_id']]['terminal'] << {'accession_number' => patient['accession_number'],'test_code' => patient['test_code'],
+                                                   'test_name' => patient['test_type_name']} if terminal_states.include?patient['status'].upcase
     end
     render :text => data.to_json
+  end
+
+  def get_state
+    status_link = "#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["status_path"]}#{params[:id]}"
+
+    status = RestClient.get(status_link)
+
+    render :text => status
   end
 
   protected
