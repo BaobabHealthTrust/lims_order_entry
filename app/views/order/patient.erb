@@ -391,7 +391,7 @@
 
                             td2.onclick = function () {
 
-                                editTest(this.getAttribute("accession_number"), this.getAttribute("state"), this.getAttribute("test_code"), this.getAttribute("test_name"));
+                                checkState(this.getAttribute("accession_number"), this.getAttribute("state"), this.getAttribute("test_code"), this.getAttribute("test_name"));
 
                             }
 
@@ -990,6 +990,32 @@
 
             }
 
+        }
+
+        function checkState(id, tstate, tcode, tname){
+
+            var url = "/get_state/" + id;
+            var httpRequest = new XMLHttpRequest();
+
+            httpRequest.onreadystatechange = function () {
+                if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
+                        httpRequest.status == 304)) {
+
+                    var results = httpRequest.responseText;
+
+                    if (results.toLowerCase().trim() == "drawn" || results.toLowerCase().trim() == "ordered") {
+                        editTest(id, tstate, tcode, tname);
+                    }else{
+                        showMsg("CANNOT BE CHANGED! CURRENT STATUS: " + results);
+                    }
+                }
+            };
+
+            try {
+                httpRequest.open('GET', url, true);
+                httpRequest.send(null);
+            } catch (e) {
+            }
         }
 
         function deleteTest(id){
