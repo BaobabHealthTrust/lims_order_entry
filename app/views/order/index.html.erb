@@ -52,6 +52,7 @@
       </div>
     </div>
 </div>
+<button id="btnRefresh" class="button_blue" style=" font-size: 25px; margin-left: 28px; cursor: pointer;" onclick="showSpinner(); pullWorkList()">Refresh</button>
 
 <script>
 
@@ -111,6 +112,11 @@
             window.location = '/logout';
         }
 
+        if (__$("nav")) {
+
+            __$("nav").appendChild(__$("btnRefresh"));
+
+        }
     }
 
     function ajaxTasks(barcode) {
@@ -154,13 +160,21 @@
             xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
         }
         xmlhttp.onreadystatechange=function() {
-            if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200 ||
+                    xmlhttp.status == 304) {
                 var results = xmlhttp.responseText;
+
                 if(results == 'undefined' || results == '' || results == 'null' || results == '"not validate"') {
+                    if (spinner)
+                        hideSpinner();
                     return ;
                 }else if(results.length > 0){
                     displayWorkList(JSON.parse(results))
+                    if (spinner)
+                        hideSpinner();
                 }else{
+                    if (spinner)
+                        hideSpinner();
                     return ;
                 }
             }

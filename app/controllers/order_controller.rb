@@ -586,6 +586,14 @@ class OrderController < ApplicationController
     render :text => data.to_json
   end
 
+  def get_state
+    status_link = "#{CONFIG["order_transport_protocol"]}://#{CONFIG["order_username"]}:#{CONFIG["order_password"]}@#{CONFIG["order_server"]}:#{CONFIG["order_port"]}#{CONFIG["status_path"]}#{params[:id]}"
+
+    status = RestClient.get(status_link)
+
+    render :text => status
+  end
+
   protected
 
   def set_connection

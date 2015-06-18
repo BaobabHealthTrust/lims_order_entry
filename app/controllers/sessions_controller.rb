@@ -112,9 +112,9 @@ class SessionsController < ApplicationController
         flash[:notice] = "Update successful"
 
         if @section.blank?
-          redirect_to "/login"
+          redirect_to "/login" and return
         else
-          redirect_to "/remote_login"
+          redirect_to "/remote_login" and return
         end
 
       end

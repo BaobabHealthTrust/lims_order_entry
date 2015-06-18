@@ -10,9 +10,9 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require jquery
-//= require jquery_ujs
-//= require turbolinks
+// require jquery
+// require jquery_ujs
+// require turbolinks
 //= require_tree .
 
 function displayTestState(accession_number, state, code, name, national_id,patient_name, element)

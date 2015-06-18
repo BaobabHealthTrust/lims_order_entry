@@ -106,6 +106,8 @@ Rails.application.routes.draw do
 
   get '/ward_work_list' => "order#ward_work_list"
 
+  get '/get_state/:id' => "order#get_state"
+
  # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

@@ -1,4 +1,3 @@
-<%#= render 'location_check' %>
 
 <style>
 
@@ -7,34 +6,6 @@
     }
 
 </style>
-<!--div id="shell" style="height: 295px; overflow: auto; text-align: center;">
-
-  <button class="button_blue long" style="margin: 10px; width: 515px;" onclick="window.location = '/search_for_samples?target=process_sample';">
-    Start Processing Sample
-  </button>
-
-  <br />
-
-  <button class="button_blue long" style="margin: 10px;" onclick="window.location = '/search_for_samples?target=rejection_reason';">
-    Reject Sample
-  </button>
-
-  <button class="button_blue long" style="margin: 10px;" onclick="window.location = '/search_for_samples?target=enter_results';">
-    Enter Results
-  </button>
-
-  <br />
-
-  <button class="button_blue long" style="margin: 10px;">
-    Verify Results
-  </button>
-
-  <button class="button_blue long" style="margin: 10px;" onclick="window.location = '/search_for_samples?target=dispose_sample';">
-    Dispose Sample
-  </button>
-
-</div-->
-
 
 <style>
 
@@ -120,7 +91,6 @@
                 __$("barcode").value = "";
             }
             timeout -= 100;
-            //console.log("time out :" + timeout)
         }
 
         if (__$("btnNext")) {
@@ -204,6 +174,7 @@
 
                     true);
             httpRequest.send(null);
+
         } catch (e) {
         }
 
@@ -357,7 +328,7 @@
 
                 }
 
-                __$("worklist").appendChild(tableMain);     // fragment.cloneNode(true));
+                __$("worklist").appendChild(tableMain);
 
             }
 
