@@ -241,8 +241,9 @@
                         updateState(tests[k]['accession_number'], 'Seen', tests[k]['test_code'],tests[k]['test_name'])
                     }
 
+                    var uri = '/patient/' + this.getAttribute('national_id');
                     setTimeout(function(){
-                                window.location = '/patient/' + this.getAttribute('national_id');
+                                window.location = uri;
                             }, 300);
                 }
             }
