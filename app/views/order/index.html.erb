@@ -238,10 +238,13 @@
                 view.onclick = function() {
                     for(var k =0; k < tests.length; k++)
                     {
-                        console.log(tests[k]["accession_number"])
                         updateState(tests[k]['accession_number'], 'Seen', tests[k]['test_code'],tests[k]['test_name'])
                     }
-                    window.location='/patient/'+ this.getAttribute('national_id')
+
+                    var uri = '/patient/' + this.getAttribute('national_id');
+                    setTimeout(function(){
+                                window.location = uri;
+                            }, 100);
                 }
             }
             else
