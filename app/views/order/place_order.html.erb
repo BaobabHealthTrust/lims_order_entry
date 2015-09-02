@@ -1891,7 +1891,7 @@
 
             if (drawingSamples && preSelectedTest.trim().length == 0) {
 
-                printBarcode(npid, result["messageDatetime"], currentTests, result["accessionNumber"]);
+                printBarcode(npid, formatTimestamp(result["messageDatetime"]), currentTests, result["accessionNumber"]);
 
                 hideSpinner();
 
