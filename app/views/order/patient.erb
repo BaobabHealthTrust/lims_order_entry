@@ -604,8 +604,10 @@
                     if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
                             httpRequest.status == 304)) {
 
-                        var datetime = (new Date()).getDate() + "/" + months[(new Date()).getMonth()] + "/" + (new Date()).getFullYear() +
-                                " " + (new Date()).getHours() + ":" + (new Date()).getMinutes();
+                        var dt = new Date(JSON.parse("<%= @datetime%>"));
+
+                        var datetime = dt.getDate() + "/" + months[dt.getMonth()] + "/" + dt.getFullYear() +
+                                " " + dt.getHours() + ":" + dt.getMinutes();
 
                         var currentTests = "";
 
@@ -652,8 +654,10 @@
                     if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
                             httpRequest.status == 304)) {
 
-                        var datetime = (new Date()).getDate() + "/" + months[(new Date()).getMonth()] + "/" + (new Date()).getFullYear() +
-                                " " + (new Date()).getHours() + ":" + (new Date()).getMinutes();
+                        var dt = new Date(JSON.parse("<%= @datetime%>"));
+
+                        var datetime = dt.getDate() + "/" + months[dt.getMonth()] + "/" + dt.getFullYear() +
+                                " " + dt.getHours() + ":" + dt.getMinutes();
 
                         var currentTests = "";
 
@@ -729,8 +733,10 @@
 
             } else {
 
-                var datetime = (new Date()).getDate() + "/" + months[(new Date()).getMonth()] + "/" + (new Date()).getFullYear() +
-                        " " + (new Date()).getHours() + ":" + (new Date()).getMinutes();
+                var dt = new Date(JSON.parse("<%= @datetime%>"));
+
+                var datetime = dt.getDate() + "/" + months[dt.getMonth()] + "/" + dt.getFullYear() +
+                        " " + dt.getHours() + ":" + dt.getMinutes();
 
                 var currentTests = "";
 

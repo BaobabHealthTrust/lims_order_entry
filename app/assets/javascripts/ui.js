@@ -979,9 +979,9 @@ function formatTimestamp(timestamp){
 
         var months = ["Jan","Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-        var month = months[eval(time[2]) - 1];
+        var month = months[parseInt(time[2]) - 1];
 
-        var date = eval(time[3]);
+        var date = parseInt(time[3]);
 
         var result = date + "/" + month + "/" + time[1] + " " + time[4] + ":" + time[5] + ":" + time[6];
 
