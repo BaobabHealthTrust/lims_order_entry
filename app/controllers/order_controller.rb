@@ -168,7 +168,7 @@ class OrderController < ApplicationController
 
     # raise session[:patient_id].inspect
 
-    @datetime = Time.now.strftime("%Y%m%d%H%M%S")
+    @datetime = Time.now.to_json
 
     @patient = @request.get_patient_by_npid(params[:id]).first rescue nil
 
