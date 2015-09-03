@@ -344,17 +344,7 @@
 
                         if (result[key]["results"][kid]["result_date_time"] != null && result[key]["results"][kid]["result_date_time"].trim().length > 0) {
 
-                            var datetime = result[key]["results"][kid]["result_date_time"];
-                            var year = parseInt(datetime.substr(0, 4));
-                            var month = parseInt(datetime.substr(4, 2)) - 1;
-                            var day = parseInt(datetime.substr(6, 2));
-                            var hour = parseInt(datetime.substr(8, 2));
-                            var minute = parseInt(datetime.substr(10, 2));
-                            var second = parseInt(datetime.substr(12, 2));
-                            var theDate = new Date(year, month, day, hour, minute, second);
-
-                            date = "<i>" + day + "/" + months[month] + "/" + year + "</i> <b>" + padZeros(hour, 2) + ":" + padZeros(minute, 2) + "</b>";
-
+                            date = formatTimestamp(result[key]["results"][kid]["result_date_time"]);
                         }
 
                         var td1 = document.createElement("td");
@@ -584,6 +574,21 @@
 
         }
 
+        function formatTimestamp(timestamp){
+
+            var datetime = timestamp.trim();
+            var year = eval(datetime.substr(0, 4));
+            var month = eval(datetime.substr(4, 2)) - 1;
+            var day = eval(datetime.substr(6, 2));
+            var hour = eval(datetime.substr(8, 2));
+            var minute = eval(datetime.substr(10, 2));
+            var second = eval(datetime.substr(12, 2));
+            var theDate = new Date(year, month, day, hour, minute, second);
+            var date = "<i>" + day + "/" + months[month] + "/" + year + "</i> <b>" + padZeros(hour, 2) + ":" + padZeros(minute, 2) + "</b>";
+
+            return date;
+        }
+
         function printLabel(accession_number, currentState, state, code, name) {
 
             if (accession_number == undefined || currentState == undefined || state == undefined) {
@@ -604,7 +609,8 @@
                     if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
                             httpRequest.status == 304)) {
 
-                        var dt = new Date(JSON.parse("<%= @datetime%>"));
+                        var dt = new Date('<%= @datetime.year%>', (parseInt('<%= @datetime.month%>') - 1), '<%= @datetime.day%>',
+                                '<%= @datetime.hour%>', '<%= @datetime.min%>', '<%= @datetime.sec%>');
 
                         var datetime = dt.getDate() + "/" + months[dt.getMonth()] + "/" + dt.getFullYear() +
                                 " " + dt.getHours() + ":" + dt.getMinutes();
@@ -654,7 +660,8 @@
                     if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
                             httpRequest.status == 304)) {
 
-                        var dt = new Date(JSON.parse("<%= @datetime%>"));
+                        var dt = new Date('<%= @datetime.year%>', (parseInt('<%= @datetime.month%>') - 1), '<%= @datetime.day%>',
+                                '<%= @datetime.hour%>', '<%= @datetime.min%>', '<%= @datetime.sec%>');
 
                         var datetime = dt.getDate() + "/" + months[dt.getMonth()] + "/" + dt.getFullYear() +
                                 " " + dt.getHours() + ":" + dt.getMinutes();
@@ -733,7 +740,8 @@
 
             } else {
 
-                var dt = new Date(JSON.parse("<%= @datetime%>"));
+                var dt = new Date('<%= @datetime.year%>', (parseInt('<%= @datetime.month%>') - 1), '<%= @datetime.day%>',
+                        '<%= @datetime.hour%>', '<%= @datetime.min%>', '<%= @datetime.sec%>');
 
                 var datetime = dt.getDate() + "/" + months[dt.getMonth()] + "/" + dt.getFullYear() +
                         " " + dt.getHours() + ":" + dt.getMinutes();

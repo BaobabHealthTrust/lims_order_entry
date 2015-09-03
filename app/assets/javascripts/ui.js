@@ -973,26 +973,17 @@ function showMsgForAction(doc, title) {
 
 function formatTimestamp(timestamp){
 
-    var time = timestamp.match(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
+    var datetime = timestamp.trim();
+    var year = eval(datetime.substr(0, 4));
+    var month = eval(datetime.substr(4, 2)) - 1;
+    var day = eval(datetime.substr(6, 2));
+    var hour = eval(datetime.substr(8, 2));
+    var minute = eval(datetime.substr(10, 2));
+    var second = eval(datetime.substr(12, 2));
+    var theDate = new Date(year, month, day, hour, minute, second);
+    var date = "<i>" + day + "/" + months[month] + "/" + year + "</i> <b>" + padZeros(hour, 2) + ":" + padZeros(minute, 2) + "</b>";
 
-    if(time != null){
-
-        var months = ["Jan","Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-        var month = months[parseInt(time[2]) - 1];
-
-        var date = parseInt(time[3]);
-
-        var result = date + "/" + month + "/" + time[1] + " " + time[4] + ":" + time[5] + ":" + time[6];
-
-        return result;
-
-    } else {
-
-        return timestamp;
-
-    }
-
+    return date;
 }
 
 setTimeout(function () {

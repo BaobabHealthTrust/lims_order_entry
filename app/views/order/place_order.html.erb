@@ -1912,6 +1912,34 @@
         }
     }
 
+    function padZeros(number, positions) {
+        var zeros = parseInt(positions) - String(number).length;
+        var padded = "";
+
+        for (var i = 0; i < zeros; i++) {
+            padded += "0";
+        }
+
+        padded += String(number);
+
+        return padded;
+    }
+
+    function formatTimestamp(timestamp){
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var datetime = timestamp.trim();
+        var year = eval(datetime.substr(0, 4));
+        var month = eval(datetime.substr(4, 2)) - 1;
+        var day = eval(datetime.substr(6, 2));
+        var hour = eval(datetime.substr(8, 2));
+        var minute = eval(datetime.substr(10, 2));
+        var second = eval(datetime.substr(12, 2));
+        var theDate = new Date(year, month, day, hour, minute, second);
+        var date = day + "/" + months[month] + "/" + year + " " + padZeros(hour, 2) + ":" + padZeros(minute, 2);
+
+        return date;
+    }
+
     function printBarcode(npid, messageDatetime, testsTBD, accessionNumber, ward) {
 
         if (ward == undefined) {
